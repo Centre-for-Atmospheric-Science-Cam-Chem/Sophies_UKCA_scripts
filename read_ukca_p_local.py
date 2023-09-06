@@ -2,6 +2,11 @@
 Script to make ATom data comparable with UKCA data. 
 Occasionally, the run terminates unexpectedly after giving a warning but no error. Possibly due to remote connection. Run it again and it should work.
 """
+
+# Stop annoying warnings about pandas version.
+import warnings
+warnings.simplefilter('ignore')
+
 # Necessary pip commands are in iris_imports.sh. 
 
 import iris # pip install scitools-iris
@@ -66,7 +71,7 @@ ATom_data = ATom_data.loc['2017-10-23 09:33:00':'2017-10-23 18:59:00'] # dims= 2
 # Make arrays for a direct comparison of hourly time steps.
 # ATom and UM are using UTC.
 # Get the UM data for the same time of day.
-UKCA_data = UKCA_data[9:19] # 10:00 to 19:00. dims = 4. t, z, y, x. type = iris cube.
+UKCA_data = UKCA_data[8:18] # 10:00 to 19:00. dims = 4. t, z, y, x. type = iris cube.
 
 timesteps = ['2017-10-23 10:00:00', '2017-10-23 11:00:00', '2017-10-23 12:00:00', '2017-10-23 13:00:00', '2017-10-23 14:00:00', 
              '2017-10-23 15:00:00', '2017-10-23 16:00:00', '2017-10-23 17:00:00', '2017-10-23 18:00:00', '2017-10-23 18:59:00']
