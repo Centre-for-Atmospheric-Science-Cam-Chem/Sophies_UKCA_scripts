@@ -1,18 +1,25 @@
-"""
+'''
+Name: Sophie Turner.
+Date: 28/9/2023.
+Contact: st838@cam.ac.uk
 Script to make ATom data comparable with UKCA data. 
 Occasionally, the run terminates unexpectedly after giving a warning but no error. Possibly due to remote connection. Run it again and it should work.
-"""
+'''
+
+# Tell this script to run with the currently active Python environment, not the computer's local versions. 
+#!/usr/bin/env python
 
 # Stop annoying warnings about pandas version.
 import warnings
 warnings.simplefilter('ignore')
 
-# Necessary pip commands are in iris_imports.sh. 
-
-import iris # pip install scitools-iris
+# module load anaconda/python3/2022.05
+# conda activate /home/st838/nethome/condaenv
+# Alternatively, necessary pip commands are in iris_imports.sh. 
+import iris 
 import matplotlib.pyplot as plt
-import numpy as np # pip install numpy==1.21
-import pandas as pd # version 2.0.3. pip install --upgrade pandas if needed.
+import numpy as np 
+import pandas as pd 
 
 dates = ['2016-08-06', '2017-10-23', '2018-05-12']
 
@@ -26,13 +33,13 @@ ATom_file = ATom_dir + 'photolysis_data.csv'
 # Stash codes.
 UM_JO3 = 'm01s50i567' # O3 -> O(1D) + O2
 UM_JNO2 = 'm01s50i574' # NO2 -> NO + O
-UM_cloud = 'm01s00i266' # Cloud fraction, 0-1 volume of grid box.
+UM_cloud = 'm01s00i266' # Cloud fraction, 0-1 volume of grid box. cube.data gives an unpack error.
 UM_sw_down = 'm01s01i218' # Downward shortwave radiation flux, rho grid, Wm-2.
 UM_sw_up = 'm01s01i217' # Upward shortwave radiation flux, rho grid, Wm-2.
-UM_zenith = 'm01s01i142' # Cosine of solar zenith angle.
+UM_zenith = 'm01s01i142' # Cosine of solar zenith angle. error: found no level heights.
 UM_humid = 'm01s00i010' # Specific humidity, kg kg-1.
-UM_temp = 'm01s16i004' # Temperature, K.
-UM_pressure = 'm01s00i408' # Pressure, Pa.
+UM_temp = 'm01s16i004' # Temperature, K. error: found no level heights.
+UM_pressure = 'm01s00i408' # Pressure, Pa. cube.data gives an unpack error.
 
 # ATom field names.
 ATom_JO3 = 'jO3_O2_O1D_CAFS' # O3 -> O(1D) + O2
@@ -41,25 +48,24 @@ ATom_cloud = 'CloudFlag_AMS' # Cloud fraction?
 ATom_down_O3 = 'jO3_dwnFrac_CAFS' # Total radiation flux in O3.
 ATom_zenith = 'Solar_Zenith_Angle' # Solar zenith angle, deg.
 ATom_humid = 'Relative_Humidity' # Relative humidity, %.
-ATom_temp = 'T' # Temperature, K.
+ATom_temp = 'T' # Temperature, K. 
 ATom_pressure = 'Pres' # Pressure, hPa.
 
 # This step takes several minutes. Better to load individual chunks than the whole thing. See stash codes text file.
-UKCA_data = iris.load_cube(UKCA_file,iris.AttributeConstraint(STASH=UM_JO3)) 
+UKCA_data = iris.load_cube(UKCA_file,iris.AttributeConstraint(STASH=UM_temp)) 
 
 # Investigate the contents.
-'''
 print(type(UKCA_data)) # iris cube
 print(UKCA_data.shape) # 24 t, 85 z, 144 y, 192 x
 print(UKCA_data)
-'''
+print(UKCA_data.data)
 
 # Open the .csv of all the ATom data which I have already pre-processed in the script, ATom_J_data.
 ATom_data = pd.read_csv(ATom_file, index_col=0) # dims = 2. time steps, chemicals + spatial dimensions.
 
 # Pick out the fields.
 ATom_data = ATom_data[ATom_data.index.str.contains(dates[1])]
-ATom_data = ATom_data[['G_LAT', 'G_LONG', 'G_ALT', ATom_JO3]] 
+ATom_data = ATom_data[['G_LAT', 'G_LONG', 'G_ALT', ATom_pressure]] 
 
 # Check what the time of day range is.
 #print(ATom_data.index[0]) # 09:33
@@ -106,21 +112,21 @@ for i in range(len(timesteps)):
   diffs = np.absolute(UKCA_longs - ATom_long)
   iLong = diffs.argmin()
   UKCA_point = UKCA_point[iLong]
-
-  # Checking that they match. They do. 
-  ATom_point = ATom_data.loc[timesteps[i]]
-  print('\n\n')
-  print(type(UKCA_point)) # iris.cube.Cube
-  print(UKCA_point.shape) # ()
-  print(UKCA_point)
-  print(UKCA_point.data)
-  print('\n\n')
-  print(type(ATom_point)) # pandas.core.series.Series
-  print(ATom_point.shape) # (4,)
-  print(ATom_point)
   
   UKCA_points.append(UKCA_point) # list of iris.cube.Cube.
   ATom_points.append(ATom_data.loc[timesteps[i]]) # list of pandas.core.series.Series.
+
+# Checking that they match. They do. 
+ATom_point = ATom_data.loc[timesteps[i]]
+print('\n\n')
+print(type(ATom_point)) # pandas.core.series.Series
+print(ATom_point.shape) # (4,)
+print(ATom_point)
+print('\n')
+print(type(UKCA_point)) # iris.cube.Cube
+print(UKCA_point.shape) # ()
+print(UKCA_point)
+print(UKCA_point.data)
 
 # For this example, ATom J rate measurements are around e-5 but UKCA J rates are around e-11. 
 # Find out if this is common in the data. 
@@ -134,4 +140,3 @@ for i in range(len(timesteps)):
 
 #outpath = './test_cube.nc'
 #iris.save(UKCA_data, outpath)
-
