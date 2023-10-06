@@ -20,6 +20,56 @@ import pandas as pd
 import numpy as np
 
 
+# Equivalent of pandas.value_counts for a python list.
+def count_unique(plain_list):
+  values, counts = [], []
+  for value in plain_list:
+    if value not in values:
+      values.append(value)
+      counts.append(1)
+    else:
+      i = values.index(value)
+      counts[i] += 1
+  counts = pd.Series(values, counts)
+  counts.sort_index(ascending=False)
+  return counts
+
+
+# Investigate data values.
+def view_values(ATom_data, ATom_field, UKCA_points):
+# field is the column name e.g. 'CloudFlag_AMS'.
+  col = ATom_data[ATom_field]
+  num_values = len(col)
+  ATom_counts = col.value_counts(dropna=False)
+  UKCA_counts = count_unique(np.squeeze(UKCA_points))
+  
+  # Put these 2 bits into a proper function or loop:
+  if max(ATom_counts) > 1:
+    print('ATom', ATom_field, 'contains mostly:')
+    print('value        count')
+    print(ATom_counts.iloc[0:3])
+
+    print('\nvalue        % of data')
+    print((ATom_counts.iloc[0:3]/num_values)*100)
+
+  if max(UKCA_counts) > 1:
+    print('UKCA contains mostly:')
+    print('value        count')
+    print(UKCA_counts.iloc[0:3])
+
+    print('\nvalue        % of data')
+    print((UKCA_counts.iloc[0:3]/num_values)*100)
+
+  print('\nATom largest value: ', max(col.dropna()))
+  print('UKCA largest value: ', max(UKCA_points))
+  print('ATom smallest value:', min(col.dropna()))
+  print('UKCA smallest value:', min(UKCA_points))
+  print('ATom mean value:', col.mean())
+  print('UKCA mean value:', UKCA_points.mean())
+  num_nans = num_values - len(col.dropna())
+  print('There are', num_nans, 'empty ATom values.')
+
+
 # Converting with different vertical levels.
 def vertical(ATom_data, UKCA_data, z_axis, field, timesteps):
   # z-axis is 'G_ALT', 'Pres' or None.
@@ -118,8 +168,8 @@ dates = ['2016-08-06', '2017-10-23', '2018-05-12']
 # File paths.
 UKCA_dir = './StratTrop_nudged_J_outputs_for_ATom/'
 ATom_dir = './ATom_MER10_Dataset.20210613/'
-#UKCA_file = '{}cy731a.pl{}.pp'.format(UKCA_dir, dates[1].replace('-', ''))
-UKCA_file = './tests/cy731a.pl20150129.pp' # A test file with extra physical fields. Not for actual use with ATom.
+UKCA_file = '{}cy731a.pl{}.pp'.format(UKCA_dir, dates[1].replace('-', ''))
+#UKCA_file = './tests/cy731a.pl20150129.pp' # A test file with extra physical fields. Not for actual use with ATom.
 ATom_file = ATom_dir + 'photolysis_data.csv'
 
 # Stash codes.
@@ -142,8 +192,8 @@ ATom_temp = 'T' # Temperature, K.
 ATom_pressure = 'Pres' # Pressure, hPa.
 
 # What we want to compare.
-UM_field = UM_zenith
-ATom_field = ATom_zenith
+UM_field = UM_JO3
+ATom_field = ATom_JO3
 print('Comparing', ATom_field)
 
 # This step takes several minutes. Better to load individual chunks than the whole thing. See stash codes text file.
@@ -195,6 +245,11 @@ if UM_field == UM_zenith:
   UKCA_points = np.arccos(UKCA_points)
   print(UKCA_points[-1])
   
+#print(type(UKCA_points)) # 3D or 4D list.
+#print(np.squeeze(UKCA_points)[-1]) # 1D. 
+
+view_values(ATom_data, ATom_field, UKCA_points)
+  
 # For this example, ATom J rate measurements are around e-5 but UKCA J rates are around e-11. 
 # Find out if this is common in the data. 
 # See if I can tell UM to replicate clouds from ATom. 
@@ -204,4 +259,3 @@ if UM_field == UM_zenith:
 # compare the ATom days with the UM days.
 # put all the above into functions to work with different chemicals and times etc and try with NO2.
 # compare ratios of other rates to NO2 at same points for both UCKA and ATom.
-
