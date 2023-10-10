@@ -20,7 +20,7 @@ import pandas as pd
 import numpy as np
 
 
-# Equivalent of pandas.value_counts for a python list.
+# Equivalent of pandas.value_counts for a python list or np array.
 def count_unique(plain_list):
   values, counts = [], []
   for value in plain_list:
@@ -30,45 +30,48 @@ def count_unique(plain_list):
     else:
       i = values.index(value)
       counts[i] += 1
-  counts = pd.Series(values, counts)
-  counts.sort_index(ascending=False)
+  counts = pd.Series(counts, values)
+  counts = counts.sort_values(ascending=False)
   return counts
 
 
 # Investigate data values.
-def view_values(ATom_data, ATom_field, UKCA_points):
-# field is the column name e.g. 'CloudFlag_AMS'.
-  col = ATom_data[ATom_field]
-  num_values = len(col)
-  ATom_counts = col.value_counts(dropna=False)
-  UKCA_counts = count_unique(np.squeeze(UKCA_points))
+def view_values(points, name):
+  points = np.squeeze(points)
+  if 'ATom' in name:
+    points = points[:,-1]
   
-  # Put these 2 bits into a proper function or loop:
-  if max(ATom_counts) > 1:
-    print('ATom', ATom_field, 'contains mostly:')
-    print('value        count')
-    print(ATom_counts.iloc[0:3])
+  num_values = len(points)
+  counts = count_unique(points)
+  print('\n')
+  
+  if max(counts) > 1:
+    end = 3
+    if len(counts) < 3:
+      end = len(counts)
+    print(name, 'contains mostly:')
+    print('value    count')
+    print(counts.iloc[0:end])
 
-    print('\nvalue        % of data')
-    print((ATom_counts.iloc[0:3]/num_values)*100)
+    print('\nvalue    % of data')
+    print((counts.iloc[0:end]/num_values)*100)
+    print('\n')
+  
+  print(f'{name} largest value: {max(points)}')
+  print('smallest value:', min(points))
+  print('mean value:', np.nanmean(points))
 
-  if max(UKCA_counts) > 1:
-    print('UKCA contains mostly:')
-    print('value        count')
-    print(UKCA_counts.iloc[0:3])
 
-    print('\nvalue        % of data')
-    print((UKCA_counts.iloc[0:3]/num_values)*100)
-
-  print('\nATom largest value: ', max(col.dropna()))
-  print('UKCA largest value: ', max(UKCA_points))
-  print('ATom smallest value:', min(col.dropna()))
-  print('UKCA smallest value:', min(UKCA_points))
-  print('ATom mean value:', col.mean())
-  print('UKCA mean value:', UKCA_points.mean())
-  num_nans = num_values - len(col.dropna())
-  print('There are', num_nans, 'empty ATom values.')
-
+# Converting physical parameters.
+def convert(field, UKCA_point):
+  # Conversion for cos solar zenith angle.
+  if field == 'Solar_Zenith_Angle':
+    UKCA_point = np.arccos(UKCA_point)
+  # Conversion for hPa -> Pascals.
+  elif field == 'Pres':
+    UKCA_point = UKCA_point * 0.01
+  return UKCA_point
+  
 
 # Converting with different vertical levels.
 def vertical(ATom_data, UKCA_data, z_axis, field, timesteps):
@@ -115,6 +118,7 @@ def vertical(ATom_data, UKCA_data, z_axis, field, timesteps):
       iLong = diffs.argmin()
       UKCA_point = UKCA_point[0,0,0,iLong]
   
+      UKCA_point = convert(field, UKCA_point)
       UKCA_points.append(UKCA_point) # list of cf fields.
       ATom_points.append(ATom_data.loc[timesteps[i]]) # list of pandas.core.series.Series.
   
@@ -143,6 +147,7 @@ def vertical(ATom_data, UKCA_data, z_axis, field, timesteps):
       iLong = diffs.argmin()
       UKCA_point = UKCA_point[0,0,iLong]
   
+      UKCA_point = convert(field, UKCA_point)
       UKCA_points.append(UKCA_point) # list of cf fields.
       ATom_points.append(ATom_data.loc[timesteps[i]]) # list of pandas.core.series.Series.
   
@@ -154,12 +159,14 @@ def vertical(ATom_data, UKCA_data, z_axis, field, timesteps):
   print(ATom_point)
   print('\nUM data point closest spatial match:')
   print(type(UKCA_point)) # cf.field.
+  print('Latitude:', UKCA_point.coord('latitude').data)
+  print('Longitude:', UKCA_point.coord('longitude').data)
   if z_axis == 'G_ALT':
     print('Altitude:', UKCA_point.coord('atmosphere_hybrid_height_coordinate').data * 85000)
-  print(UKCA_point.shape) # (1,1,1,1)
-  print(UKCA_point)
-  print(UKCA_point.data)
-    
+  elif z_axis == 'Pres':
+    print('Pressure:', UKCA_point.coord('air_pressure').data)
+  print(field, UKCA_point.data)
+  
   return(ATom_data, ATom_points, UKCA_data, UKCA_points)
 
 
@@ -168,8 +175,8 @@ dates = ['2016-08-06', '2017-10-23', '2018-05-12']
 # File paths.
 UKCA_dir = './StratTrop_nudged_J_outputs_for_ATom/'
 ATom_dir = './ATom_MER10_Dataset.20210613/'
-UKCA_file = '{}cy731a.pl{}.pp'.format(UKCA_dir, dates[1].replace('-', ''))
-#UKCA_file = './tests/cy731a.pl20150129.pp' # A test file with extra physical fields. Not for actual use with ATom.
+#UKCA_file = '{}cy731a.pl{}.pp'.format(UKCA_dir, dates[1].replace('-', ''))
+UKCA_file = './tests/cy731a.pl20150129.pp' # A test file with extra physical fields. Not for actual use with ATom.
 ATom_file = ATom_dir + 'photolysis_data.csv'
 
 # Stash codes.
@@ -192,9 +199,11 @@ ATom_temp = 'T' # Temperature, K.
 ATom_pressure = 'Pres' # Pressure, hPa.
 
 # What we want to compare.
-UM_field = UM_JO3
-ATom_field = ATom_JO3
-print('Comparing', ATom_field)
+UM_field = UM_pressure
+ATom_field = ATom_pressure
+name = ATom_field.replace('_CAFS', '')
+name = ATom_field.replace('_AMS', '')
+print('Comparing', name)
 
 # This step takes several minutes. Better to load individual chunks than the whole thing. See stash codes text file.
 print('\nLoading the UM data.')
@@ -240,15 +249,8 @@ timesteps = ['2017-10-23 10:00:00', '2017-10-23 11:00:00', '2017-10-23 12:00:00'
 
 ATom_data, ATom_points, UKCA_data, UKCA_points = vertical(ATom_data, UKCA_data, z_axis, ATom_field, timesteps)
 
-# Conversion for cos solar zenith angle.
-if UM_field == UM_zenith:
-  UKCA_points = np.arccos(UKCA_points)
-  print(UKCA_points[-1])
-  
-#print(type(UKCA_points)) # 3D or 4D list.
-#print(np.squeeze(UKCA_points)[-1]) # 1D. 
-
-view_values(ATom_data, ATom_field, UKCA_points)
+view_values(ATom_points, f'ATom {name}')
+view_values(UKCA_points, f'UKCA {name}')
   
 # For this example, ATom J rate measurements are around e-5 but UKCA J rates are around e-11. 
 # Find out if this is common in the data. 
