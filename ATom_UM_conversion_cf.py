@@ -20,18 +20,9 @@ import pandas as pd
 import numpy as np
 
 
-# Equivalent of pandas.value_counts for a python list or np array.
 def count_unique(plain_list):
-  values, counts = [], []
-  for value in plain_list:
-    if value not in values:
-      values.append(value)
-      counts.append(1)
-    else:
-      i = values.index(value)
-      counts[i] += 1
-  counts = pd.Series(counts, values)
-  counts = counts.sort_values(ascending=False)
+  pd_list = pd.Series(plain_list)
+  counts = pd_list.value_counts(ascending=False)
   return counts
 
 
