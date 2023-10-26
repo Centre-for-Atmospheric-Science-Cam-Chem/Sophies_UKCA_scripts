@@ -18,6 +18,7 @@ warnings.simplefilter('ignore')
 import cf
 import pandas as pd 
 import numpy as np
+import codes_to_names as codes
 
 date = '2017-10-23'
 
@@ -28,6 +29,8 @@ ATom_dir = 'ATom_MER10_Dataset.20210613/'
 UKCA_file = 'tests/cy731a.pl20150129.pp' # A test file with extra physical fields. Not for actual use with ATom.
 ATom_file = dir_path + ATom_dir + 'photolysis_data.csv'
 UKCA_file = dir_path + UKCA_file
+
+code_names = np.array(codes.code_names)
 
 # Open the .csv of all the ATom data which I have already pre-processed in the script, ATom_J_data.
 print('Loading the ATom data.')
@@ -46,7 +49,9 @@ ATom_data = ATom_data[ATom_data.index.str.contains(date)]
 timesteps = ['2017-10-23 10:00:00', '2017-10-23 11:00:00', '2017-10-23 12:00:00', '2017-10-23 13:00:00', '2017-10-23 14:00:00', 
              '2017-10-23 15:00:00', '2017-10-23 16:00:00', '2017-10-23 17:00:00', '2017-10-23 18:00:00', '2017-10-23 18:59:00']
 # Trim so that data are over the same times.
-ATom_data = ATom_data.loc[timesteps] # dims = 2. type = pandas dataframe.       
+ATom_data = ATom_data.loc[timesteps] # dims = 2. type = pandas dataframe. 
+
+names = ['TIME', 'ALTITUDE m', 'PRESSURE hPa', 'LATITUDE', 'LONGITUDE']      
 
 for i in range(len(timesteps)):
   # The lat, long, alt and pres are the same for every ATom field at each time step as it is a flight path.
@@ -72,11 +77,19 @@ for i in range(len(timesteps)):
   idx_long = diffs.argmin()
   
   # The Nones are placeholders for altitude and pressure.
-  UKCA_point_entry = [time, None, None, UKCA_lats[idx_lat], UKCA_longs[idx_long]]
+  UKCA_point_entry = [time, None, None, np.squeeze(UKCA_lats[idx_lat]), np.squeeze(UKCA_longs[idx_long])]
  
   # Match each item by hourly time steps.
-  for j in range(len(UKCA_data)):
+  for j in range(len(UKCA_data)):  
     UKCA_point = UKCA_data[j][i+9] # Get the UM data for the same time of day.
+    name = UKCA_point.long_name    
+    
+    # Convert name if needed.
+    if name in code_names[:,0]:
+      i_name = np.where(code_names[:,0] == name)
+      name = code_names[i_name,1][0,0] 
+      UKCA_point.long_name = name
+      
     UKCA_point = np.squeeze(UKCA_point) # Get dimensions.
     # Some fields are 3D with differing vertical levels.
     if UKCA_point.ndim == 3:
@@ -85,10 +98,10 @@ for i in range(len(timesteps)):
         UKCA_pressures = UKCA_point.coord('air_pressure').data
         diffs = np.absolute(UKCA_pressures - ATom_pres)
         idx_pres = diffs.argmin()
-	# Add pressure.
-        UKCA_point_entry[2] = UKCA_pressures[idx_pres] 
-	# Add the J rate or other field value.
-        UKCA_point_entry.append(UKCA_point[idx_pres,idx_lat,idx_long].data)
+	# Add this pressure if there is no better value for pressure.
+        if UKCA_point_entry[2] is None:
+          UKCA_point_entry[2] = np.squeeze(UKCA_pressures[idx_pres])
+        value = UKCA_point[idx_pres,idx_lat,idx_long].data  
       else:
         # Height levels.  
         UKCA_alts = UKCA_point.coord('atmosphere_hybrid_height_coordinate').data
@@ -96,30 +109,30 @@ for i in range(len(timesteps)):
         diffs = np.absolute(UKCA_alts - ATom_alt)
         idx_alt = diffs.argmin()
 	# Add the altitude.
-        UKCA_point_entry[1] = UKCA_alts[idx_alt]
-        # Add the J rate or other field value.
-        UKCA_point_entry.append(UKCA_point[idx_alt,idx_lat,idx_long].data)
+        UKCA_point_entry[1] = np.squeeze(UKCA_alts[idx_alt])
+        value = UKCA_point[idx_alt,idx_lat,idx_long].data
     # Some fields are 2D with only 1 vertical level.
     elif UKCA_point.ndim == 2:
-      # Add the J rate or other field value.
-      UKCA_point_entry.append(UKCA_point[idx_lat,idx_long].data)
+      value = UKCA_point[idx_lat,idx_long].data 
+    value = np.squeeze(value)
+    # Add the J rate or other field value.
+    if name == 'PRESSURE AT THETA LEVELS AFTER TS':
+      UKCA_point_entry[2] = value * 0.01 # Pascals to hPa.
+    else: 
+      # More conversions.
+      if name == 'COS SOLAR ZENITH ANGLE':
+        value = np.arccos(value)
+        name = 'SOLAR ZENITH ANGLE'
+      # Add the value to the final list.
+      UKCA_point_entry.append(value)
+      if name not in names:
+        names.append(name) 
+	
+  print(names)
+  exit()
     
-  print('ATom altitude:')
-  print(ATom_data.loc[time]['G_ALT'])
-  print('UKCA altitude:')
-  print(UKCA_point_entry[1])
-  print('ATom pressure:')
-  print(ATom_data.loc[time]['Pres'])
-  print('UKCA pressure from PLEV:')
-  print(UKCA_point_entry[2])
-  print('UKCA pressure from DALLTH:')  
-  print(UKCA_point_entry[7])
-  # Note how the PLEV is not as accurate as the DALLTH.
-  # Might need more PLEV vertical increments. We only have 36.
-  # What is PLEV for? Do we need it to be perfect? If not, replace [2] with DALLTH pressure output.
-  exit()    
-    
-     
+
+         
           
 '''
 # Make a .csv.
