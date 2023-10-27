@@ -40,7 +40,7 @@ ATom_data = pd.read_csv(ATom_file, index_col=0) # dims = 2. time steps, chemical
 print('Loading the UM data.')
 UKCA_data = cf.read(UKCA_file)
 
-print('\nRefining by time comparison.')
+print('Refining by time comparison.')
 
 # Pick out the fields.
 ATom_data = ATom_data[ATom_data.index.str.contains(date)]
@@ -51,7 +51,8 @@ timesteps = ['2017-10-23 10:00:00', '2017-10-23 11:00:00', '2017-10-23 12:00:00'
 # Trim so that data are over the same times.
 ATom_data = ATom_data.loc[timesteps] # dims = 2. type = pandas dataframe. 
 
-names = ['TIME', 'ALTITUDE m', 'PRESSURE hPa', 'LATITUDE', 'LONGITUDE']      
+names = ['TIME', 'ALTITUDE m', 'PRESSURE hPa', 'LATITUDE', 'LONGITUDE']  
+table_data = []    
 
 for i in range(len(timesteps)):
   # The lat, long, alt and pres are the same for every ATom field at each time step as it is a flight path.
@@ -123,21 +124,17 @@ for i in range(len(timesteps)):
       if name == 'COS SOLAR ZENITH ANGLE':
         value = np.arccos(value)
         name = 'SOLAR ZENITH ANGLE'
-      # Add the value to the final list.
+      # Add the value to the list.
       UKCA_point_entry.append(value)
       if name not in names:
         names.append(name) 
-	
-  print(names)
-  exit()
-    
-
-         
-          
-'''
-# Make a .csv.
-ATom_out_path = f'./tests/ATom_points_{date}.csv'
+  # Add a row of data to the table for this timestep.
+  table_data.append(UKCA_point_entry)
+  
+table = pd.DataFrame(data=(table_data), columns=names)
+table = table.set_index('TIME')
+# Make a csv
+ATom_out_path = f'{dir_path}tests/ATom_points_{date}.csv'
 ATom_data.to_csv(ATom_out_path)
-UKCA_out_path = f'./tests/UKCA_points_{date}.csv'
-
-'''
+UKCA_out_path = f'{dir_path}tests/UKCA_points_{date}.csv'
+table.to_csv(UKCA_out_path)
