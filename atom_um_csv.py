@@ -32,15 +32,31 @@ UKCA_file = dir_path + UKCA_file
 
 code_names = np.array(codes.code_names)
 
+
+def standard_names(data):
+  # Standardise the names of ATom and UM fields into 1 format.
+  for name_old in data.iloc[:,4:-1].columns:
+    name_new = name_old.replace('CAFS', '')
+    name_new = name_new.replace('_', ' ')
+    name_new = name_new.upper()  
+    name_new = name_new.strip()
+    data = data.rename(columns={name_old:name_new})
+  return(data)
+  
+
 # Open the .csv of all the ATom data which I have already pre-processed in the script, ATom_J_data.
 print('Loading the ATom data.')
-ATom_data = pd.read_csv(ATom_file, index_col=0) # dims = 2. time steps, chemicals + spatial dimensions.
+ATom_data = pd.read_csv(ATom_file) # dims = 2. time steps, chemicals + spatial dimensions.
 
 # This step takes several minutes. Better to load individual chunks than the whole thing. See stash codes text file.
 print('Loading the UM data.')
 UKCA_data = cf.read(UKCA_file)
 
 print('Refining by time comparison.')
+
+ATom_data = ATom_data.rename(columns={'UTC_Start_dt':'TIME', 'T':'TEMPERATURE K', 'G_LAT':'LATITUDE', 
+                                      'G_LONG':'LONGITUDE', 'G_ALT':'ALTITUDE m', 'Pres':'PRESSURE hPa'})    
+ATom_data = ATom_data.set_index('TIME')
 
 # Pick out the fields.
 ATom_data = ATom_data[ATom_data.index.str.contains(date)]
@@ -52,15 +68,15 @@ timesteps = ['2017-10-23 10:00:00', '2017-10-23 11:00:00', '2017-10-23 12:00:00'
 ATom_data = ATom_data.loc[timesteps] # dims = 2. type = pandas dataframe. 
 
 names = ['TIME', 'ALTITUDE m', 'PRESSURE hPa', 'LATITUDE', 'LONGITUDE']  
-table_data = []    
+table_data = []
 
 for i in range(len(timesteps)):
   # The lat, long, alt and pres are the same for every ATom field at each time step as it is a flight path.
   time = timesteps[i]
-  ATom_lat = ATom_data.loc[time]['G_LAT']
-  ATom_long = ATom_data.loc[time]['G_LONG']
-  ATom_alt = ATom_data.loc[time]['G_ALT']
-  ATom_pres = ATom_data.loc[time]['Pres']
+  ATom_lat = ATom_data.loc[time]['LATITUDE']
+  ATom_long = ATom_data.loc[time]['LONGITUDE']
+  ATom_alt = ATom_data.loc[time]['ALTITUDE m']
+  ATom_pres = ATom_data.loc[time]['PRESSURE hPa']
   
   # Pick a point from UKCA for these times.
   UKCA_point = UKCA_data[0][i+9] # Get the UM data for the same time of day.
@@ -124,7 +140,8 @@ for i in range(len(timesteps)):
       if name == 'COS SOLAR ZENITH ANGLE':
         value = np.arccos(value)
         name = 'SOLAR ZENITH ANGLE'
-      # Add the value to the list.
+      # Add the value to the list as a number.
+      value = float(value)
       UKCA_point_entry.append(value)
       if name not in names:
         names.append(name) 
@@ -133,6 +150,10 @@ for i in range(len(timesteps)):
   
 table = pd.DataFrame(data=(table_data), columns=names)
 table = table.set_index('TIME')
+table = standard_names(table)
+table = table.rename(columns={'TEMPERATURE ON THETA LEVELS':'TEMPERATURE K'})
+ATom_data = standard_names(ATom_data)
+
 # Make a csv
 ATom_out_path = f'{dir_path}tests/ATom_points_{date}.csv'
 ATom_data.to_csv(ATom_out_path)
