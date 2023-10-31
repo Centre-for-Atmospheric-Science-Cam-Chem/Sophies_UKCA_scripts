@@ -55,7 +55,8 @@ UKCA_data = cf.read(UKCA_file)
 print('Refining by time comparison.')
 
 ATom_data = ATom_data.rename(columns={'UTC_Start_dt':'TIME', 'T':'TEMPERATURE K', 'G_LAT':'LATITUDE', 
-                                      'G_LONG':'LONGITUDE', 'G_ALT':'ALTITUDE m', 'Pres':'PRESSURE hPa'})    
+                                      'G_LONG':'LONGITUDE', 'G_ALT':'ALTITUDE m', 'Pres':'PRESSURE hPa',
+				      'CLOUDINDICATOR CAPS':'CLOUD %'})    
 ATom_data = ATom_data.set_index('TIME')
 
 # Pick out the fields.
@@ -94,7 +95,7 @@ for i in range(len(timesteps)):
   idx_long = diffs.argmin()
   
   # The Nones are placeholders for altitude and pressure.
-  UKCA_point_entry = [time, None, None, np.squeeze(UKCA_lats[idx_lat]), np.squeeze(UKCA_longs[idx_long])]
+  UKCA_point_entry = [time, None, None, float(np.squeeze(UKCA_lats[idx_lat])), float(np.squeeze(UKCA_longs[idx_long]))]
  
   # Match each item by hourly time steps.
   for j in range(len(UKCA_data)):  
@@ -117,7 +118,7 @@ for i in range(len(timesteps)):
         idx_pres = diffs.argmin()
 	# Add this pressure if there is no better value for pressure.
         if UKCA_point_entry[2] is None:
-          UKCA_point_entry[2] = np.squeeze(UKCA_pressures[idx_pres])
+          UKCA_point_entry[2] = float(np.squeeze(UKCA_pressures[idx_pres]))
         value = UKCA_point[idx_pres,idx_lat,idx_long].data  
       else:
         # Height levels.  
@@ -126,12 +127,13 @@ for i in range(len(timesteps)):
         diffs = np.absolute(UKCA_alts - ATom_alt)
         idx_alt = diffs.argmin()
 	# Add the altitude.
-        UKCA_point_entry[1] = np.squeeze(UKCA_alts[idx_alt])
+        UKCA_point_entry[1] = float(np.squeeze(UKCA_alts[idx_alt]))
         value = UKCA_point[idx_alt,idx_lat,idx_long].data
     # Some fields are 2D with only 1 vertical level.
     elif UKCA_point.ndim == 2:
       value = UKCA_point[idx_lat,idx_long].data 
-    value = np.squeeze(value)
+    # Add the value to the list as a number.
+    value = float(np.squeeze(value))
     # Add the J rate or other field value.
     if name == 'PRESSURE AT THETA LEVELS AFTER TS':
       UKCA_point_entry[2] = value * 0.01 # Pascals to hPa.
@@ -140,8 +142,6 @@ for i in range(len(timesteps)):
       if name == 'COS SOLAR ZENITH ANGLE':
         value = np.arccos(value)
         name = 'SOLAR ZENITH ANGLE'
-      # Add the value to the list as a number.
-      value = float(value)
       UKCA_point_entry.append(value)
       if name not in names:
         names.append(name) 
@@ -151,7 +151,9 @@ for i in range(len(timesteps)):
 table = pd.DataFrame(data=(table_data), columns=names)
 table = table.set_index('TIME')
 table = standard_names(table)
-table = table.rename(columns={'TEMPERATURE ON THETA LEVELS':'TEMPERATURE K'})
+table = table.rename(columns={'TEMPERATURE ON THETA LEVELS':'TEMPERATURE K', 
+                              'BULK CLOUD FRACTION IN EACH LAYER':'CLOUD %',
+			      'RELATIVE HUMIDITY ON P LEV/UV GRID':'RELATIVE HUMIDITY'})
 ATom_data = standard_names(ATom_data)
 
 # Make a csv
