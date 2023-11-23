@@ -13,9 +13,12 @@ Files are located at scratch/st838/netscratch.
 
 import pandas as pd
 import numpy as np
+from numpy import ones,vstack
+from numpy.linalg import lstsq
 import matplotlib.pyplot as plt
 import pylab
 import cartopy.crs as ccrs
+from sklearn.metrics import r2_score
 
 
 def view_values(data, name):
@@ -74,40 +77,98 @@ def diffs(data_1, data_2, name_1, name_2):
   view_basics(rel_diff, 'relative differences %')
   
   
-def plot_both(data_1, data_2):
+def split_date_time(data):
+  date_time = data.index[0]
+  date = date_time.split()[0]
+  times = []
+  for item in data.index:
+    date_time = item.split()
+    times.append(date_time[1])
+  return(date, times)
+  
+  
+def make_title(name):
+  if name != 'RELATIVE HUMIDITY' and name != 'SOLAR ZENITH ANGLE':
+    name = name.split()[0]
+  return(name)
+  
+  
+def get_line_eqn(x, y):
+  # Find out how to calculate eqn of a line.
+  sign = ''
+  if c >= 0:
+    sign='+ '
+  eqn = f'y = {m} x {sign}{c}'
+  return(eqn)  
+  
+  
+def plot_timeseries(dataATom, dataUKCA):
+  # Works best with data from one flight, and one field.
+  date, times = split_date_time(dataATom)
+  title = make_title(dataATom.name)
   plt.figure()
-  plt.title = data_1.name
-  x = data_1.index
-  y1 = data_1
-  y2 = data_2
-  plt.plot(x, y1)
-  plt.plot(x, y2)
-  plt.show()
+  plt.title(f'{title} ALONG FLIGHT PROGRESSION, {date}')
+  x = times
+  y1 = dataATom
+  y2 = dataUKCA
+  plt.plot(x, y1, label='ATom')
+  plt.plot(x, y2, label='UKCA')
+  plt.xlabel('TIME')
+  plt.ylabel(dataATom.name)
+  plt.legend()
+  plt.show()    
+  
+  
+def plot_corr(dataATom, dataUKCA, lat):
+  # Works with data for one field.
+  title = make_title(dataATom.name)
+  plt.figure()
+  r2 = round(r2_score(dataUKCA, dataATom), 1)
+  plt.figtext(0.25, 0.75, f'r\u00b2 = {r2}')
+  plt.title(f'CORRELATION OF {title} FROM ATOM AND UKCA') 
+  x = dataUKCA
+  y = dataATom
+  plt.scatter(x, y, c=lat)
+  # Line of best fit.
+  plt.plot(np.unique(x), np.poly1d(np.polyfit(x, y, 1))(np.unique(x)), c='black', linestyle='dotted')
+  #line_eqn = get_line_eqn(x, y)
+  # Display it on chart with R2 score.
+  #plt.text(-5, 60, f'r\u00b2 = {r2}\n{line_eqn}')
+  plt.xlabel(f'UKCA {title}') 
+  plt.ylabel(f'ATom {title}')
+  plt.colorbar(label='Latitude / degrees North')
+  plt.show() 
   
 
-def plot_diff(data_1, data_2):
+def plot_diff(dataATom, dataUKCA):
+  # Works best with data from all times and all flights at once, and one field.
+  title = make_title(dataATom.name)
   plt.figure()
-  plt.title = data_1.name
-  diff = data_2 - data_1
-  rel_diff = diff/data * 100
+  plt.title(f'UKCA DIFFERENCE TO ATOM FOR {title}')
+  diff = dataUKCA - dataATom
+  rel_diff = diff/dataATom * 100
   plt.hist(rel_diff)
+  plt.xlabel('% difference')
+  plt.ylabel('Number of data points')
   plt.show()
   
   
 def plot_location(data1, data2):
-  date = data1.index[0]
-  date = date.split()[0]
+  date, _ = split_date_time(data1)
   fig = pylab.figure(dpi=150)
   ax = pylab.axes(projection=ccrs.PlateCarree(central_longitude=310.0))
   ax.stock_img()
   pylab.title(f'Locations of selected flight path points, {date}')
+  alt = data1['ALTITUDE m']
   x = data1['LONGITUDE']
   y = data1['LATITUDE']
-  pylab.scatter(x+50, y, s=7, c='white', label='ATom')
+  pylab.scatter(x+50, y, s=20, c=alt, cmap='Reds', marker='_', label='ATom')
+  alt = data2['ALTITUDE m']
   x = data2['LONGITUDE']
   y = data2['LATITUDE']
-  pylab.scatter(x+50, y, s=7, marker='x', c='black', label='UKCA')
+  pylab.scatter(x+50, y, s=20, marker='|', c=alt, cmap='Reds', label='UKCA')
   pylab.legend()
+  pylab.colorbar(label='Altitude / m')
   pylab.show()
   
  
@@ -120,11 +181,11 @@ ATom_data = pd.read_csv(ATom_file, index_col=0)
 UKCA_data = pd.read_csv(UKCA_file, index_col=0) 
  
 # Turn this into saves in a specific dir so it doesn't show pop ups. 
-plot_location(ATom_data, UKCA_data)
-'''
-for field in ATom_data.columns:
-  plot_both(ATom_data[field], UKCA_data[field])
-  plot_diff(ATom_data[field], UKCA_data[field])
-'''
+#plot_location(ATom_data, UKCA_data)
+field = 'JO3 O2 O1D'
+#plot_diff(ATom_data[field], UKCA_data[field])
 
+#for field in ATom_data.columns:
+#plot_timeseries(ATom_data[field], UKCA_data[field])
+plot_corr(ATom_data[field], UKCA_data[field], UKCA_data['LATITUDE'])
 
