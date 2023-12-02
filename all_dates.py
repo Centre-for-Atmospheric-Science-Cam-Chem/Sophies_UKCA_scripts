@@ -12,6 +12,7 @@ Files are located at scratch/st838/netscratch.
 #!/usr/bin/env python
 
 import time
+import statistics
 import cf
 import glob
 import pandas as pd
@@ -23,7 +24,7 @@ print('Reading data...')
 # File paths.
 dir_path = '/scratch/st838/netscratch/'
 UKCA_dir = dir_path + 'nudged_J_outputs_for_ATom/'
-ATom_dir = dir_path + 'ATom_MER10_Dataset.20210613/'
+ATom_dir = dir_path + 'ATom_MER10_Dataset/'
 ATom_file = ATom_dir + 'photolysis_data.csv'
 
 code_names = np.array(codes.code_names)
@@ -37,7 +38,7 @@ def get_date(UKCA_file):
   return(year, month, day)
 
 
-def get_ATom_day(UKCA_file):
+def get_ATom_day(ATom_data, UKCA_file):
   # Pick out the corresponding date from ATom.
   year, month, day = get_date(UKCA_file)
   date_str = f'{year}-{month}-{day}'
@@ -82,13 +83,35 @@ def match(ATom_data, UKCA_data):
         matches.append(ATom_field)
   ATom_data_matched = ATom_data[matches]
   UKCA_data_matched = UKCA_data[matches] 
-  return(ATom_data_matched, UKCA_data_matched)   
+  return(ATom_data_matched, UKCA_data_matched)  
+  
+  
+def remove_cloudy(data1, data2):
+  # Remove entries where the amount of cloud in UKCA and ATom differs by more than 10%.
+  drops = []
+  for timestep in data1.index:
+    cloud1 = data1.loc[timestep]['CLOUD %']
+    cloud2 = data2.loc[timestep]['CLOUD %']
+    if abs(cloud1 - cloud2) > 10:
+      drops.append(timestep)
+  data1 = data1.drop(index=drops)
+  data2 = data2.drop(index=drops)
+  return(data1, data2)
+     
+  
+def run_time_left(h, i, time_read, time_timestep, num_hours):
+  avg_hours = statistics.mean(num_hours)
+  time_day = time_read + (time_timestep * (avg_hours - i))
+  time_est = time_day * (len(UKCA_files) - h) 
+  remaining = round(time_est / 60)
+  print(f'Estimated time remaining = {remaining} minutes')
+
 
 # Open ATom dataset, already partially pre-processed.
 ATom_data = pd.read_csv(ATom_file)
 ATom_data = ATom_data.rename(columns={'UTC_Start_dt':'TIME', 'T':'TEMPERATURE K', 'G_LAT':'LATITUDE', 
                                       'G_LONG':'LONGITUDE', 'G_ALT':'ALTITUDE m', 'Pres':'PRESSURE hPa',
-				      'CLOUDINDICATOR CAPS':'CLOUD %'})    
+				      'cloudindicator_CAPS':'CLOUD %'})    
 ATom_data = ATom_data.set_index('TIME')
 
 # Make a DataFrame for the new hourly ATom dataset.
@@ -97,17 +120,39 @@ ATom_hourly, UKCA_hourly = pd.DataFrame(), pd.DataFrame()
 # Find dates of UKCA files.
 UKCA_files = glob.glob(UKCA_dir + '/*.pp') # Just .pp files.
 
+'''
+# Debugging test.
+for h in range(1):
+  UKCA_file = UKCA_files[3]
+  print('\nfile:', UKCA_file)
+  # Open the UKCA file.
+  UKCA_day = cf.read(UKCA_file)
+  # Pick out the corresponding date from ATom.
+  ATom_day, date = get_ATom_day(ATom_data, UKCA_file)
+  if not ATom_day.empty:
+    ATom_hours = get_times(ATom_day)
+    timesteps = ATom_hours.index
+    for i in range(len(timesteps)):    
+        timestep = timesteps[i]
+        # Get the UM data for the same time of day.
+        hour_num = int(timestep[11:13])-1
+        if hour_num > -2 and hour_num < 2:
+          print('\nATom timestep:', timestep)
+          print('hour index from 0:', hour_num)
+          UKCA_point = UKCA_day[0][hour_num]
+          print('UKCA hourly point:', UKCA_point)
+exit()  
+'''
+
 time_read = 279
 time_timestep = 234
-avg_timesteps = 8
-time_day = time_read + (time_timestep * avg_timesteps)
-time_est = time_day * len(UKCA_files)
-remaining = round(time_est / 60)
-print(f'Estimated time remaining = {remaining} minutes') 
+avg_timesteps = 5
+num_hours = [avg_timesteps]
+run_time_left(0, 0, time_read, time_timestep, num_hours)
 
 for h in range(len(UKCA_files)):
   start = time.time()  
-  UKCA_file = UKCA_files[h+1]
+  UKCA_file = UKCA_files[h]
   
   # Open the UKCA file.
   UKCA_day = cf.read(UKCA_file)
@@ -116,10 +161,11 @@ for h in range(len(UKCA_files)):
   time_read = end - start
   
   # Pick out the corresponding date from ATom.
-  ATom_day, date = get_ATom_day(UKCA_file)
+  ATom_day, date = get_ATom_day(ATom_data, UKCA_file)
   if not ATom_day.empty:
     ATom_hours = get_times(ATom_day)
     timesteps = ATom_hours.index
+    num_hours.append(len(timesteps))
 
     # Table to make the matching UKCA DataFrame.
     UKCA_hours = []
@@ -138,7 +184,7 @@ for h in range(len(UKCA_files)):
       
       # Get the UM data for the same time of day.
       hour_num = int(timestep[11:13])-1
-      UKCA_point = UKCA_day[0][i+hour_num]
+      UKCA_point = UKCA_day[0][hour_num]
       
       # Match latitude.
       UKCA_lats = UKCA_point.coord('latitude').data
@@ -208,11 +254,7 @@ for h in range(len(UKCA_files)):
       
       end = time.time()
       time_timestep = end - start 
-      time_day = time_read + (time_timestep * (len(timesteps) - i))
-      time_est = time_day * (len(UKCA_files) - h) 
-      remaining = round(time_est / 60)
-      print('timestep seconds = ', time_timestep)
-      print(f'Estimated time remaining = {remaining} minutes')
+      run_time_left(h, i, time_read, time_timestep, num_hours)
       
     # Turn the selected UKCA data into a DataFrame to match the ATom one and standardise both.  
     UKCA_hours = pd.DataFrame(data=(UKCA_hours), columns=names)
@@ -227,6 +269,9 @@ for h in range(len(UKCA_files)):
     # To retain all the fields, comment out this line.
     ATom_hours, UKCA_hours = match(ATom_hours, UKCA_hours)
     
+    # Remove datapoints with differing clouds. Comment out this line to keep all cloudy points.
+    ATom_hours, UKCA_hours = remove_cloudy(ATom_hours, UKCA_hours)
+    
     # Save daily hourly data for each day separately.
     ATom_out_path = f'{ATom_dir}/ATom_hourly_{date}.csv'
     ATom_hours.to_csv(ATom_out_path) 
@@ -236,23 +281,9 @@ for h in range(len(UKCA_files)):
     # Build up the big datasets of all the hourly points.
     ATom_hourly = ATom_hourly._append(ATom_hours) 
     UKCA_hourly = UKCA_hourly._append(UKCA_hours)
-      
-  # Test run on 2 files. Remember to also remove h+1 when removing this test exit.
-  if h == 1:  
-    ATom_out_path = f'{ATom_dir}/ATom_hourly_all.csv'
-    ATom_hourly.to_csv(ATom_out_path)
-    UKCA_out_path = f'{UKCA_dir}/UKCA_hourly_all.csv'
-    UKCA_hourly.to_csv(UKCA_out_path)
-    exit() 
     
 # Save the hourly datasets for all days.
 ATom_out_path = f'{ATom_dir}/ATom_hourly_all.csv'
 ATom_hourly.to_csv(ATom_out_path)
 UKCA_out_path = f'{UKCA_dir}/UKCA_hourly_all.csv'
 UKCA_hourly.to_csv(UKCA_out_path)
-    
-    
-
-    
-
- 
