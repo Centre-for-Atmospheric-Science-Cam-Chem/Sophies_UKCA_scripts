@@ -273,8 +273,10 @@ for h in range(len(UKCA_files)):
     ATom_hours, UKCA_hours = remove_cloudy(ATom_hours, UKCA_hours)
     
     # Save daily hourly data for each day separately.
+    ATom_hours = ATom_hours.sort_index()    
     ATom_out_path = f'{ATom_dir}/ATom_hourly_{date}.csv'
     ATom_hours.to_csv(ATom_out_path) 
+    UKCA_hours = UKCA_hours.sort_index()
     UKCA_out_path = f'{UKCA_dir}/UKCA_hourly_{date}.csv'
     UKCA_hours.to_csv(UKCA_out_path)
     
