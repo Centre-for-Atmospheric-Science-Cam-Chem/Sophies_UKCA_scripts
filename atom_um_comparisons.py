@@ -11,6 +11,7 @@ Files are located at scratch/st838/netscratch.
 # Tell this script to run with the currently active Python environment, not the computer's local versions. 
 #!/usr/bin/env python
 
+import glob
 import pandas as pd
 import numpy as np
 from numpy import ones,vstack
@@ -94,7 +95,15 @@ def make_title(name):
   
   
 def get_line_eqn(x, y):
-  # Find out how to calculate eqn of a line.
+  # Calculate eqn of a straight line.
+  # Slope.
+  x1, y1 = x[0], y[0]
+  x2, y2 = x[4], y[4]
+  m = (y2-y1)/(x2-x1)
+  # Y intercept.
+  # c = y - (m * x).
+
+  # Formulate y=mx+c.
   sign = ''
   if c >= 0:
     sign='+ '
@@ -121,6 +130,7 @@ def plot_timeseries(dataATom, dataUKCA):
   
 def plot_corr(dataATom, dataUKCA, lat):
   # Works with data for one field.
+  # Make axes the same scale.
   title = make_title(dataATom.name)
   plt.figure()
   r2 = round(r2_score(dataUKCA, dataATom), 1)
@@ -140,16 +150,25 @@ def plot_corr(dataATom, dataUKCA, lat):
   plt.show() 
   
 
-def plot_diff(dataATom, dataUKCA):
+def plot_diff(dataATom, dataUKCA, path):
   # Works best with data from all times and all flights at once, and one field.
   title = make_title(dataATom.name)
   plt.figure()
   plt.title(f'UKCA DIFFERENCE TO ATOM FOR {title}')
   diff = dataUKCA - dataATom
+  # Prevent divide by zero by treating zero as the smallest number > 0.
+  smallest_ATom = np.min(dataATom[np.nonzero(dataATom)[0]])
+  smallest_UKCA = np.min(dataUKCA[np.nonzero(dataUKCA)[0]])
+  smallest = smallest_UKCA
+  if smallest_UKCA > smallest_ATom:
+    smallest = smallest_ATom
+  dataATom[dataATom == 0.0] = smallest
+  dataUKCA[dataUKCA == 0.0] = smallest 
   rel_diff = diff/dataATom * 100
   plt.hist(rel_diff)
   plt.xlabel('% difference')
   plt.ylabel('Number of data points')
+  #plt.savefig(f'{path}/diff_{title}.png')
   plt.show()
   
   
@@ -173,19 +192,26 @@ def plot_location(data1, data2):
   
  
 # File paths.
-path = '/scratch/st838/netscratch/tests/'
-ATom_file = f'{path}ATom_points_matched.csv'
-UKCA_file = f'{path}UKCA_points_matched.csv'
+path = '/scratch/st838/netscratch/'
+out_dir = path + 'analysis'
+ATom_dir = path + 'ATom_MER10_Dataset'
+UKCA_dir = path + 'nudged_J_outputs_for_ATom'
+ATom_file = f'{ATom_dir}/ATom_hourly_all.csv'
+UKCA_file = f'{UKCA_dir}/UKCA_hourly_all.csv'
+ATom_daily_files = glob.glob(ATom_dir + '/ATom_hourly_20*.csv') 
+UKCA_daily_files = glob.glob(UKCA_dir + '/UKCA_hourly_20*.csv') 
  
-ATom_data = pd.read_csv(ATom_file, index_col=0)
-UKCA_data = pd.read_csv(UKCA_file, index_col=0) 
- 
-# Turn this into saves in a specific dir so it doesn't show pop ups. 
-#plot_location(ATom_data, UKCA_data)
-field = 'JO3 O2 O1D'
-#plot_diff(ATom_data[field], UKCA_data[field])
+ATom_all = pd.read_csv(ATom_file, index_col=0)
+UKCA_all = pd.read_csv(UKCA_file, index_col=0) 
 
-#for field in ATom_data.columns:
+# test
+field = 'JO3 O2 O1D'
+plot_diff(ATom_all[field], UKCA_all[field], out_dir)
+plot_corr(ATom_all[field], UKCA_all[field], UKCA_all['LATITUDE'])
+ 
+#for field in ATom_all.columns:
+#  plot_diff(ATom_all[field], UKCA_all[field], out_dir)   
+
+#plot_location(ATom_data, UKCA_data)
 #plot_timeseries(ATom_data[field], UKCA_data[field])
-plot_corr(ATom_data[field], UKCA_data[field], UKCA_data['LATITUDE'])
 
