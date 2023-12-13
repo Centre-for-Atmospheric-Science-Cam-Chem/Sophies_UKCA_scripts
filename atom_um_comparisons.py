@@ -22,18 +22,40 @@ import cartopy.crs as ccrs
 from sklearn.metrics import r2_score
 
 
-def remove_null(dataATom, dataUKCA, other=None):
-  # Only the ATom data can contain nulls. Remove those from both datasets and other fields if needed.
-  remove = dataATom.loc[dataATom.isna()].index
-  dataATom = dataATom.drop(index=remove)
-  dataUKCA = dataUKCA.drop(index=remove)
-  if other is not None:
-    other = other.drop(index=remove)
+def remove(dataATom, dataUKCA, other=None, null=True, zero=False):
+  # other: additional data to remove from.
+  # null, zero: remove nulls and/or zeros.
+  remove = []
+  # Only the ATom data can contain nulls. 
+  if null:
+    remove.append(dataATom[dataATom.isna()].index)
+  if zero:
+    remove.append(dataATom[dataATom == 0.0].index)  
+    remove.append(dataUKCA[dataUKCA == 0.0].index)  
+  # Remove those from both datasets and other fields if needed.
+  for indices in remove:
+    for idx in indices:
+      if idx in dataATom.index:
+        dataATom = dataATom.drop(index=idx)
+        dataUKCA = dataUKCA.drop(index=idx)
+        if other is not None:
+          other = other.drop(index=idx)
   return(dataATom, dataUKCA, other)
 
 
-def no_div_zero(data1, data2):
+def rel_diff_no_zero(data1, data2):
+  # Relative difference. 
+  # Remove zeros from divisor and corresponding dividend elements to prevent arithmetic errors.
+  data1 = data1[np.nonzero(data1)[0]]
+  data2 = data2[np.nonzero(data1)[0]]
+  diff = data2 - data1
+  rel_diff = diff/data1 * 100
+  return(rel_diff)
+
+
+def scale_zero(data1, data2):
   # Prevent divide by zero by treating zero as the smallest number that > 0.
+  # Can cause scientific error. Only use if you can't remove nonzero values.
   smallest1 = np.min(data1[np.nonzero(data1)[0]])
   smallest2 = np.min(data2[np.nonzero(data2)[0]])
   smallest = smallest2
@@ -42,7 +64,19 @@ def no_div_zero(data1, data2):
   data1[data1 == 0.0] = smallest
   data2[data2 == 0.0] = smallest
   return(data1, data2) 
-
+  
+  
+def too_diff(data1, data2):
+  # Determine if the datasets are too different to be able to view in the same scale.
+  means = [np.mean(data1), np.mean(data2)]
+  diff = np.max(means) / np.min(means)
+  # If one mean is 5x higher than the other.
+  if diff > 5:
+    too = True
+  else:
+    too = False
+  return(too)  
+  
 
 def view_values(data, name, round_by=10):
   # data: list or array of data points.
@@ -117,24 +151,16 @@ def diffs(data1, data2, data1_name, data2_name, path):
   # data1 - data2 to see differences.
   num_values = len(data1)
   diff = round(data2 - data1, 10)
-  data1_no_zero, _ = no_div_zero(data1, data2) 
-  rel_diff = diff/data1_no_zero * 100
   # how many data are different?
   num_diff = np.count_nonzero(diff)
+  # Relative difference.
+  rel_diff = rel_diff_no_zero(data1, data2)
   # Put the answers in a file.
   name = make_filename(data1.name)
   printout = open(f'{path}/{name}_diff.txt', 'w')
-  name = make_sentence(data1.name)
-  printstr = f'\n{num_diff} of {data2_name} {name} values are different to the corresponding {data1_name} {name} values.'
-  # what % of the data are different?
-  printstr += f'\n{round((num_diff/num_values)*100, 2)}% of the data are different.'
-  # by how much do they differ?
-  diff_str = view_basics(diff, 'differences')
-  rel_str = view_basics(rel_diff, 'relative differences %')  
-  printstr += f'\n{diff_str[0]}'
-  printstr += f'\n{rel_str[0]}'
+  name = make_sentence(data1.name)  
   diff_str, _, _, avg1 = view_basics(data1, f'ATom {name}')
-  printstr += f'\n{diff_str}'
+  printstr = f'\n{diff_str}'
   diff_str, _, _, avg2 = view_basics(data2, f'UKCA {name}')
   printstr += f'\n{diff_str}' 
   avg_str = simple_diff(avg1, avg2, data1_name, data2_name, 'mean', name)
@@ -143,6 +169,14 @@ def diffs(data1, data2, data1_name, data2_name, path):
   printstr += f'\n{vals_str}'
   vals_str = view_values(data2, f'UKCA {name}')
   printstr += f'\n{vals_str}'
+  printstr += f'\n{num_diff} of {data2_name} {name} values are different to the corresponding {data1_name} {name} values.'
+  # what % of the data are different?
+  printstr += f'\n{round((num_diff/num_values)*100, 2)}% of the data are different.'
+  # by how much do they differ?
+  diff_str = view_basics(diff, 'differences')
+  rel_str = view_basics(rel_diff, 'relative differences %')
+  printstr += f'\n{diff_str[0]}'
+  printstr += f'\n{rel_str[0]}'
   printout.write(printstr)
   print(printstr)
   printout.close()
@@ -195,10 +229,11 @@ def plot_timeseries(dataATom, dataUKCA, path):
   plt.show()    
   
   
-def plot_corr(dataATom, dataUKCA, lat, path):
+def plot_corr(path, dataATom, dataUKCA, other=None, remove_null=False, remove_zero=False):
   # Works with data for one field.
-  # Need to make axes the same scale.
-  dataATom, dataUKCA, lat = remove_null(dataATom, dataUKCA, lat)
+  # other: another field to show as colour of dots, e.g. latitude.
+  if remove_null or remove_zero:
+    dataATom, dataUKCA, other = remove(dataATom, dataUKCA, other, remove_null, remove_zero)
   title = make_title(dataATom.name)
   name = make_filename(title)
   label = make_sentence(dataATom.name)
@@ -207,13 +242,16 @@ def plot_corr(dataATom, dataUKCA, lat, path):
   plt.figtext(0.25, 0.75, f'r\u00b2 = {r2}')
   x = dataUKCA
   y = dataATom
-  plt.scatter(x, y, c=lat)
-  # Make sure the axes are on the same scale for easy viewing.
-  low = min([min(dataATom), min(dataUKCA)])
-  high = max([max(dataATom), max(dataUKCA)])
-  ext = (high - low)/20 # +5% each end to display all points clearly.
-  plt.xlim(low-ext, high+ext)
-  plt.ylim(low-ext, high+ext)
+  plt.scatter(x, y, c=other)
+  # Make sure the axes are on the same scale for easy viewing, 
+  # unless the scales are too different to see.
+  #if abs(np.mean(rel_diff_no_zero(dataATom, dataUKCA))) < 50:
+  if not too_diff(dataATom, dataUKCA):
+    low = min([min(dataATom), min(dataUKCA)])
+    high = max([max(dataATom), max(dataUKCA)])
+    ext = (high - low)/20 # +5% each end to display all points clearly.
+    plt.xlim(low-ext, high+ext)
+    plt.ylim(low-ext, high+ext) 
   # Line of best fit.
   plt.plot(np.unique(x), np.poly1d(np.polyfit(x, y, 1))(np.unique(x)), c='black', linestyle='dotted')
   #line_eqn = get_line_eqn(x, y)
@@ -221,7 +259,8 @@ def plot_corr(dataATom, dataUKCA, lat, path):
   #plt.text(-5, 60, f'r\u00b2 = {r2}\n{line_eqn}')
   plt.xlabel(f'UKCA {label}') 
   plt.ylabel(f'ATom {label}')
-  plt.colorbar(label='Latitude / degrees North')
+  if other is not None:
+    plt.colorbar(label=make_sentence(other.name))
   # The title depends on whether we're looking at all flights or 1 flight.
   if len(dataATom) < 24:
     date, _ = split_date_time(dataATom)
@@ -241,17 +280,42 @@ def plot_diff(dataATom, dataUKCA, path):
   plt.figure()
   plt.title(f'UKCA DIFFERENCE TO ATOM FOR {title}')
   diff = dataUKCA - dataATom
-  # Prevent divide by zero.
-  dataATom, _ = no_div_zero(dataATom, dataUKCA) 
-  rel_diff = diff/dataATom * 100
-  plt.hist(rel_diff, bins=50)
+  # Relative difference. 
+  rel_diff = rel_diff_no_zero(dataATom, dataUKCA)
+  plt.hist(rel_diff, bins=50, density=False) # Change denstiy to True to put % of data points on y axis.
   plt.xlabel('% difference')
   plt.ylabel('Number of data points')
   plt.savefig(f'{path}/{name}_diff.png')
   plt.show()
   
   
+def plot_data(dataATom, dataUKCA, path, remove_zero=False):
+  # Works best with data from all times and all flights at once, and one field.
+  if remove_zero:
+    dataATom, dataUKCA, _ = remove(dataATom, dataUKCA, zero=True)
+  title = make_title(dataATom.name)
+  name = make_filename(title)
+  plt.figure()
+  plt.title(f'UKCA AND ATOM DATA FOR {title}')
+  # If they are too different, show their logs instead.
+  #if abs(np.mean(rel_diff_no_zero(dataATom, dataUKCA))) > 50:
+  if too_diff(dataATom, dataUKCA):
+    dataATom = np.log(dataATom[np.nonzero(dataATom)[0]])
+    dataUKCA = np.log(dataUKCA[np.nonzero(dataUKCA)[0]])
+    xlabel = f'Log of {name} non-zero values'
+  else:
+    xlabel = name
+  plt.hist(dataATom, bins=50, histtype='step', density=False, label='ATom') # Change denstiy to True to put % of data points on y axis.
+  plt.hist(dataUKCA, bins=50, histtype='step', density=False, label='UKCA') 
+  plt.xlabel(xlabel)
+  plt.ylabel('Number of data points')
+  plt.legend()
+  plt.savefig(f'{path}/{name}_data.png')
+  plt.show()
+  
+  
 def plot_location(data1, data2, path):
+  # Works best with data from one flight.
   date, _ = split_date_time(data1)
   fig = pylab.figure(figsize=(8,4))
   ax = pylab.axes(projection=ccrs.PlateCarree(central_longitude=310.0))
@@ -286,10 +350,20 @@ ATom_all = pd.read_csv(ATom_file, index_col=0)
 UKCA_all = pd.read_csv(UKCA_file, index_col=0) 
 
 for field in ATom_all.columns:
+  
+  # Test
   field = 'JO3 O2 O1D'
-  diffs(ATom_all[field], UKCA_all[field], 'ATom', 'UKCA', out_dir)
-  plot_diff(ATom_all[field], UKCA_all[field], out_dir)
-  plot_corr(ATom_all[field], UKCA_all[field], UKCA_all['LATITUDE'], out_dir)
+
+  ATom_field = ATom_all[field]
+  UKCA_field = UKCA_all[field]
+  #diffs(ATom_field, UKCA_field, 'ATom', 'UKCA', out_dir)
+  plot_data(ATom_field, UKCA_field, out_dir, True)
+  #plot_diff(ATom_field, UKCA_field, out_dir)
+  plot_corr(out_dir, ATom_field, UKCA_field, remove_null=True, remove_zero=True)
+  
+  # End of test
+  exit()
+  
   for ATom_day_file in ATom_daily_files:
     ATom_day = pd.read_csv(ATom_day_file, index_col=0)
     # There are a lot of flights. Just look at the longest ones.
@@ -299,7 +373,4 @@ for field in ATom_all.columns:
       UKCA_day = pd.read_csv(UKCA_day_file, index_col=0)
       plot_location(ATom_day, UKCA_day, out_dir)
       plot_timeseries(ATom_day[field], UKCA_day[field], out_dir)
-      plot_corr(ATom_day[field], UKCA_day[field], UKCA_day['LATITUDE'], out_dir)
-      
-      
-
+      plot_corr(out_dir, ATom_day[field], UKCA_day[field], UKCA_day['LATITUDE'], remove_null=True)  
