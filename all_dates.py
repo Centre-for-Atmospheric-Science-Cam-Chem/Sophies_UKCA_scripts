@@ -115,7 +115,7 @@ ATom_data = ATom_data.rename(columns={'UTC_Start_dt':'TIME', 'T':'TEMPERATURE K'
 ATom_data = ATom_data.set_index('TIME')
 
 # Make a DataFrame for the new hourly ATom dataset.
-ATom_hourly, UKCA_hourly = pd.DataFrame(), pd.DataFrame() 
+#ATom_hourly, UKCA_hourly = pd.DataFrame(), pd.DataFrame() 
 
 # Find dates of UKCA files.
 UKCA_files = glob.glob(UKCA_dir + '/*.pp') # Just .pp files.
@@ -143,16 +143,17 @@ for h in range(1):
           print('UKCA hourly point:', UKCA_point)
 exit()  
 '''
-
+'''
 time_read = 279
 time_timestep = 234
 avg_timesteps = 5
 num_hours = [avg_timesteps]
 run_time_left(0, 0, time_read, time_timestep, num_hours)
-
-for h in range(len(UKCA_files)):
+'''
+for h in range(33, len(UKCA_files)):
   start = time.time()  
   UKCA_file = UKCA_files[h]
+  print('starting', UKCA_file)
   
   # Open the UKCA file.
   UKCA_day = cf.read(UKCA_file)
@@ -165,7 +166,7 @@ for h in range(len(UKCA_files)):
   if not ATom_day.empty:
     ATom_hours = get_times(ATom_day)
     timesteps = ATom_hours.index
-    num_hours.append(len(timesteps))
+    #num_hours.append(len(timesteps))
 
     # Table to make the matching UKCA DataFrame.
     UKCA_hours = []
@@ -177,6 +178,7 @@ for h in range(len(UKCA_files)):
     
       # The lat, long, alt and pres are the same for every ATom field at each time step as it is a flight path.
       timestep = timesteps[i]
+      print(timestep)
       ATom_lat = ATom_hours.loc[timestep]['LATITUDE']
       ATom_long = ATom_hours.loc[timestep]['LONGITUDE']
       ATom_alt = ATom_hours.loc[timestep]['ALTITUDE m']
@@ -198,8 +200,13 @@ for h in range(len(UKCA_files)):
       diffs = np.absolute(UKCA_longs - ATom_long)
       idx_long = diffs.argmin()
       
+      # Convert UKCA longitude from 360 to 180 format.
+      UKCA_point_long = float(np.squeeze(UKCA_longs[idx_long]))
+      if UKCA_point_long > 180:
+        UKCA_point_long -= 360
+      
       # The Nones are placeholders for altitude and pressure.
-      UKCA_point_entry = [timestep, None, None, float(np.squeeze(UKCA_lats[idx_lat])), float(np.squeeze(UKCA_longs[idx_long]))]
+      UKCA_point_entry = [timestep, None, None, float(np.squeeze(UKCA_lats[idx_lat])), UKCA_point_long]
  
       # Match each item by hourly time steps.
       for j in range(len(UKCA_day)):  
@@ -251,11 +258,11 @@ for h in range(len(UKCA_files)):
             names.append(name) 
       # Add a row of data to the table for this timestep.
       UKCA_hours.append(UKCA_point_entry)
-      
+      '''
       end = time.time()
       time_timestep = end - start 
       run_time_left(h, i, time_read, time_timestep, num_hours)
-      
+      '''
     # Turn the selected UKCA data into a DataFrame to match the ATom one and standardise both.  
     UKCA_hours = pd.DataFrame(data=(UKCA_hours), columns=names)
     UKCA_hours = UKCA_hours.set_index('TIME')
@@ -273,19 +280,28 @@ for h in range(len(UKCA_files)):
     ATom_hours, UKCA_hours = remove_cloudy(ATom_hours, UKCA_hours)
     
     # Save daily hourly data for each day separately.
-    ATom_hours = ATom_hours.sort_index()    
     ATom_out_path = f'{ATom_dir}/ATom_hourly_{date}.csv'
+    # Sort by date, not by file name.
+    ATom_hours = ATom_hours.sort_index()
     ATom_hours.to_csv(ATom_out_path) 
-    UKCA_hours = UKCA_hours.sort_index()
     UKCA_out_path = f'{UKCA_dir}/UKCA_hourly_{date}.csv'
+    # Sort by date, not by file name.
+    UKCA_hours = UKCA_hours.sort_index()
     UKCA_hours.to_csv(UKCA_out_path)
-    
+    '''
     # Build up the big datasets of all the hourly points.
     ATom_hourly = ATom_hourly._append(ATom_hours) 
     UKCA_hourly = UKCA_hourly._append(UKCA_hours)
-    
+    '''
+'''    
 # Save the hourly datasets for all days.
 ATom_out_path = f'{ATom_dir}/ATom_hourly_all.csv'
 ATom_hourly.to_csv(ATom_out_path)
 UKCA_out_path = f'{UKCA_dir}/UKCA_hourly_all.csv'
 UKCA_hourly.to_csv(UKCA_out_path)
+'''    
+    
+
+    
+
+ 

@@ -237,7 +237,7 @@ def plot_corr(path, dataATom, dataUKCA, other=None, remove_null=False, remove_ze
   title = make_title(dataATom.name)
   name = make_filename(title)
   label = make_sentence(dataATom.name)
-  plt.figure()
+  plt.figure(figsize=(7,5))
   r2 = round(r2_score(dataUKCA, dataATom), 2)
   plt.figtext(0.25, 0.75, f'r\u00b2 = {r2}')
   x = dataUKCA
@@ -317,19 +317,20 @@ def plot_data(dataATom, dataUKCA, path, remove_zero=False):
 def plot_location(data1, data2, path):
   # Works best with data from one flight.
   date, _ = split_date_time(data1)
-  fig = pylab.figure(figsize=(8,4))
+  fig = pylab.figure(figsize=(10,5))
   ax = pylab.axes(projection=ccrs.PlateCarree(central_longitude=310.0))
   ax.stock_img()
   pylab.title(f'Locations of selected flight path points, {date}')
   alt = data1['ALTITUDE m']
   x = data1['LONGITUDE']
   y = data1['LATITUDE']
-  pylab.scatter(x+50, y, s=70, c=alt, cmap='Reds', marker='_', label='ATom')
+  # Flip the colourmap because for altitude it seems more intuitive if dark=low and light=high.
+  pylab.scatter(x+50, y, s=80, c=alt, cmap='Reds_r', marker='_', label='ATom')
   alt = data2['ALTITUDE m']
   x = data2['LONGITUDE']
   y = data2['LATITUDE']
-  pylab.scatter(x+50, y, s=70, marker='|', c=alt, cmap='Reds', label='UKCA')
-  pylab.legend(labelcolor='white', facecolor='black')
+  pylab.scatter(x+50, y, s=80, marker='|', c=alt, cmap='Reds_r', label='UKCA')
+  pylab.legend()
   pylab.colorbar(label='Altitude / m', shrink=0.8)
   pylab.tight_layout()
   pylab.savefig(f'{path}/{date}_loc.png')
@@ -349,21 +350,15 @@ UKCA_daily_files = glob.glob(UKCA_dir + '/UKCA_hourly_20*.csv')
 ATom_all = pd.read_csv(ATom_file, index_col=0)
 UKCA_all = pd.read_csv(UKCA_file, index_col=0) 
 
+# Look at all the data.
 for field in ATom_all.columns:
-  
-  # Test
-  field = 'JO3 O2 O1D'
-
   ATom_field = ATom_all[field]
-  UKCA_field = UKCA_all[field]
+  UKCA_field = UKCA_all[field] 
   #diffs(ATom_field, UKCA_field, 'ATom', 'UKCA', out_dir)
-  plot_data(ATom_field, UKCA_field, out_dir, True)
+  #plot_data(ATom_field, UKCA_field, out_dir, True)
   #plot_diff(ATom_field, UKCA_field, out_dir)
-  plot_corr(out_dir, ATom_field, UKCA_field, remove_null=True, remove_zero=True)
-  
-  # End of test
-  exit()
-  
+  #plot_corr(out_dir, ATom_field, UKCA_field, remove_null=True, remove_zero=True)
+  # Look at each flight.
   for ATom_day_file in ATom_daily_files:
     ATom_day = pd.read_csv(ATom_day_file, index_col=0)
     # There are a lot of flights. Just look at the longest ones.
@@ -372,5 +367,5 @@ for field in ATom_all.columns:
       UKCA_day_file = f'{UKCA_dir}/UKCA_hourly_{date}.csv'
       UKCA_day = pd.read_csv(UKCA_day_file, index_col=0)
       plot_location(ATom_day, UKCA_day, out_dir)
-      plot_timeseries(ATom_day[field], UKCA_day[field], out_dir)
-      plot_corr(out_dir, ATom_day[field], UKCA_day[field], UKCA_day['LATITUDE'], remove_null=True)  
+      #plot_timeseries(ATom_day[field], UKCA_day[field], out_dir)
+      plot_corr(out_dir, ATom_day[field], UKCA_day[field], UKCA_day['LATITUDE'], remove_null=True) 
