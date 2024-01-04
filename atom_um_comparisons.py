@@ -226,7 +226,8 @@ def plot_timeseries(dataATom, dataUKCA, path):
   plt.ylabel(label)
   plt.legend()
   plt.savefig(f'{path}/{name}_{date}_ts.png')
-  plt.show()    
+  #plt.show()    
+  plt.close()
   
   
 def plot_corr(path, dataATom, dataUKCA, other=None, remove_null=False, remove_zero=False):
@@ -270,7 +271,8 @@ def plot_corr(path, dataATom, dataUKCA, other=None, remove_null=False, remove_ze
     plt.title(f'CORRELATION OF {title} FROM ATOM AND UKCA') 
     path = f'{path}/{name}_corr.png'
   plt.savefig(path)
-  plt.show() 
+  #plt.show() 
+  plt.close()
   
 
 def plot_diff(dataATom, dataUKCA, path):
@@ -286,7 +288,8 @@ def plot_diff(dataATom, dataUKCA, path):
   plt.xlabel('% difference')
   plt.ylabel('Number of data points')
   plt.savefig(f'{path}/{name}_diff.png')
-  plt.show()
+  #plt.show()
+  plt.close()
   
   
 def plot_data(dataATom, dataUKCA, path, remove_zero=False):
@@ -311,7 +314,8 @@ def plot_data(dataATom, dataUKCA, path, remove_zero=False):
   plt.ylabel('Number of data points')
   plt.legend()
   plt.savefig(f'{path}/{name}_data.png')
-  plt.show()
+  #plt.show()
+  plt.close()
   
   
 def plot_location(data1, data2, path):
@@ -334,7 +338,8 @@ def plot_location(data1, data2, path):
   pylab.colorbar(label='Altitude / m', shrink=0.8)
   pylab.tight_layout()
   pylab.savefig(f'{path}/{date}_loc.png')
-  pylab.show()
+  #pylab.show()
+  pylab.close()
   
  
 # File paths.
@@ -354,10 +359,12 @@ UKCA_all = pd.read_csv(UKCA_file, index_col=0)
 for field in ATom_all.columns:
   ATom_field = ATom_all[field]
   UKCA_field = UKCA_all[field] 
-  #diffs(ATom_field, UKCA_field, 'ATom', 'UKCA', out_dir)
-  #plot_data(ATom_field, UKCA_field, out_dir, True)
-  #plot_diff(ATom_field, UKCA_field, out_dir)
-  #plot_corr(out_dir, ATom_field, UKCA_field, remove_null=True, remove_zero=True)
+  print(f'\nComparing {field}.')
+  diffs(ATom_field, UKCA_field, 'ATom', 'UKCA', out_dir)
+  print(f'\nSaving plots for {field} comparisons.\n')
+  plot_data(ATom_field, UKCA_field, out_dir, True)
+  plot_diff(ATom_field, UKCA_field, out_dir)
+  plot_corr(out_dir, ATom_field, UKCA_field, remove_null=True, remove_zero=True)
   # Look at each flight.
   for ATom_day_file in ATom_daily_files:
     ATom_day = pd.read_csv(ATom_day_file, index_col=0)
@@ -367,5 +374,5 @@ for field in ATom_all.columns:
       UKCA_day_file = f'{UKCA_dir}/UKCA_hourly_{date}.csv'
       UKCA_day = pd.read_csv(UKCA_day_file, index_col=0)
       plot_location(ATom_day, UKCA_day, out_dir)
-      #plot_timeseries(ATom_day[field], UKCA_day[field], out_dir)
-      plot_corr(out_dir, ATom_day[field], UKCA_day[field], UKCA_day['LATITUDE'], remove_null=True) 
+      plot_timeseries(ATom_day[field], UKCA_day[field], out_dir)
+      plot_corr(out_dir, ATom_day[field], UKCA_day[field], UKCA_day['LATITUDE'], remove_null=True)    

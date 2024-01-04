@@ -2,7 +2,10 @@
 Name: Sophie Turner.
 Date: 3/11/2023.
 Contact: st838@cam.ac.uk
-Compile data from daily UM .pp files. Takes a long time to run.
+Compile relevant data from daily UM .pp files and put them in daily csv files. Takes a long time to run.
+It can be better to just use this script to make daily files and then
+use another script to make the all in one file after, in case
+this script fails somewhere and has to be restarted mid way through the data. 
 For use on Cambridge chemistry department's atmospheric servers. 
 Files are located at scratch/st838/netscratch.
 '''
@@ -18,6 +21,7 @@ import glob
 import pandas as pd
 import numpy as np
 import codes_to_names as codes
+from math import pi
 
 print('Reading data...')
 
@@ -114,7 +118,7 @@ ATom_data = ATom_data.rename(columns={'UTC_Start_dt':'TIME', 'T':'TEMPERATURE K'
 				      'cloudindicator_CAPS':'CLOUD %'})    
 ATom_data = ATom_data.set_index('TIME')
 
-# Make a DataFrame for the new hourly ATom dataset.
+# Make a DataFrame for the new hourly datasets with all dates in one.
 #ATom_hourly, UKCA_hourly = pd.DataFrame(), pd.DataFrame() 
 
 # Find dates of UKCA files.
@@ -150,7 +154,7 @@ avg_timesteps = 5
 num_hours = [avg_timesteps]
 run_time_left(0, 0, time_read, time_timestep, num_hours)
 '''
-for h in range(33, len(UKCA_files)):
+for h in range(len(UKCA_files)):
   start = time.time()  
   UKCA_file = UKCA_files[h]
   print('starting', UKCA_file)
@@ -249,9 +253,9 @@ for h in range(33, len(UKCA_files)):
         if name == 'PRESSURE AT THETA LEVELS AFTER TS':
           UKCA_point_entry[2] = value * 0.01 # Pascals to hPa.
         else: 
-          # More conversions.
+          # Convert solar zenith angle from cos radians to degrees.
           if name == 'COS SOLAR ZENITH ANGLE':
-            value = np.arccos(value)
+            value = np.arccos(value) * 180 / pi
             name = 'SOLAR ZENITH ANGLE'
           UKCA_point_entry.append(value)
           if name not in names:
