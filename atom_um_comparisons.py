@@ -126,7 +126,7 @@ def simple_diff(value1, value2, data1_name, data2_name, values_name, field_name)
 
 
 def make_title(name):
-  if name != 'RELATIVE HUMIDITY' and name != 'SOLAR ZENITH ANGLE':
+  if name != 'RELATIVE HUMIDITY' and name != 'SOLAR ZENITH ANGLE' and 'JCH2O' not in name:
     name = name.split()[0]
   return(name)
 
@@ -134,8 +134,8 @@ def make_title(name):
 def make_sentence(name):
   if name[0] != 'J':
     name = name.lower()
-  name = name.replace(' k', ' K')
-  name = name.replace('hpa', 'hPa')
+    name = name.replace(' k', ' K')
+    name = name.replace('hpa', 'hPa')
   return(name)
   
   
