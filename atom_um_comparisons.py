@@ -28,7 +28,7 @@ ATom_all = pd.read_csv(ATom_file, index_col=0)
 UKCA_all = pd.read_csv(UKCA_file, index_col=0) 
 
 # Look at all the data.
-for field in ATom_all.columns:
+for field in ATom_all.columns[14:]:
   ATom_field = ATom_all[field]
   UKCA_field = UKCA_all[field] 
   print(f'\nComparing {field}.')
@@ -37,6 +37,7 @@ for field in ATom_all.columns:
   fns.plot_data(ATom_field, UKCA_field, out_dir, True)
   fns.plot_diff(ATom_field, UKCA_field, out_dir)
   fns.plot_corr(out_dir, ATom_field, UKCA_field, remove_null=True, remove_zero=True)
+  
   # Look at each flight.
   for ATom_day_file in ATom_daily_files:
     ATom_day = pd.read_csv(ATom_day_file, index_col=0)
@@ -45,6 +46,8 @@ for field in ATom_all.columns:
       date, _ = fns.split_date_time(ATom_day)
       UKCA_day_file = f'{UKCA_dir}/UKCA_hourly_{date}.csv'
       UKCA_day = pd.read_csv(UKCA_day_file, index_col=0)
-      fns.plot_location(ATom_day, UKCA_day, out_dir)
-      fns.plot_timeseries(ATom_day[field], UKCA_day[field], out_dir)
-      fns.plot_corr(out_dir, ATom_day[field], UKCA_day[field], UKCA_day['LATITUDE'], remove_null=True)    
+      # As long as the data aren't all missing for this flight, plot them.
+      if ATom_day[field].notnull().any(): 
+        fns.plot_location(ATom_day, UKCA_day, out_dir)
+        fns.plot_timeseries(ATom_day[field], UKCA_day[field], out_dir)
+        fns.plot_corr(out_dir, ATom_day[field], UKCA_day[field], UKCA_day['LATITUDE'], remove_null=True)    

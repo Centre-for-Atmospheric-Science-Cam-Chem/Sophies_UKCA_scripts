@@ -21,6 +21,7 @@ from sklearn.metrics import r2_score
 
 
 def remove(dataATom, dataUKCA, other=None, null=True, zero=False):
+  # Match and remove entries with any null and/or zero values from datasets.
   # other: additional data to remove from.
   # null, zero: remove nulls and/or zeros.
   remove = []
@@ -43,11 +44,10 @@ def remove(dataATom, dataUKCA, other=None, null=True, zero=False):
 
 def rel_diff_no_zero(data1, data2):
   # Relative difference. 
-  # Remove zeros from divisor and corresponding dividend elements to prevent arithmetic errors.
-  data1 = data1[np.nonzero(data1)[0]]
-  data2 = data2[np.nonzero(data1)[0]]
+  # Remove zeros and nans to prevent arithmetic errors. 
+  data1, data2, _ = remove(data1, data2, None, True, True) 
   diff = data2 - data1
-  rel_diff = diff/data1 * 100
+  rel_diff = diff/data1 * 100  
   return(rel_diff)
 
 
@@ -146,7 +146,7 @@ def make_filename(name):
 
 def diffs(data1, data2, data1_name, data2_name, path):
   # data1_name ~ 'ATom'
-  # data1 - data2 to see differences.
+  # data2 - data1 to see differences.
   num_values = len(data1)
   diff = round(data2 - data1, 10)
   # how many data are different?
@@ -232,7 +232,12 @@ def plot_corr(path, dataATom, dataUKCA, other=None, remove_null=False, remove_ze
   # Works with data for one field.
   # other: another field to show as colour of dots, e.g. latitude.
   if remove_null or remove_zero:
-    dataATom, dataUKCA, other = remove(dataATom, dataUKCA, other, remove_null, remove_zero)
+    dataATom_nums, dataUKCA_nums, other_nums = remove(dataATom, dataUKCA, other, remove_null, remove_zero)
+    # Ignore the remove zero option if it results in all data lost (i.e. all values are null or 0).
+    if len(dataATom_nums) == 0:
+      dataATom, dataUKCA, other = remove(dataATom, dataUKCA, other) # Default options include zeros but remove nulls.
+    else:
+      dataATom, dataUKCA, other = dataATom_nums, dataUKCA_nums, other_nums
   title = make_title(dataATom.name)
   name = make_filename(title)
   label = make_sentence(dataATom.name)
@@ -275,19 +280,20 @@ def plot_corr(path, dataATom, dataUKCA, other=None, remove_null=False, remove_ze
 
 def plot_diff(dataATom, dataUKCA, path):
   # Works best with data from all times and all flights at once, and one field.
-  title = make_title(dataATom.name)
-  name = make_filename(title)
-  plt.figure()
-  plt.title(f'UKCA DIFFERENCE TO ATOM FOR {title}')
-  diff = dataUKCA - dataATom
-  # Relative difference. 
+  # Relative difference.  
   rel_diff = rel_diff_no_zero(dataATom, dataUKCA)
-  plt.hist(rel_diff, bins=50, density=False) # Change denstiy to True to put % of data points on y axis.
-  plt.xlabel('% difference')
-  plt.ylabel('Number of data points')
-  plt.savefig(f'{path}/{name}_diff.png')
-  #plt.show()
-  plt.close()
+  # If a field is full of zeros and nans, a plot won't work.
+  if len(rel_diff != 0):
+    title = make_title(dataATom.name)
+    name = make_filename(title)
+    plt.figure()
+    plt.title(f'UKCA DIFFERENCE TO ATOM FOR {title}')
+    plt.hist(rel_diff, bins=50, density=False) # Change denstiy to True to put % of data points on y axis.
+    plt.xlabel('% difference')
+    plt.ylabel('Number of data points')
+    plt.savefig(f'{path}/{name}_diff.png')
+    #plt.show()
+    plt.close()
   
   
 def plot_data(dataATom, dataUKCA, path, remove_zero=False):

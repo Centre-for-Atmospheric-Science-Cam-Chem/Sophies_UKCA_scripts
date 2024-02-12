@@ -94,9 +94,9 @@ def remove_cloudy(data1, data2):
   # Remove entries where the amount of cloud in UKCA and ATom differs by more than 10%.
   drops = []
   for timestep in data1.index:
-    cloud1 = data1.loc[timestep]['CLOUD %']
-    cloud2 = data2.loc[timestep]['CLOUD %']
-    if abs(cloud1 - cloud2) > 10:
+    cloud1 = data1.loc[timestep]['CLOUD FRACTION']
+    cloud2 = data2.loc[timestep]['CLOUD FRACTION']
+    if abs(cloud1 - cloud2) > 0.1:
       drops.append(timestep)
   data1 = data1.drop(index=drops)
   data2 = data2.drop(index=drops)
@@ -115,7 +115,7 @@ def run_time_left(h, i, time_read, time_timestep, num_hours):
 ATom_data = pd.read_csv(ATom_file)
 ATom_data = ATom_data.rename(columns={'UTC_Start_dt':'TIME', 'T':'TEMPERATURE K', 'G_LAT':'LATITUDE', 
                                       'G_LONG':'LONGITUDE', 'G_ALT':'ALTITUDE m', 'Pres':'PRESSURE hPa',
-				      'cloudindicator_CAPS':'CLOUD %'})    
+				      'CloudFlag_AMS':'CLOUD FRACTION'})    
 ATom_data = ATom_data.set_index('TIME')
 
 # Make a DataFrame for the new hourly datasets with all dates in one.
@@ -155,15 +155,16 @@ num_hours = [avg_timesteps]
 run_time_left(0, 0, time_read, time_timestep, num_hours)
 '''
 for h in range(len(UKCA_files)):
-  start = time.time()  
+  #start = time.time()  
   UKCA_file = UKCA_files[h]
   print('starting', UKCA_file)
+  print('file number', h+1, 'of', len(UKCA_files))
   
   # Open the UKCA file.
   UKCA_day = cf.read(UKCA_file)
   
-  end = time.time()
-  time_read = end - start
+  #end = time.time()
+  #time_read = end - start
   
   # Pick out the corresponding date from ATom.
   ATom_day, date = get_ATom_day(ATom_data, UKCA_file)
@@ -178,7 +179,7 @@ for h in range(len(UKCA_files)):
     names = ['TIME', 'ALTITUDE m', 'PRESSURE hPa', 'LATITUDE', 'LONGITUDE'] 
     
     for i in range(len(timesteps)):
-      start = time.time()
+      #start = time.time()
     
       # The lat, long, alt and pres are the same for every ATom field at each time step as it is a flight path.
       timestep = timesteps[i]
@@ -272,7 +273,7 @@ for h in range(len(UKCA_files)):
     UKCA_hours = UKCA_hours.set_index('TIME')
     UKCA_hours = standard_names(UKCA_hours)
     UKCA_hours = UKCA_hours.rename(columns={'TEMPERATURE ON THETA LEVELS':'TEMPERATURE K', 
-                              'BULK CLOUD FRACTION IN EACH LAYER':'CLOUD %',
+                              'BULK CLOUD FRACTION IN EACH LAYER':'CLOUD FRACTION',
 			      'RELATIVE HUMIDITY ON P LEV/UV GRID':'RELATIVE HUMIDITY'})
     ATom_hours = standard_names(ATom_hours)  
     
@@ -281,7 +282,7 @@ for h in range(len(UKCA_files)):
     ATom_hours, UKCA_hours = match(ATom_hours, UKCA_hours)
     
     # Remove datapoints with differing clouds. Comment out this line to keep all cloudy points.
-    ATom_hours, UKCA_hours = remove_cloudy(ATom_hours, UKCA_hours)
+    #ATom_hours, UKCA_hours = remove_cloudy(ATom_hours, UKCA_hours)
     
     # Save daily hourly data for each day separately.
     ATom_out_path = f'{ATom_dir}/ATom_hourly_{date}.csv'
@@ -304,8 +305,3 @@ ATom_hourly.to_csv(ATom_out_path)
 UKCA_out_path = f'{UKCA_dir}/UKCA_hourly_all.csv'
 UKCA_hourly.to_csv(UKCA_out_path)
 '''    
-    
-
-    
-
- 
