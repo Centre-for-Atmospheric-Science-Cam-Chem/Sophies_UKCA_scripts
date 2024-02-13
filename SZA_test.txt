@@ -1,0 +1,71 @@
+# Test to see if there is a problem with the SZA given in the ATom data 
+# due to UTC conversion issues.
+# Uses Pysolar to calculate SZA independently.
+
+import datetime
+import pandas as pd
+import matplotlib.pyplot as plt
+from pysolar.solar import *
+from glob import glob
+
+
+def conversions(data):
+  # Convert pressure from hectopascals to Pascals.
+  data['PRESSURE hPa'] = data['PRESSURE hPa'] * 100
+  data = data.rename(columns={'PRESSURE hPa':'PRESSURE Pa'})
+  # Distinguish between reported and independently calculated SZAs.
+  data = data.rename(columns={'SOLAR ZENITH ANGLE':'SZA REPORTED'})
+  return(data)
+  
+  
+def calc_SZA(data):
+  # Loop through the timesteps and calculate SZAs from physical data.
+  # data is for one flight.
+  SZAs = []
+  for hour in data.index:
+    # For each hourly timestep.
+    dt = hour.replace(tzinfo=datetime.timezone.utc)
+    lat = data.loc[hour]['LATITUDE']
+    lon = data.loc[hour]['LONGITUDE']
+    alt = data.loc[hour]['ALTITUDE m']
+    temp = data.loc[hour]['TEMPERATURE K']
+    pres = data.loc[hour]['PRESSURE Pa']
+    a = get_altitude(lat, lon, dt, alt, temp, pres)
+    SZAs.append(90 - a) # Conversion assumes that we are on the ground.
+  # Append the calculated SZAs to the datasets as columns for easy indexing later.
+  data.insert(15, 'SZA CALCULATED', SZAs)
+  return(data)
+
+
+ATom_files = glob('/scratch/st838/netscratch/ATom_MER10_Dataset/ATom_hourly_20*.csv')
+
+# Look at each flight.
+for ATom_file in ATom_files:
+  # Read time in datetime format.
+  ATom_data = pd.read_csv(ATom_file, parse_dates=['TIME'], index_col=0) 
+  # There are a lot of flights. Just look at the longest ones.
+  if len(ATom_data) >= 10:
+    # Find the matching data.
+    name = ATom_file[-14:]
+    UKCA_file = f'/scratch/st838/netscratch/nudged_J_outputs_for_ATom/UKCA_hourly_{name}'
+    UKCA_data = pd.read_csv(UKCA_file, parse_dates=['TIME'], index_col=0) 
+
+    # Conversions to units needed for Pysolar (pressure in Pascals) and rename.
+    ATom_data = conversions(ATom_data)
+    UKCA_data = conversions(UKCA_data) 
+
+    # SZAs which are read directly from the datasets.
+    ATom_SZA_read = ATom_data['SZA REPORTED']
+    UM_SZA_read = UKCA_data['SZA REPORTED']
+  
+    # Loop through the timesteps and calculate SZAs from physical data.
+    ATom_data = calc_SZA(ATom_data)
+    UKCA_data = calc_SZA(UKCA_data)
+    
+    timeline = UKCA_data.index
+    plt.plot(timeline, ATom_data['SZA REPORTED'], label='ATom reported SZA')
+    plt.plot(timeline, ATom_data['SZA CALCULATED'], label='ATom independently calculated SZA')
+    plt.plot(timeline, UKCA_data['SZA REPORTED'], label='UM reported SZA')
+    plt.plot(timeline, UKCA_data['SZA CALCULATED'], label='UM independently calculated SZA')
+    plt.legend()
+    plt.show()
