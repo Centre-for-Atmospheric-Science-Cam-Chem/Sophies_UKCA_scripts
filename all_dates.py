@@ -43,11 +43,27 @@ def get_date(UKCA_file):
 
 
 def get_ATom_day(ATom_data, UKCA_file):
-  # Pick out the corresponding date from ATom.
+  # Pick out the corresponding date when ATom time is midnight.
   year, month, day = get_date(UKCA_file)
   date_str = f'{year}-{month}-{day}'
   ATom_day = ATom_data[ATom_data.index.str.contains(date_str)]
   return(ATom_day, date_str)
+  
+  
+def get_UKCA_day(timestep, adder, UKCA_dir):
+  # Find and open the UM files for the right day based on ATom date when time is close to 00:00 or 1:00
+  # timestep: string like '2017-10-05 11:00:00'
+  # adder: -1 or 1, to select previous or next day.
+  # UKCA_dir: path to UKCA directory.
+  year_month = timestep[:7].replace('-', '')
+  # The day needs to be the previous or next day because UKCA files end with midnight of the next day.
+  day = int(timestep[8:10]) + adder
+  if day < 10:
+    day = f'0{day}'
+  UKCA_file = glob.glob(f'{UKCA_dir}*{year_month}{day}.pp')
+  # Open the UKCA file.
+  UKCA_day = cf.read(UKCA_file)
+  return(UKCA_day)
 
 
 def get_times(ATom_day):
@@ -101,7 +117,6 @@ def remove_cloudy(data1, data2):
   data1 = data1.drop(index=drops)
   data2 = data2.drop(index=drops)
   return(data1, data2)
-     
   
 def run_time_left(h, i, time_read, time_timestep, num_hours):
   avg_hours = statistics.mean(num_hours)
@@ -123,7 +138,6 @@ ATom_data = ATom_data.set_index('TIME')
 
 # Find dates of UKCA files.
 UKCA_files = glob.glob(UKCA_dir + '/*.pp') # Just .pp files.
-
 '''
 # Debugging test.
 for h in range(1):
@@ -144,54 +158,52 @@ for h in range(1):
           print('\nATom timestep:', timestep)
           print('hour index from 0:', hour_num)
           UKCA_point = UKCA_day[0][hour_num]
-          print('UKCA hourly point:', UKCA_point)
+          print('UKCA timestep:', UKCA_point.coord('time').data)
 exit()  
 '''
-'''
-time_read = 279
-time_timestep = 234
-avg_timesteps = 5
-num_hours = [avg_timesteps]
-run_time_left(0, 0, time_read, time_timestep, num_hours)
-'''
-for h in range(len(UKCA_files)):
-  #start = time.time()  
+for h in range(len(UKCA_files)):    
   UKCA_file = UKCA_files[h]
-  print('starting', UKCA_file)
-  print('file number', h+1, 'of', len(UKCA_files))
+  print('\nStarting UKCA file:', UKCA_file)
+  print('File number', h+1, 'of', len(UKCA_files))
   
   # Open the UKCA file.
   UKCA_day = cf.read(UKCA_file)
-  
-  #end = time.time()
-  #time_read = end - start
   
   # Pick out the corresponding date from ATom.
   ATom_day, date = get_ATom_day(ATom_data, UKCA_file)
   if not ATom_day.empty:
     ATom_hours = get_times(ATom_day)
     timesteps = ATom_hours.index
-    #num_hours.append(len(timesteps))
-
     # Table to make the matching UKCA DataFrame.
     UKCA_hours = []
     # Column names for new UKCA dataset.
     names = ['TIME', 'ALTITUDE m', 'PRESSURE hPa', 'LATITUDE', 'LONGITUDE'] 
     
-    for i in range(len(timesteps)):
-      #start = time.time()
-    
+    for i in range(len(timesteps)):    
       # The lat, long, alt and pres are the same for every ATom field at each time step as it is a flight path.
       timestep = timesteps[i]
       print(timestep)
+      hour_num = int(timestep[11:13])
+      
+      # Check for passing midnight.
+      if hour_num == 0 and i == 0:
+        # The previous UKCA file will need to be opened.
+        UKCA_day = get_UKCA_day(timestep, -1, UKCA_dir)
+      elif hour_num == 1:
+        if i == 1:
+          adder = 0
+        elif i > 1:
+          adder = 1
+	# The next UKCA file will need to be opened.
+        UKCA_day = get_UKCA_day(timestep, adder, UKCA_dir)
+      
+      # Get the UM data for the same time of day.	
+      UKCA_point = UKCA_day[0][hour_num-1] 
+      
       ATom_lat = ATom_hours.loc[timestep]['LATITUDE']
       ATom_long = ATom_hours.loc[timestep]['LONGITUDE']
       ATom_alt = ATom_hours.loc[timestep]['ALTITUDE m']
       ATom_pres = ATom_hours.loc[timestep]['PRESSURE hPa']  
-      
-      # Get the UM data for the same time of day.
-      hour_num = int(timestep[11:13])-1
-      UKCA_point = UKCA_day[0][hour_num]
       
       # Match latitude.
       UKCA_lats = UKCA_point.coord('latitude').data
@@ -214,16 +226,16 @@ for h in range(len(UKCA_files)):
       UKCA_point_entry = [timestep, None, None, float(np.squeeze(UKCA_lats[idx_lat])), UKCA_point_long]
  
       # Match each item by hourly time steps.
-      for j in range(len(UKCA_day)):  
-        UKCA_point = UKCA_day[j][i+9] # Get the UM data for the same time of day.
-        name = UKCA_point.long_name 
+      for j in range(len(UKCA_day)):
+        UKCA_point = UKCA_day[j][hour_num-1] # Loop through all the STASH outputs at the same time of day.
 	
+        name = UKCA_point.long_name 	
 	# Convert name if needed.
         if name in code_names[:,0]:
           i_name = np.where(code_names[:,0] == name)
           name = code_names[i_name,1][0,0] 
           UKCA_point.long_name = name
-      
+	 
         UKCA_point = np.squeeze(UKCA_point) # Get dimensions.
         # Some fields are 3D with differing vertical levels.
         if UKCA_point.ndim == 3:
@@ -256,18 +268,14 @@ for h in range(len(UKCA_files)):
         else: 
           # Convert solar zenith angle from cos radians to degrees.
           if name == 'COS SOLAR ZENITH ANGLE':
-            value = np.arccos(value) * 180 / pi
+            value = np.arccos(value) * (180.0 / pi)
             name = 'SOLAR ZENITH ANGLE'
           UKCA_point_entry.append(value)
           if name not in names:
             names.append(name) 
       # Add a row of data to the table for this timestep.
       UKCA_hours.append(UKCA_point_entry)
-      '''
-      end = time.time()
-      time_timestep = end - start 
-      run_time_left(h, i, time_read, time_timestep, num_hours)
-      '''
+
     # Turn the selected UKCA data into a DataFrame to match the ATom one and standardise both.  
     UKCA_hours = pd.DataFrame(data=(UKCA_hours), columns=names)
     UKCA_hours = UKCA_hours.set_index('TIME')
