@@ -118,6 +118,7 @@ def remove_cloudy(data1, data2):
   data2 = data2.drop(index=drops)
   return(data1, data2)
   
+  
 def run_time_left(h, i, time_read, time_timestep, num_hours):
   avg_hours = statistics.mean(num_hours)
   time_day = time_read + (time_timestep * (avg_hours - i))
@@ -126,7 +127,7 @@ def run_time_left(h, i, time_read, time_timestep, num_hours):
   print(f'Estimated time remaining = {remaining} minutes')
 
 
-# Open ATom dataset, already partially pre-processed.
+# Open ATom dataset, already partially pre-processed but with raw data in tact.
 ATom_data = pd.read_csv(ATom_file)
 ATom_data = ATom_data.rename(columns={'UTC_Start_dt':'TIME', 'T':'TEMPERATURE K', 'G_LAT':'LATITUDE', 
                                       'G_LONG':'LONGITUDE', 'G_ALT':'ALTITUDE m', 'Pres':'PRESSURE hPa',
@@ -134,12 +135,13 @@ ATom_data = ATom_data.rename(columns={'UTC_Start_dt':'TIME', 'T':'TEMPERATURE K'
 ATom_data = ATom_data.set_index('TIME')
 
 # Make a DataFrame for the new hourly datasets with all dates in one.
+# Comment this line out if you prefer to merge outputs separately, using all_csv.py. 
 #ATom_hourly, UKCA_hourly = pd.DataFrame(), pd.DataFrame() 
 
 # Find dates of UKCA files.
 UKCA_files = glob.glob(UKCA_dir + '/*.pp') # Just .pp files.
 '''
-# Debugging test.
+# Debugging test used to double-check timesteps.
 for h in range(1):
   UKCA_file = UKCA_files[3]
   print('\nfile:', UKCA_file)
@@ -302,12 +304,14 @@ for h in range(len(UKCA_files)):
     UKCA_hours = UKCA_hours.sort_index()
     UKCA_hours.to_csv(UKCA_out_path)
     '''
-    # Build up the big datasets of all the hourly points.
+    # Build up the big datasets of all the hourly points. 
+    # Comment this out if you prefer to merge outputs separately, using all_csv.py. 
     ATom_hourly = ATom_hourly._append(ATom_hours) 
     UKCA_hourly = UKCA_hourly._append(UKCA_hours)
     '''
 '''    
 # Save the hourly datasets for all days.
+# Comment this out if you prefer to merge outputs separately, using all_csv.py.
 ATom_out_path = f'{ATom_dir}/ATom_hourly_all.csv'
 ATom_hourly.to_csv(ATom_out_path)
 UKCA_out_path = f'{UKCA_dir}/UKCA_hourly_all.csv'
