@@ -8,15 +8,25 @@ for use on Cambridge chemistry department's atmospheric servers.
 '''
 
 # ['UM stash code', 'ATom field name or new name']
-code_names = [['UM_m01s01i142_vn1300', 'COS SOLAR ZENITH ANGLE'], 
-              ['UM_m01s30i296_vn1300', 'RELATIVE HUMIDITY ON PLEV/T GRID'], 
+code_names = [['specific_humidity'   , 'SPECIFIC HUMIDITY'],
+              ['UM_m01s00i266_vn1300', 'CLOUD FRACTION'],
+              ['air_pressure'        , 'PRESSURE'],
+              ['UM_m01s01i142_vn1300', 'COS SOLAR ZENITH ANGLE'],
+	      ['UM_m01s01i217_vn1300', 'UPWARD SW FLUX'],
+              ['UM_m01s01i218_vn1300', 'DOWNWARD SW FLUX'],
+              ['UM_m01s02i217_vn1300', 'UPWARD LW FLUX'],
+              ['UM_m01s02i218_vn1300', 'DOWNWARD LW FLUX'],
+	      ['air_temperature'     , 'TEMPERATURE'],
+	      ['UM_m01s30i206_vn1300', 'RELATIVE HUMIDITY ON PLEV/UV GRID'],
+              ['UM_m01s30i296_vn1300', 'RELATIVE HUMIDITY ON PLEV/T GRID'],
+	      ['UM_m01s30i301_vn1300', 'HEAVYSIDE FN ON P LEV/UV GRID'], 
               ['UM_m01s30i304_vn1300', 'HEAVYSIDE FN ON P LEV/T GRID'], 
               ['UM_m01s50i228_vn1300', 'O1D'], 
 	      ['UM_m01s50i229_vn1300', 'jNO2_NO_O3P'], # Matched to ATom
 	      ['UM_m01s50i500_vn1300', 'organic nitrate J rates (summed)'],
               ['UM_m01s50i501_vn1300', 'jCH2O_H_HCO'], # HCHO radical matched to ATom
               ['UM_m01s50i502_vn1300', 'jCH2O_H2_CO'], # HCHO molecular matched to ATom
-              ['UM_m01s50i503_vn1300', 'CH3COCHO'], # MGLY (summed) matched to ATom.
+              ['UM_m01s50i503_vn1300', 'jCH3COCHO'], # MGLY (summed) matched to ATom.
               ['UM_m01s50i504_vn1300', 'Other CO producing rxns J rates (summed)'],
               ['UM_m01s50i505_vn1300', 'H and O stuff J rates (summed)'],
               ['UM_m01s50i506_vn1300', 'O2 J rates (summed)'],
