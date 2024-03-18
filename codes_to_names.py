@@ -11,6 +11,7 @@ for use on Cambridge chemistry department's atmospheric servers.
 code_names = [['specific_humidity'   , 'SPECIFIC HUMIDITY'],
               ['UM_m01s00i266_vn1300', 'CLOUD FRACTION'],
               ['air_pressure'        , 'PRESSURE'],
+              ['UM_m01s01i140_vn1300', 'COS SOLAR ZENITH ANGLE'],
               ['UM_m01s01i142_vn1300', 'COS SOLAR ZENITH ANGLE'],
 	      ['UM_m01s01i217_vn1300', 'UPWARD SW FLUX'],
               ['UM_m01s01i218_vn1300', 'DOWNWARD SW FLUX'],
