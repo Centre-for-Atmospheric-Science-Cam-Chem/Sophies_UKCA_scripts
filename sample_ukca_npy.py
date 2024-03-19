@@ -54,19 +54,20 @@ def write_metadata(day, out_path):
   meta_file.write(metadata)
   meta_file.close()
     
-  
+'''  
 def write_dims(field, out_path):
   # field: a cf field from an opened .pp file. 
   # Dimensions will be added as columns.
   # It will be a 5d np array of (num fields + 4 dims) x num times x num alts x num lats x num lons. 
   print('Flattening dimensions.')
+  start = time.time()
   # Get the dimension values.
   dts = field.coord('time')
   alts = field.coord('atmosphere_hybrid_height_coordinate')
   lats = field.coord('latitude')
   lons = field.coord('longitude')
   # For each entry in the field, set the time, alt, lat and long.
-  # There should be 256 values, or 4 values repeated 4x4x4x.
+  # There should be 256 values if there are 4 values repeated 4x4x4x.
   # Repeat the dims in the right order to match the flattened data.
   dts_flat, alts_flat, lats_flat, lons_flat = np.empty(0), np.empty(0), np.empty(0), np.empty(0)
   for dt in dts:
@@ -79,25 +80,106 @@ def write_dims(field, out_path):
           lats_flat = np.append(lats_flat, lat)
           lons_flat = np.append(lons_flat, lon)
   # Times are converted to numerical representation.
-  cols = np.array([dts_flat, alts_flat, lats_flat, lons_flat])   
+  cols = np.array([dts_flat, alts_flat, lats_flat, lons_flat]) 
+  end = time.time()
+  elapsed = end - start
+  print(f'That took {elapsed} seconds.') 
+  exit()  
+  return(cols)
+'''
+
+# This is a test version of the above function, which expands a 2d array instead of concatenating 1d arrays.
+# It is not faster but at least the code looks neater.
+def write_dims(field, out_path):
+  # field: a cf field from an opened .pp file. 
+  # Dimensions will be added as columns.
+  # It will be a 5d np array of (num fields + 4 dims) x num times x num alts x num lats x num lons. 
+  print('Flattening dimensions.')
+  start = time.time()
+  # Get the dimension values.
+  dts = field.coord('time')
+  alts = field.coord('atmosphere_hybrid_height_coordinate')
+  lats = field.coord('latitude')
+  lons = field.coord('longitude')
+  # For each entry in the field, set the time, alt, lat and long.
+  # There should be 256 values if there are 4 values repeated 4x4x4x.
+  # Repeat the dims in the right order to match the flattened data.
+  cols = np.empty((4, 0))
+  for dt in dts:
+    for alt in alts:
+      for lat in lats:
+        for lon in lons: 
+          # Save these dimensions in their own columns.
+          cols = np.append(cols, [dt, alt, lat, lon], axis=1)
+  # Times are converted to numerical representation.
+  end = time.time()
+  elapsed = end - start
+  print(f'That took {elapsed} seconds.')  
   return(cols)
 
+
+'''
+# This is a test version of the above function, which updates fixed size arrays rather than expanding arrays.
+# It was about 4% slower than the updating implementation.
+def write_dims(field, out_path):
+  # field: a cf field from an opened .pp file. 
+  # Dimensions will be added as columns.
+  # It will be a 5d np array of (num fields + 4 dims) x num times x num alts x num lats x num lons. 
+  print('Flattening dimensions.')
+  start = time.time()
+  # Get the dimension values.
+  dts = field.coord('time')
+  alts = field.coord('atmosphere_hybrid_height_coordinate')
+  lats = field.coord('latitude')
+  lons = field.coord('longitude')
+  # For each entry in the field, set the time, alt, lat and long.
+  # There should be 256 values if there are 4 values repeated 4x4x4x.
+  # Repeat the dims in the right order to match the flattened data.
+  ndts = dts.size
+  nalts = alts.size
+  nlats = lats.size
+  nlons = lons.size
+  flat_len = ndts * nalts * nlats * nlons # ~ 56.4 million with all data.
+  dts_flat = np.empty(flat_len)
+  alts_flat = np.empty(flat_len)
+  lats_flat = np.empty(flat_len)
+  lons_flat = np.empty(flat_len)
+  
+  idx_flat = 0
+  for i in range(ndts):
+    for j in range(nalts):
+      for k in range(nlats):
+        for l in range(nlons): 
+          # Save these dimensions in their own columns.	  
+          dts_flat[idx_flat] = dts[i].data
+          alts_flat[idx_flat] = alts[j].data
+          lats_flat[idx_flat] = lats[k].data
+          lons_flat[idx_flat] = lons[l].data
+          idx_flat += 1
+          # The flat index at any point is (l * pow(nlons, 0)) + (k * pow(nlats, 1)) + (j * pow(nalts, 2)) + (i * pow(ndts, 3)) 	  
+  # Times are converted to numerical representation.
+  cols = np.array([dts_flat, alts_flat, lats_flat, lons_flat]) 
+  end = time.time()
+  elapsed = end - start
+  print(f'That took {elapsed} seconds.') 
+  exit() 
+  return(cols)
+'''
 
 # Base.
 dir_path = '/scratch/st838/netscratch/'  
 # Input .pp files.
-# Choose a day from each season.
-spring_file = 0
-summer_file = dir_path + 'nudged_J_outputs_for_ATom/cy731a.pl20160729.pp' # Test file.
-autumn_file = 0
-winter_file = 0
+test_file = dir_path + 'nudged_J_outputs_for_ATom/cy731a.pl20160729.pp' # Test file.
 # Output paths.
 meta_file = dir_path + 'tests/metadata.txt'
 csv_file = dir_path + 'tests/cols.csv'
 npy_file = dir_path + 'tests/cols.npy'
 
+# Sample size of each dimension length.
+sample_sizes = [2, 3, 4, 5, 10, 20]
+dim_len = sample_sizes[1]
+
 # Identities of all 68 of the J rates output from Strat-Trop + some physics outputs.
-print('Getting code-names of STASH items.')
 code_names = np.array(codes.code_names)
 # Adjust them so that they work with cf identity functions.
 for i in range(len(code_names)):
@@ -108,7 +190,7 @@ for i in range(len(code_names)):
 
 # Pick one day to test on.
 print('Reading .pp file.')
-day = cf.read(summer_file)
+day = cf.read(test_file)
 
 # Write metadata if needed.
 if not os.path.exists(meta_file):
@@ -118,7 +200,7 @@ if not os.path.exists(meta_file):
 # Get the number of vertical levels.
 field = day[0]
 # TEST SAMPLE.
-field = field[-3:, -3:, -3:, -3:]
+field = field[:dim_len, :dim_len, :dim_len, :dim_len]
 nalts = field.coord('atmosphere_hybrid_height_coordinate').size
 
 # Write the dims first if they haven't been written already.
@@ -146,40 +228,33 @@ for i in range(6):
   if field.ndim == 3:
     
     # TEST
-    field = field[-3:, -3:, -3:]
+    field = field[:dim_len, :dim_len, :dim_len]
     
     field = field.array
     times = nalts
-    print('times:', times)
-    stride = field.shape[1] * field.shape[2]
-    print('stride:', stride)
-    
+    stride = field.shape[1] * field.shape[2]    
     field = field.flatten()
     # Make a new 1d field array.
     padded = np.empty(0)
-    # Loop through old 1d field indices with strides of nlat x nlon until the end.
+    # Loop through old 1d field indices with strides of nlats x nlons until the end.
     for i in range(0, len(field), stride):
-      print('i:', i)
-      # Pick sub arrays in sections of len nlat x nlon
+      # Pick sub arrays in sections of len nlats x nlons
       rep = field[i:i+stride]
-      print('rep:', rep)
-      # Repeat that sub array ntime x nalt.
+      # Repeat that sub array ntimes x nalts.
       rep = np.tile(rep, times)
-      print('rep:', rep)
       # Append it to the new field array.
       padded = np.append(padded, rep)
     
     # TEST
     # Check that the new array is the right size and shape.
     print('padded.shape:', padded.shape) # should be 1d and the same as one of the following.
-    print('cols.shape:', cols.shape)
     
     field = padded
     
   else:
   
     # TEST SAMPLE.
-    field = field[-3:, -3:, -3:, -3:]
+    field = field[:dim_len, :dim_len, :dim_len, :dim_len]
   
     field = field.flatten()   
   
@@ -188,6 +263,7 @@ for i in range(6):
   # Don't convert to np unless you specifically need to because the conversion takes a long time.
   # This should probably be done on a GPU.  
   cols = np.vstack((cols, field))
+  print('cols.shape:', cols.shape)
   end = time.time()
   elapsed = end - start
   remaining = elapsed * (len(day) - (i + 1)) / 60
@@ -198,6 +274,7 @@ for i in range(6):
     unit = 'minutes'
     
   print(f'That field took {round(elapsed / 60, 1)} minutes.')
+  exit()
   if i < len(day):
     print(f'Estimated time remaining: {round(remaining, 1)} {unit}.')
 
