@@ -53,11 +53,6 @@ def write_metadata(day, out_path):
       continue
     i += 1
     idx = np.where(code_names[:,0] == code)
-    print(code)
-    print(idx)
-    print(code_names[idx, 1])
-    print(code_names[idx, 1][0])
-    print()
     name = code_names[idx, 1][0][0]
     metadata += f'{i+4} {code} {name}\n'
   # Write all this to the file.
@@ -71,25 +66,21 @@ def write_dims(field, out_path):
   # It will be a 5d np array of (num fields + 4 dims) x num times x num alts x num lats x num lons. 
   print('Flattening dimensions.')
   # Get the dimension values.
-  dts = field.coord('time')
+  dts = field.coord('time')    
   alts = field.coord('atmosphere_hybrid_height_coordinate')
   lats = field.coord('latitude')
   lons = field.coord('longitude')
   # For each entry in the field, set the time, alt, lat and long.
-  # There should be 256 values, or 4 values repeated 4x4x4x.
+  # There should be 256 values if there are 4 values repeated 4x4x4x.
   # Repeat the dims in the right order to match the flattened data.
-  dts_flat, alts_flat, lats_flat, lons_flat = np.empty(0), np.empty(0), np.empty(0), np.empty(0)
+  cols = np.empty((4, 0))
   for dt in dts:
     for alt in alts:
       for lat in lats:
         for lon in lons: 
           # Save these dimensions in their own columns.
-          dts_flat = np.append(dts_flat, dt)
-          alts_flat = np.append(alts_flat, alt)
-          lats_flat = np.append(lats_flat, lat)
-          lons_flat = np.append(lons_flat, lon)
-  # Times are converted to numerical representation.
-  cols = np.array([dts_flat, alts_flat, lats_flat, lons_flat])   
+	  # Times are converted to numerical representation.
+          cols = np.append(cols, [dt, alt, lat, lon], axis=1)
   return(cols)
 
 
@@ -104,7 +95,8 @@ npy_file = dir_path + 'cols.npy'
 # Pick the day file to read.
 for fi in range(len(ukca_files)):
   ukca_file = ukca_files[fi]
-  print(f'Reading .pp file {fi+1} of {len(ukca_files)}.')
+  print(f'Reading .pp file {fi+1} of {len(ukca_files)}:')
+  print(ukca_file)
   day = cf.read(ukca_file)
 
   # Write metadata if needed.
@@ -141,13 +133,10 @@ for fi in range(len(ukca_files)):
       padded = np.empty(0)
       # Loop through old 1d field indices with strides of nlat x nlon until the end.
       for i in range(0, len(field), stride):
-        print('i:', i)
         # Pick sub arrays in sections of len nlat x nlon
         rep = field[i : i + stride]
-        print('rep:', rep)
         # Repeat that sub array ntime x nalt.
         rep = np.tile(rep, times)
-        print('rep:', rep)
         # Append it to the new field array.
         padded = np.append(padded, rep)
       field = padded
@@ -160,19 +149,7 @@ for fi in range(len(ukca_files)):
     cols = np.vstack((cols, field))
     end = time.time()
     elapsed = end - start
-    remaining = (elapsed * (len(day) - (i + 1))) / 60
-    if remaining >= 60:
-      unit = 'hours'
-      remaining = remaining / 60
-    else:
-      unit = 'minutes'
     print(f'That field took {round(elapsed / 60, 1)} minutes.')
-    if i < len(day):
-      print(f'Fields remaining in this file:', len(day) - (i + 1))
-      if fi < len(ukca_files):
-        remaining = remaining * (len(ukca_files) - (fi + 1))
-        print(f'Files remaining after this:', len(ukca_files) - (fi + 1))       
-        print(f'Estimated time remaining: {round(remaining, 1)} {unit}.')
 
 # Save the np array as a npy file.
 np.save(npy_file, cols)
