@@ -81,6 +81,7 @@ def write_dims(field, out_path):
           # Save these dimensions in their own columns.
 	  # Times are converted to numerical representation.
           cols = np.append(cols, [dt, alt, lat, lon], axis=1)
+  np.save(out_path, cols)
   return(cols)
 
 
@@ -90,7 +91,25 @@ dir_path = '/scratch/st838/netscratch/ukca_npy/'
 ukca_files = glob.glob(dir_path + '/*.pp') # Just .pp files. 
 # Output paths.
 meta_file = dir_path + 'metadata.txt'
-npy_file = dir_path + 'cols.npy'
+npy_dims_file = dir_path + 'dims.npy' # Flattened dims to re-use.
+
+# True if 1 npy file for each day of data, False if 1 npy file for all the data.
+npy_day = True
+
+# Write the dims first if they haven't been written already.
+if os.path.exists(npy_dims_file):
+  dims = np.load(npy_dims_file)
+else:
+  field = cf.read(ukca_files[0], select='stash_code=50500')[0]
+  dims = write_dims(field, npy_dims_file)
+print('shape of dims:', dims.shape)
+if not npy_day:
+  # We might need to build up the big np array in sections depending on the amount of data.
+  if os.path.exists(npy_file):
+    cols = np.load(npy_file)
+  else:
+    cols = dims
+  del(dims) # We don't need to re-use the dims if making 1 big file.  
 
 # Pick the day file to read.
 for fi in range(len(ukca_files)):
@@ -108,12 +127,8 @@ for fi in range(len(ukca_files)):
   field = day[0]
   nalts = field.coord('atmosphere_hybrid_height_coordinate').size
 
-  # Write the dims first if they haven't been written already.
-  if not os.path.exists(npy_file):  
-    cols = write_dims(field, npy_file)
-  else:  
-    # Open the npy file.
-    cols = np.load(npy_file)
+  if npy_day:
+    cols = dims.copy() # We need to re-use the dims if making multiple files.   
 
   # For each field, save all the field data in another column.
   for i in range(len(day)):
@@ -147,9 +162,17 @@ for fi in range(len(ukca_files)):
     # Don't convert to np unless you specifically need to because the conversion takes a long time.
     # This should probably be done on a GPU.  
     cols = np.vstack((cols, field))
+    print('shape of cols:', cols.shape)
     end = time.time()
     elapsed = end - start
-    print(f'That field took {round(elapsed / 60, 1)} minutes.')
-
-# Save the np array as a npy file.
-np.save(npy_file, cols)
+    print(f'That field took {round(elapsed / 1)} seconds.')
+  
+  # Save the np array as a npy file containing this day of data.
+  if npy_day:
+    npy_file = dir_path + ukca_file[9:17] + '.npy'
+    np.save(npy_file, cols)
+  
+# Save the np array as a npy file containing all data.
+if not npy_day:
+  npy_file = dir_path + 'all.npy' 
+  np.save(npy_file, cols)
