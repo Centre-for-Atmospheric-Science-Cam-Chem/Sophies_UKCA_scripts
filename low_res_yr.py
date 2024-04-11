@@ -64,6 +64,17 @@ points = np.empty(0)
 # Loop through the data to select the points we want. 
 
 # Select by time.
+times = day[0]
+# Get the indices of the cols which are at the times specified by resolution.
+clock = np.unique(times)
+ids = np.empty(0, dtype=int)
+# Loop through the different time values in order to find the right values.
+for i in range(hr_res - 1, len(clock), hr_res):
+  # Find their indices in the flattened row with dim duplicates.
+  pos = np.where(times == clock[i])
+  ids = np.append(ids, pos)
+# Update selected data by removing parts we don't want.
+day = day[:, ids]
 
 # Select by altitude.
 
@@ -73,20 +84,17 @@ alts_km = [0, 1]
 # Compare the real altitude values to the altitudes we want.
 # km = alt * 85. Find the closest to what we want.
 day[1] = day[1] * 85
+alts = day[1]
 i_cols = np.empty(0, dtype=int)
 for alt_km in alts_km:
-  diffs = abs(day[1] - alt_km)
+  diffs = abs(alts - alt_km)
   idx_alt = diffs.argmin()
   i_alts = np.where(diffs == diffs.min())[0]
   i_cols = np.concatenate((i_cols, i_alts))
 i_cols = np.sort(i_cols)  
 
-# TEST
-#print(i_cols)
-
 # Update selected data by removing parts we don't want.
 day = day[:, i_cols]
-print(day.shape)
 
 # Select by latitude.
 
@@ -99,4 +107,3 @@ print(day.shape)
 # If there is not space to save the new array(s), go straight to ML.
 
 # ML model.
-
