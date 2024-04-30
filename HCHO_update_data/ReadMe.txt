@@ -5,5 +5,5 @@ The UKCA file here is different because its HCHO data has been updated using the
 Place the UKCA file somewhere and point to it in your Rose suite, either in the Rose GUI or in the suite's app/um/rose-app.conf file. 
 e.g.
 jvspec_dir='/home/d02/sturner/fastJ'
-jvspec_file='UKCA_FJX.dat'
+jvspec_file='UKCA_FJX_new.dat'
 
