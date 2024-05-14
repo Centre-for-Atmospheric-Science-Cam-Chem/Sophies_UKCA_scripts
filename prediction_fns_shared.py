@@ -12,10 +12,10 @@ Files are located at scratch/st838/netscratch.
 
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-from sklearn import linear_model
-from sklearn.metrics import mean_squared_error, r2_score
 from datetime import datetime
+from sklearn import linear_model
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
 
 
 def standard_names(data):
@@ -67,7 +67,7 @@ def normalise(col):
   
   
 def prep_data(target_name, input_name, data, J_all):
-  # Prepare dataset, when inputs and targets come from the same dataset.
+  # Prepare dataset, when inputs and targets come from the same pandas dataset.
   # Don't let targets into inputs.
   if target_name == J_all:
     for name in input_name:
@@ -84,13 +84,14 @@ def prep_data(target_name, input_name, data, J_all):
   data = data.dropna(axis=0, subset=all_used) 
 
   # Normalise relevant data.
-  for col in all_used:
-    data[col] = normalise(data[col])
+  #for col in all_used:
+  #  data[col] = normalise(data[col])
 
   return(target_name, input_name, data)
 
 
 def set_params(target_name, input_name, target_data, input_data):
+  # For pandas datasets.
   targets = target_data[target_name]
   inputs = input_data[input_name] 
   # Split data (almost randomly).

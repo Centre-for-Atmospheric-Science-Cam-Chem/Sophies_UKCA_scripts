@@ -50,6 +50,7 @@ def write_metadata(day, out_path):
     code = field.identity()
     # We don't want section 30 pressure level outputs here.
     if code[:13] == 'id%UM_m01s30i':
+      i -= 1
       continue
     i += 1
     idx = np.where(code_names[:,0] == code)
@@ -62,8 +63,7 @@ def write_metadata(day, out_path):
   
 def write_dims(field, out_path):
   # field: a cf field from an opened .pp file. 
-  # Dimensions will be added as columns.
-  # It will be a 5d np array of (num fields + 4 dims) x num times x num alts x num lats x num lons. 
+  # Dimensions will be added as columns. 
   print('Flattening dimensions.')
   # Get the dimension values.
   dts = field.coord('time')    
@@ -73,17 +73,17 @@ def write_dims(field, out_path):
   # For each entry in the field, set the time, alt, lat and long.
   # There should be 256 values if there are 4 values repeated 4x4x4x.
   # Repeat the dims in the right order to match the flattened data.
-  cols = np.empty((4, 0))
+  table = np.empty((4, 0), dtype=np.float32)
   for dt in dts:
     for alt in alts:
       for lat in lats:
         for lon in lons: 
           # Save these dimensions in their own columns.
 	  # Times are converted to numerical representation.
-          cols = np.append(cols, [dt, alt, lat, lon], axis=1)
-  np.save(out_path, cols)
-  return(cols)
-
+          table = np.append(table, [dt, alt, lat, lon], axis=1)
+  np.save(out_path, table)
+  return(table)
+  
 
 # Base.
 dir_path = '/scratch/st838/netscratch/ukca_npy/' 
@@ -106,10 +106,10 @@ print('shape of dims:', dims.shape)
 if not npy_day:
   # We might need to build up the big np array in sections depending on the amount of data.
   if os.path.exists(npy_file):
-    cols = np.load(npy_file)
+    table = np.load(npy_file)
   else:
-    cols = dims
-  del(dims) # We don't need to re-use the dims if making 1 big file.  
+    table = dims
+  del(dims) # There is no need to re-use the dims if making 1 big file.  
 
 # Pick the day file to read.
 for fi in range(len(ukca_files)):
@@ -128,7 +128,7 @@ for fi in range(len(ukca_files)):
   nalts = field.coord('atmosphere_hybrid_height_coordinate').size
 
   if npy_day:
-    cols = dims.copy() # We need to re-use the dims if making multiple files.   
+    table = dims.copy() # Re-use the dims if making multiple files.   
 
   # For each field, save all the field data in another column.
   for i in range(len(day)):
@@ -145,7 +145,7 @@ for fi in range(len(ukca_files)):
       stride = field.shape[1] * field.shape[2]
       field = field.flatten()
       # Make a new 1d field array.
-      padded = np.empty(0)
+      padded = np.empty(0, dtype=np.float32)
       # Loop through old 1d field indices with strides of nlat x nlon until the end.
       for i in range(0, len(field), stride):
         # Pick sub arrays in sections of len nlat x nlon
@@ -161,8 +161,8 @@ for fi in range(len(ukca_files)):
     # before working with it, depending on the size.
     # Don't convert to np unless you specifically need to because the conversion takes a long time.
     # This should probably be done on a GPU.  
-    cols = np.vstack((cols, field))
-    print('shape of cols:', cols.shape)
+    table = np.vstack((table, field), dtype=np.float32)
+    print('shape of table:', table.shape)
     end = time.time()
     elapsed = end - start
     print(f'That field took {round(elapsed / 1)} seconds.')
@@ -170,9 +170,9 @@ for fi in range(len(ukca_files)):
   # Save the np array as a npy file containing this day of data.
   if npy_day:
     npy_file = dir_path + ukca_file[9:17] + '.npy'
-    np.save(npy_file, cols)
+    np.save(npy_file, table)
   
 # Save the np array as a npy file containing all data.
 if not npy_day:
   npy_file = dir_path + 'all.npy' 
-  np.save(npy_file, cols)
+  np.save(npy_file, table)

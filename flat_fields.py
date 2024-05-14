@@ -17,12 +17,56 @@ import time
 import glob
 import numpy as np
 
+
+def write_metadata(day, out_path):
+  # Function to write metadata file.
+  # day: an opened .pp file as a cfpython FieldsList.
+  # out_path: the metadata output file path.
+  # Identities of all 68 of the J rates output from Strat-Trop + some physics outputs.
+  import codes_to_names as codes  
+  code_names = np.array(codes.code_names)
+  # Adjust them so that they work with cf identity functions.
+  for i in range(len(code_names)):
+    code = code_names[i,0]
+    if code[0:2] == 'UM':
+      code = f'id%{code}'
+      code_names[i,0] = code
+  # Make a file to write metadata to.
+  meta_file = open(out_path, 'w')
+  metadata = 'These are the ordered indices and column names of the numpy arrays in the .npy files in this directory.\
+  \nSTASH code identities are included for each field where possible. \
+  \nDate-times have been converted to numerical interpretations of time. \
+  \nThe date-times which they represent are shown here, in the same order as the numpy data.\n\
+  \nDate-times:\n'
+  # Get date-times.
+  for timestep in day[0]:
+    metadata += f"{timestep.coord('time').data}\n"
+  metadata += '\nColumn names:\n'
+  # Add the time, alt, lat and long column names and units.
+  metadata += '0 time\n1 altitude m\n2 latitude deg N\n3 longitude deg E\n'
+  # Get the code-name of each field and write it in metadata.
+  i = 0
+  for field in day:
+    code = field.identity()
+    # We don't want section 30 pressure level outputs here.
+    if code[:13] == 'id%UM_m01s30i':
+      continue
+    i += 1
+    idx = np.where(code_names[:,0] == code)
+    name = code_names[idx, 1][0][0]
+    metadata += f'{i+3} {code} {name}\n'
+  # Write all this to the file.
+  meta_file.write(metadata)
+  meta_file.close()
+
+
 # Base.
 dir_path = '/scratch/st838/netscratch/ukca_npy/' 
 # Input files.
 ukca_files = glob.glob(dir_path + '/*.pp') # Just .pp files. 
 dims_file = dir_path + 'dims.npy' # Dims to match the flattened data.
 # Output paths.
+meta_file = dir_path + 'metadata.txt'
 npy_file = dir_path + 'fields.npy' # Flattened fields to re-use.
 
 # True if 1 npy file for each day of data, False if 1 npy file for all the data.
@@ -54,6 +98,13 @@ for fi in range(len(ukca_files)):
   print(f'Reading .pp file {fi+1} of {len(ukca_files)}:')
   print(ukca_file)
   day = cf.read(ukca_file)
+  
+  # Write metadata if needed.
+  if not os.path.exists(meta_file):
+    print(f'Writing metadata to {meta_file}.')
+    write_metadata(day, meta_file)
+    
+  exit()
 
   # Get the number of vertical levels.
   field = day[0]
