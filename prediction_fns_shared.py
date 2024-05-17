@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from sklearn import linear_model
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import mean_absolute_error, r2_score
 
 
 def standard_names(data):
@@ -110,15 +110,15 @@ def test(model, in_test, out_test):
   # Try it out.
   out_pred = model.predict(in_test)
   # See how well it did.
-  mse = mean_squared_error(out_test, out_pred)
-  mse = round(mse, 2)
+  err = mean_absolute_error(out_test, out_pred)
+  #err = round(err, 2)
   r2 = r2_score(out_test, out_pred)
   r2 = round(r2, 2)
-  return(out_pred, mse, r2)
+  return(out_pred, err, r2)
   
   
-def show(out_test, out_pred, mse, r2):
-  print(f'Mean squared error = {mse}')
+def show(out_test, out_pred, mae, r2):
+  print(f'Mean squared error = {mae}')
   print(f'Coefficient of determination = {r2}')
   plt.scatter(out_test, out_pred)
   plt.xlabel('actual')

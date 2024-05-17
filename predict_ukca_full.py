@@ -43,6 +43,22 @@ def remove_duplicates(remove, keep):
   remove = np.delete(remove, removes, axis=0)
   return(remove, keep)
   
+
+def get_name(row, day, names):
+  # Find the name of a row.
+  # row: a 1d npy array from an input set.
+  # day: the 2d npy array containing all the data.
+  # names: the array of processed metadata of row names.
+  # Get the index of the row in the full dataset.
+  for i in range(len(day)):
+    each_row = day[i]
+    if np.all(each_row == row):
+      idx = i
+      break
+  # Match that index to the line of text in the metadata. 
+  name = names[i][1]
+  return(name)
+  
   
 def simple_select(inputs, targets, n):
   # Feature selection assuming that all targets will have the same best input rows.  
@@ -83,8 +99,62 @@ def multi_target_select(inputs, targets, n):
   # Reshape the inputs so they enter ML functions in the right order.
   input_rows = np.rot90(input_rows, 3)
   return(input_rows)
-  
+ 
+ 
+def specific_num_inputs(inputs, targets, days, idx_names):
+  # Test out a specific number of inputs.
+  # Choose how many input rows to use. 
+  num_inputs = 4
 
+  # Do feature selection and dimensionality reduction if there are more potential inputs.
+  if inputs.shape[1] > num_inputs:
+    inputs = simple_select(inputs, targets, num_inputs) 
+  
+  print('Inputs chosen:')
+  for i in range(num_inputs):
+    name = get_name(inputs[:,i], days, idx_names)
+    print(name) 
+
+  # Reshape the targets so they enter ML functions in the right order.
+  if targets.shape[0] < targets.shape[1]:
+    targets = np.rot90(targets, 3)
+  
+  # Split data (almost randomly).
+  in_train, in_test, out_train, out_test = train_test_split(inputs, targets, test_size=0.1, random_state=6)
+  
+  # Test to see if my old linear regression code will work with these data.
+  model = fns.train(in_train, out_train)
+  pred, err, r2 = fns.test(model, in_test, out_test)
+  print('R2:', r2)
+  print('% err:', err)
+  
+  
+def try_many_inputs(inputs, targets, days, idx_names):
+  # Test out different numbers of inputs in a loop.
+  targets_rot = np.rot90(targets, 3)
+
+  # Test different numbers of input rows to see how many to use.
+  for num_inputs in range(13, 0, -1): 
+    print('Num inputs:', num_inputs)
+    # Do feature selection and dimensionality reduction if there are more potential inputs.
+    if inputs.shape[1] > num_inputs:
+      inputs = simple_select(inputs, targets, num_inputs) 
+  
+    print('Inputs chosen:')
+    for i in range(num_inputs):
+      name = get_name(inputs[:,i], days, idx_names)
+      print(name) 
+  
+    # Split data (almost randomly).
+    in_train, in_test, out_train, out_test = train_test_split(inputs, targets_rot, test_size=0.1, random_state=6)
+  
+    # Test to see if my old linear regression code will work with these data.
+    model = fns.train(in_train, out_train)
+    pred, err, r2 = fns.test(model, in_test, out_test)
+    print('R2:', r2)
+    print('% err:', err)
+
+  
 # File paths.
 dir_path = '/scratch/st838/netscratch/ukca_npy'
 input_files = glob.glob(f'{dir_path}/2015*.npy')
@@ -130,12 +200,14 @@ days = np.load(input_files[0])
 #  print(name)
   
 # Indices of some common combinations to use as inputs and outputs.
-phys_all = np.linspace(0,12,12, dtype=int)
-J_all = np.linspace(13,82,69, dtype=int)
-H2O2 = 72
+phys_all = np.linspace(0,12,13, dtype=int)
+J_all = np.linspace(13,82,70, dtype=int)
 NO2 = 14
-  
-# Choose which fields to use as inputs and outputs. 
+HCHOr = 16 # Radical product.
+HCHOm = 17 # Molecular product.
+H2O2 = 72
+O3 = 76 # O(1D) product.
+ 
 inputs = days[phys_all]
 targets = days[H2O2]
 
@@ -151,21 +223,7 @@ inputs, targets = remove_duplicates(inputs, targets)
 # Reshape the inputs so they enter ML functions in the right order.
 inputs = np.rot90(inputs, 3)
 
-# Choose how many input rows to use. 
-num_inputs = 4 
-# Do feature selection and dimensionality reduction if there are more potential inputs.
-if inputs.shape[1] > num_inputs:
-  inputs = simple_select(inputs, targets, num_inputs)
+specific_num_inputs(inputs, targets, days, idx_names)
 
-# Reshape the targets so they enter ML functions in the right order.
-targets = np.rot90(targets, 3)
 
-# Split data (almost randomly).
-in_train, in_test, out_train, out_test = train_test_split(inputs, targets, test_size=0.1, random_state=6)
-  
-# Test to see if my old linear regression code will work with these data.
-model = fns.train(in_train, out_train)
-pred, mse, r2 = fns.test(model, in_test, out_test)
-print()
-print(r2)
-print()
+
