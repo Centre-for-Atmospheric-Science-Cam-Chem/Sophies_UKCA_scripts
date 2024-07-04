@@ -13,7 +13,9 @@ Files are located at scratch/$USER/netscratch_all/st838.
 
 import glob
 import numpy as np
+import matplotlib.pyplot as plt
 import prediction_fns_numpy as fns
+from sklearn.preprocessing import StandardScaler
   
     
 def test(in_train, in_test, out_train, out_test):
@@ -23,15 +25,18 @@ def test(in_train, in_test, out_train, out_test):
   out_test = np.rot90(out_test, 3)
   # Linear regression.
   model = fns.train(in_train, out_train)
-  pred, err, r2 = fns.test(model, in_test, out_test)
+  pred, mse, mape, r2 = fns.test(model, in_test, out_test)
   print('R2:', r2)
+  print('Mean squared err:', mse)
+  print('Mean absolute percentage er:', mape)
+  return(pred)
   
   
 # File paths.
 dir_path = '/scratch/st838/netscratch/ukca_npy'
 train_files = glob.glob(f'{dir_path}/2015*15.npy')
 train_file = f'{dir_path}/4days.npy'
-test_file = f'{dir_path}/20171201.npy'
+test_file = f'{dir_path}/20170415.npy'
 name_file = f'{dir_path}/idx_names'
 
 print(test_file)
@@ -68,10 +73,34 @@ in_test = test_day[features]
 in_train, in_test = fns.shape(in_train), fns.shape(in_test)
 in_train, in_test = np.rot90(in_train, 3), np.rot90(in_test, 3)
 
+# Standardisation (optional).
+scaler = StandardScaler()
+in_train = scaler.fit_transform(in_train)
+in_test = scaler.fit_transform(in_test)
+
 # Test all the targets.
 for target_idx in [HCHOm, NO2, O3, H2O2]:  
   out_train = train_days[target_idx]
   out_test = test_day[target_idx]
   # Reshape the arrays so they enter ML functions in the right order.
   out_train, out_test = fns.shape(out_train), fns.shape(out_test)
-  test(in_train, in_test, out_train, out_test)
+  # Do linear regression and get results.
+  pred = test(in_train, in_test, out_train, out_test)
+  
+  # Make them the right shape.
+  pred = pred.squeeze()
+  out_test = out_test.squeeze()
+  
+  # Plotting this many datapoints is excessive and costly. Reduce it to 1%.
+  length = len(pred)
+  idxs = np.arange(0, length, 100)
+  pred = pred[idxs]
+  out_test = out_test[idxs]
+  del(idxs)
+  
+  # Show a plot of results.
+  plt.scatter(out_test, pred, alpha=0.1)
+  plt.title('J rates on 15/4/17')
+  plt.xlabel('targets from UKCA')
+  plt.ylabel('predictions by linear regression')
+  plt.show()

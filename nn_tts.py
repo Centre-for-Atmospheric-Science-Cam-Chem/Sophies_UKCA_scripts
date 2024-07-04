@@ -10,20 +10,19 @@ import time
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torcheval.metrics import R2Score
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, mean_absolute_percentage_error
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 
 
-# 2 layer
+# 2 layer.
 # Create a class that inherits nn.Module.
 class Model(nn.Module):
 
   # Set up NN structure.
-  def __init__(self, inputs=5, h1=8, h2=8, outputs=1):
+  def __init__(self, inputs=14, h1=8, h2=8, outputs=1):
     super().__init__() # Instantiate nn.module.
     self.fc1 = nn.Linear(inputs, h1) 
     self.fc2 = nn.Linear(h1, h2)
@@ -36,27 +35,41 @@ class Model(nn.Module):
     x = self.out(x) 
     return(x)
 
-'''
-# 3 layer
+
+# 12 layer.
 # Create a class that inherits nn.Module.
-class Model(nn.Module):
+class BigModel(nn.Module):
 
   # Set up NN structure.
-  def __init__(self, inputs=5, h1=8, h2=8, h3=8, outputs=1):
+  def __init__(self, inputs=5, h1=20, h2=20, h3=20, h4=20, h5=20, h6=10, h7=10, h8=10, h9=10, h10=10, outputs=1):
     super().__init__() # Instantiate nn.module.
     self.fc1 = nn.Linear(inputs, h1) 
     self.fc2 = nn.Linear(h1, h2)
-    self.fc3 = nn.Linear(h2, h3)  
-    self.out = nn.Linear(h3, outputs) 
+    self.fc3 = nn.Linear(h2, h3)
+    self.fc4 = nn.Linear(h3, h4)
+    self.fc5 = nn.Linear(h4, h5)
+    self.fc6 = nn.Linear(h5, h6)
+    self.fc7 = nn.Linear(h6, h7)
+    self.fc8 = nn.Linear(h7, h8)
+    self.fc9 = nn.Linear(h8, h9)
+    self.fc10 = nn.Linear(h9, h10)
+    self.out = nn.Linear(h10, outputs) 
 
   # Set up movement of data through net.
   def forward(self, x):
     x = F.relu(self.fc1(x)) 
-    x = F.relu(self.fc2(x))
+    x = F.relu(self.fc2(x)) 
     x = F.relu(self.fc3(x)) 
+    x = F.relu(self.fc4(x)) 
+    x = F.relu(self.fc5(x)) 
+    x = F.relu(self.fc6(x)) 
+    x = F.relu(self.fc7(x)) 
+    x = F.relu(self.fc8(x)) 
+    x = F.relu(self.fc9(x)) 
+    x = F.relu(self.fc10(x)) 
     x = self.out(x) 
     return(x)
-'''
+
 
 # File paths.
 dir_path = '/scratch/st838/netscratch/ukca_npy'
@@ -80,7 +93,7 @@ features = [1,7,8,9,10]
 inputs = days[features]
 
 # Output target.
-target_idx = H2O2
+target_idx = HCHO
 target = days[target_idx]
 
 inputs = np.rot90(inputs, 3)
@@ -92,8 +105,6 @@ in_train, in_test, out_train, out_test = train_test_split(inputs, target, test_s
 scaler = StandardScaler()
 in_train = scaler.fit_transform(in_train)
 in_test = scaler.fit_transform(in_test)
-out_train = scaler.fit_transform(out_train)
-out_test = scaler.fit_transform(out_test)
 
 # Make the tensors.
 in_train = torch.from_numpy(in_train.copy())
@@ -115,7 +126,7 @@ criterion = nn.MSELoss()
 opt = torch.optim.Adam(model.parameters(), lr=0.01)
 
 # Train model.
-epochs = 300 # Choose num epochs.
+epochs = 350 # Choose num epochs.
 print()
 start = time.time()
 
@@ -138,27 +149,34 @@ minutes = round(((end - start) / 60))
 print(f'Training took {minutes} minutes.')
 
 # Evaluate model on test set.
-metric = R2Score()
 with torch.no_grad(): # Turn off backpropagation.
   pred = model.forward(in_test) # Send the test inputs through the net.
   loss = criterion(pred, out_test) # Compare to test labels.
-  metric.update(pred, out_test)
-print('\nLoss on test data:', loss)
-print('\nR2 from torcheval:', metric.compute())
-print('R2 from sklearn:', round(r2_score(out_test.detach().numpy(), pred.detach().numpy()), 2))
+print('\nMSE on test data:', loss)
 
-# Remove scaling to view actual values.
-out_test = scaler.inverse_transform(out_test.detach().numpy())
-pred = scaler.inverse_transform(pred.detach().numpy())
+# Turn them into np arrays for analysis.
+out_test, pred = out_test.detach().numpy(), pred.detach().numpy()
 
-print('out_test after inverse scale:', out_test.shape)
-print('pred after inverse scale:', pred.shape)
+# Make them the right shape.
+pred = pred.squeeze()
+out_test = out_test.squeeze()
 
-print('R2 after inverse scale:', round(r2_score(out_test, pred), 2)
+print('MAPE:', mean_absolute_percentage_error(out_test, pred))
+print('R2:', round(r2_score(out_test, pred), 2))
+  
+# Plotting this many datapoints is excessive and costly. 
+length = len(pred)
+# Reduce it to 10%.
+idxs = np.arange(0, length, 10)
+pred = pred[idxs]
+out_test = out_test[idxs]
+del(idxs)
 
 # Show a plot of results.
-plt.scatter(out_test, pred)
-plt.title('jH2O2 predicted by neural network')
+plt.figure()
+plt.scatter(out_test, pred, alpha=0.1)
+plt.title(name)
 plt.xlabel('targets from UKCA')
 plt.ylabel('predictions by NN')
-plt.show()
+plt.savefig(f'{dir_path}/{name}.png')
+plt.close()

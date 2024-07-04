@@ -12,7 +12,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, mean_absolute_percentage_error
 from sklearn.preprocessing import StandardScaler
 
 
@@ -23,7 +23,7 @@ class Model(nn.Module):
   def __init__(self, inputs=5, h1=8, h2=8, outputs=1):
     super().__init__() # Instantiate nn.module.
     self.fc1 = nn.Linear(inputs, h1) 
-    self.fc2 = nn.Linear(h1, h2) 
+    self.fc2 = nn.Linear(h1, h2)
     self.out = nn.Linear(h2, outputs) 
 
   # Set up movement of data through net.
@@ -34,11 +34,49 @@ class Model(nn.Module):
     return(x)
 
 
+# Create a class that inherits nn.Module.
+class BigModel(nn.Module):
+
+  # Set up NN structure.
+  def __init__(self, inputs=5, h1=20, h2=20, h3=20, h4=20, h5=20, h6=20, h7=10, h8=10, h9=10, h10=10, h11=10, h12=10, outputs=1):
+    super().__init__() # Instantiate nn.module.
+    self.fc1 = nn.Linear(inputs, h1) 
+    self.fc2 = nn.Linear(h1, h2)
+    self.fc3 = nn.Linear(h2, h3)
+    self.fc4 = nn.Linear(h3, h4)
+    self.fc5 = nn.Linear(h4, h5)
+    self.fc6 = nn.Linear(h5, h6)
+    self.fc7 = nn.Linear(h6, h7)
+    self.fc8 = nn.Linear(h7, h8)
+    self.fc9 = nn.Linear(h8, h9)
+    self.fc10 = nn.Linear(h9, h10)
+    self.fc11 = nn.Linear(h10, h11)
+    self.fc12 = nn.Linear(h11, h12)
+    self.out = nn.Linear(h12, outputs) 
+
+  # Set up movement of data through net.
+  def forward(self, x):
+    x = F.relu(self.fc1(x)) 
+    x = F.relu(self.fc2(x)) 
+    x = F.relu(self.fc3(x)) 
+    x = F.relu(self.fc4(x)) 
+    x = F.relu(self.fc5(x)) 
+    x = F.relu(self.fc6(x)) 
+    x = F.relu(self.fc7(x)) 
+    x = F.relu(self.fc8(x)) 
+    x = F.relu(self.fc9(x)) 
+    x = F.relu(self.fc10(x)) 
+    x = F.relu(self.fc11(x)) 
+    x = F.relu(self.fc12(x)) 
+    x = self.out(x) 
+    return(x)
+
+
 # File paths.
 dir_path = '/scratch/st838/netscratch/ukca_npy'
 name_file = f'{dir_path}/idx_names'
 train_file = f'{dir_path}/4days.npy'
-test_file = f'{dir_path}/20170115.npy' 
+test_file = f'{dir_path}/20170601.npy' 
 
 # Indices of some common combinations to use as inputs and outputs.
 phys_all = np.linspace(0,13,14, dtype=int)
@@ -73,14 +111,12 @@ in_train = np.rot90(in_train, 3)
 in_test = np.rot90(in_test, 3)
 out_train = out_train.reshape(-1, 1)
 out_test = out_test.reshape(-1, 1)
-'''
+
 # Standardisation (optional).
 scaler = StandardScaler()
 in_train = scaler.fit_transform(in_train)
 in_test = scaler.fit_transform(in_test)
-out_train = scaler.fit_transform(out_train)
-out_test = scaler.fit_transform(out_test)
-'''
+
 # Turn them into torch tensors.
 in_train = torch.from_numpy(in_train.copy())
 in_test = torch.from_numpy(in_test.copy())
@@ -92,8 +128,12 @@ print('in_test:', in_test.shape)
 print('out_train:', out_train.shape)
 print('out_test:', out_test.shape)
 
+# Free up memory.
+del(train_days)
+del(test_day)
+
 # Create instance of model.
-model = Model()
+model = BigModel()
 
 # Tell the model to measure the error as fitness function to compare pred with label.
 criterion = nn.MSELoss()
@@ -125,16 +165,28 @@ print(f'Training took {minutes} minutes.')
 with torch.no_grad(): # Turn off backpropagation.
   pred = model.forward(in_test) # Send the test inputs through the net.
   loss = criterion(pred, out_test) # Compare to test labels.
-print('\nLoss on test data:', loss)
-print('R2:', round(r2_score(out_test.detach().numpy(), pred.detach().numpy()), 2))
+print('\nMSE on test data:', loss)
 
-# Remove scaling to view actual values.
-#out_test = scaler.inverse_transform(out_test.detach().numpy())
-#pred = scaler.inverse_transform(pred.detach().numpy())
+# Turn them into np arrays for analysis.
+out_test, pred = out_test.detach().numpy(), pred.detach().numpy()
+
+# Make them the right shape.
+pred = pred.squeeze()
+out_test = out_test.squeeze()
+
+print('MAPE:', mean_absolute_percentage_error(out_test, pred))
+print('R2:', round(r2_score(out_test, pred), 2))
+  
+# Plotting this many datapoints is excessive and costly. Reduce it to 1%.
+length = len(pred)
+idxs = np.arange(0, length, 100)
+pred = pred[idxs]
+out_test = out_test[idxs]
+del(idxs)
 
 # Show a plot of results.
-plt.scatter(out_test, pred)
-plt.title('jNO2 on 15/1/2017')
+plt.scatter(out_test, pred, alpha=0.1)
+plt.title('jNO2 on 1/6/2017')
 plt.xlabel('targets from UKCA')
 plt.ylabel('predictions by NN')
 plt.show()
