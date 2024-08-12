@@ -48,15 +48,31 @@ for target_idx in [HCHOm, NO2, O3, H2O2]:
   scaler = StandardScaler()
   in_train = scaler.fit_transform(in_train)
   in_test = scaler.fit_transform(in_test)
+
+  # Find suitable size of Lasso regularisation const.
+  avg = np.mean(out_train)
+  e = np.floor(np.log10(avg)) - 1
+  reg = 10**e
   
   # Train lasso regression.
-  model = linear_model.Lasso(0.01)
+  model = linear_model.Lasso(reg)
   #model = linear_model.LinearRegression()
   print(model)
   model.fit(in_train, out_train)
   
   # Test.
   pred, mse, mape, r2 = fns.test(model, in_test, out_test)
-  print('R2:', r2)
-  print('MSE:', mse)
   
+  # Make them the right shape.
+  pred = pred.squeeze()
+  out_test = out_test.squeeze()
+  
+  # Plotting this many datapoints is excessive and costly. Reduce it to 1%.
+  length = len(pred)
+  idxs = np.arange(0, length, 100)
+  pred = pred[idxs]
+  out_test = out_test[idxs]
+  del(idxs)
+  
+  # Plot.
+  fns.show(out_test, pred, mse, r2)
