@@ -12,7 +12,7 @@ Files are located at scratch/st838/netscratch.
 
 import matplotlib.pyplot as plt
 from sklearn import linear_model
-from sklearn.metrics import mean_absolute_error, r2_score
+from sklearn.metrics import mean_squared_error, mean_absolute_percentage_error, r2_score
   
 # ML functions.  
   
@@ -27,18 +27,36 @@ def test(model, in_test, out_test):
   # Try it out.
   out_pred = model.predict(in_test)
   # See how well it did.
-  err = mean_absolute_error(out_test, out_pred)
-  #err = round(err, 2)
-  r2 = r2_score(out_test, out_pred)
-  r2 = round(r2, 2)
-  return(out_pred, err, r2)  
+  mse = mean_squared_error(out_test, out_pred)
+  mape = mean_absolute_percentage_error(out_test, out_pred)
+  r2 = round(r2_score(out_test, out_pred), 3)
+  return(out_pred, mse, mape, r2)  
   
 # Results functions.  
   
-def show(out_test, out_pred, mae, r2):
-  print(f'Mean squared error = {mae}')
+def show(out_test, out_pred, mse, r2):
+  r2 = round(r2, 2)
+  print(f'MSE = {mse}')
   print(f'Coefficient of determination = {r2}')
-  plt.scatter(out_test, out_pred)
-  plt.xlabel('actual')
-  plt.ylabel('predicted')
+  #plt.figure(figsize=(10, 5))
+  plt.scatter(out_test, out_pred, alpha=0.01)
+  
+  # Force axes to be identical.
+  plt.axis('square')
+  xticks, xlabels = plt.xticks()
+  yticks, ylabels = plt.yticks()
+  plt.axis('auto')
+  if len(yticks) > len(xticks):
+    tix = yticks
+    lab = ylabels
+  else:
+    tix = xticks
+    lab = xlabels
+  plt.xticks(ticks=tix, labels=lab)
+  plt.yticks(ticks=tix, labels=lab) 
+  
+  plt.title(f'J rates, R\u00b2={r2}')
+  plt.xlabel('Fast-JX')
+  plt.ylabel('Linear regression')
   plt.show() 
+  plt.close()
