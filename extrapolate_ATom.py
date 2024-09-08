@@ -12,7 +12,25 @@ Files are located at scratch/st838/netscratch.
 #!/usr/bin/env python
 
 import pandas as pd
+import matplotlib.pyplot as plt
 import prediction_fns_pandas as fns
+
+
+def force_axes():
+  # Make plot axes exactly the same.
+  plt.axis('square')
+  xticks, xlabels = plt.xticks()
+  yticks, ylabels = plt.yticks()
+  plt.axis('auto')
+  if len(yticks) > len(xticks):
+    tix = yticks
+    lab = ylabels
+  else:
+    tix = xticks
+    lab = xlabels
+  plt.xticks(ticks=tix, labels=lab)
+  plt.yticks(ticks=tix, labels=lab) 
+
 
 # File paths.
 dir_path = '/scratch/st838/netscratch/'
@@ -66,43 +84,20 @@ for target_name in ['JO3 O2 O1D']:
   plt.scatter(targets, out_pred)
   
   # Force axes to be identical.
-  plt.axis('square')
-  xticks, xlabels = plt.xticks()
-  yticks, ylabels = plt.yticks()
-  plt.axis('auto')
-  if len(yticks) > len(xticks):
-    tix = yticks
-    lab = ylabels
-  else:
-    tix = xticks
-    lab = xlabels
-  plt.xticks(ticks=tix, labels=lab)
-  plt.yticks(ticks=tix, labels=lab) 
+  force_axes()
   
   plt.title(f'{target_name[0].split()[0]} J rates at random UM grid points')
   plt.xlabel('UKCA J rate / s\u207b\u00b9')
   plt.ylabel('Linear regression of UKCA & ATom J rate / s\u207b\u00b9')
   plt.show() 
-  plt.close()
-  
+  plt.close()  
   
   # Show another kind of plot.
   plt.scatter(UKCA_rand_data['SOLAR ZENITH ANGLE'], targets, label=f'UKCA J rate', alpha=0.5)
   plt.scatter(UKCA_rand_data['SOLAR ZENITH ANGLE'], out_pred, label=f'J rate from linear regression of ATom known J rates', alpha=0.5)
   
   # Force axes to be identical.
-  plt.axis('square')
-  xticks, xlabels = plt.xticks()
-  yticks, ylabels = plt.yticks()
-  plt.axis('auto')
-  if len(yticks) > len(xticks):
-    tix = yticks
-    lab = ylabels
-  else:
-    tix = xticks
-    lab = xlabels
-  plt.xticks(ticks=tix, labels=lab)
-  plt.yticks(ticks=tix, labels=lab) 
+  force_axes() 
   
   plt.legend()
   plt.title(f'Predictions of UKCA {target_name[0].split()[0]}')
