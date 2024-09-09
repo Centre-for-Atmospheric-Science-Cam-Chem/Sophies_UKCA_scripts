@@ -3,6 +3,7 @@ Name: Sophie Turner.
 Date: 6/9/2024.
 Contact: st838@cam.ac.uk
 Compile data, not on ATom flight path, from daily UM .pp file and put them in daily csv file.
+Takes a long time to save.
 For use on Cambridge chemistry department's atmospheric servers. 
 Files are located at scratch/st838/netscratch.
 '''
@@ -31,7 +32,7 @@ col_names = ['TIME', 'ALTITUDE m', 'LATITUDE', 'LONGITUDE', 'CLOUD %', 'PRESSURE
 	     'JNO3 NO O2', 'JHOBR OH BR', 'JH2O2 OH OH', 'JO3 O2 O1D']
 
 # How many time & space data points we want.
-n = 100
+n = 1000
 
 # Pick some random points in space.
 times = np.random.randint(0, 24, n)
@@ -44,6 +45,7 @@ rows = []
 
 # For every n point...
 for i in range(n):
+  print(f'Making point {i+1} of {n}.')
   # Make a list to hold this row.
   row = []
   # Get dimensions.
@@ -58,13 +60,14 @@ for i in range(n):
   # Convert UKCA longitude from 360 to +-180 format.
   if lon > 180:
     lon -= 360
-  
+  # Start the point data row with the dimensions.
   for dim in [time, alt, lat, lon]:
     row.append(dim)
-  # For every field...
+    
+  # For every field at this point...
   for j in range(len(field_names)):
     field_name = field_names[j]
-    col_name = col_names[j]
+    col_name = col_names[j+4]
     # Get field point data.
     field = day.select(field_name)[0]
     if len(field.shape) > 3:
@@ -77,7 +80,8 @@ for i in range(n):
       point *= 0.01 # Pascals to hPa.
     # Convert solar zenith angle from cos radians to degrees.
     elif col_name == 'SOLAR ZENITH ANGLE': 
-      point = np.arccos(point) * (180.0 / pi)
+      point = np.arccos(point) * (180.0 / pi)   
+    point = np.float32(point)
     row.append(point)
   rows.append(row)
 
@@ -90,4 +94,5 @@ print()
 
 # Save the data.
 out_path = f'{paths.UKCA_dir}/random_points.csv'
+print(f'Saving new dataset at {out_path}.')
 new_data.to_csv(out_path)

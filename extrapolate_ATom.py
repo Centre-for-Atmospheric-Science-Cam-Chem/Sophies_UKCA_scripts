@@ -16,22 +16,6 @@ import matplotlib.pyplot as plt
 import prediction_fns_pandas as fns
 
 
-def force_axes():
-  # Make plot axes exactly the same.
-  plt.axis('square')
-  xticks, xlabels = plt.xticks()
-  yticks, ylabels = plt.yticks()
-  plt.axis('auto')
-  if len(yticks) > len(xticks):
-    tix = yticks
-    lab = ylabels
-  else:
-    tix = xticks
-    lab = xlabels
-  plt.xticks(ticks=tix, labels=lab)
-  plt.yticks(ticks=tix, labels=lab) 
-
-
 # File paths.
 dir_path = '/scratch/st838/netscratch/'
 ATom_file = dir_path + 'ATom_MER10_Dataset/ATom_hourly_all.csv'
@@ -60,7 +44,7 @@ J_all = ['JO3 O2 O1D', 'JNO2 NO O3P', 'JH2O2 OH OH', 'JNO3 NO O2', 'JCH2O H HCO'
 	 
 input_name = phys_correct
 
-for target_name in ['JO3 O2 O1D']:
+for target_name in J_all:
   target_name = [target_name]
   print('\nTarget:', target_name)
 
@@ -84,9 +68,9 @@ for target_name in ['JO3 O2 O1D']:
   plt.scatter(targets, out_pred)
   
   # Force axes to be identical.
-  force_axes()
+  fns.force_axes()
   
-  plt.title(f'{target_name[0].split()[0]} J rates at random UM grid points')
+  plt.title(f'{target_name[0].split()[0]} at random UM grid points')
   plt.xlabel('UKCA J rate / s\u207b\u00b9')
   plt.ylabel('Linear regression of UKCA & ATom J rate / s\u207b\u00b9')
   plt.show() 
@@ -95,10 +79,6 @@ for target_name in ['JO3 O2 O1D']:
   # Show another kind of plot.
   plt.scatter(UKCA_rand_data['SOLAR ZENITH ANGLE'], targets, label=f'UKCA J rate', alpha=0.5)
   plt.scatter(UKCA_rand_data['SOLAR ZENITH ANGLE'], out_pred, label=f'J rate from linear regression of ATom known J rates', alpha=0.5)
-  
-  # Force axes to be identical.
-  force_axes() 
-  
   plt.legend()
   plt.title(f'Predictions of UKCA {target_name[0].split()[0]}')
   plt.xlabel('Solar zenith angle / deg')
