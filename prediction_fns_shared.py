@@ -83,8 +83,8 @@ def show(out_test, out_pred, mse, r2):
   # Force axes to be identical.
   force_axes()
   #plt.title(f'NO\u2082 J rates, R\u00b2={r2}')
-  plt.title(f'H\u2082O\u2082 J rates, R\u00b2={r2}')
+  plt.title(f'Combination of J rates, R\u00b2={r2}')
   plt.xlabel('J rate from Fast-J / s\u207b\u00b9')
-  plt.ylabel('J rate from 5-tree random forest with UKCA physics / s\u207b\u00b9')
+  plt.ylabel('J rate from random forest with UKCA physics / s\u207b\u00b9')
   plt.show() 
   plt.close()
