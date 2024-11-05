@@ -11,12 +11,18 @@ import sys
 import time
 import psutil
 import numpy as np
+import constants as con
 import prediction_fns_shared as fns
 
 train = fns.train
 test = fns.test
 force_axes = fns.force_axes
 show = fns.show
+col = fns.col
+show_col = fns.show_col
+shrink = fns.shrink
+force_axes = fns.force_axes
+mem = fns.mem
   
 # Metadata functions.
 
@@ -108,13 +114,11 @@ def sum_cloud(data, out_path=None):
     # Check at which altitude clouds stop.
     clear = find_cloud_end(data)
     # Make a new array for cloud col.
-    col = np.zeros(data.shape[1], dtype=np.float32)
-    # Start timing the whole thing.
-    start = time.time()    
+    col = np.zeros(data.shape[1], dtype=np.float32)   
     # For each grid & time point...
     n_points = len(data[0]) 
-    print(f'This will take about {round(((n_points / 10000 * 6.5) + 1349) / 60 / 60)} hours.')      
-    for i in range(n_points):     
+    print(f'This will take a while. At least half an hour. Go for a walk or something.')      
+    for i in range(n_points):   
       # Get the time, altitude, latitude and longitude.
       alt = data[1,i]
       # Ignore any altitudes which are too high for clouds.
@@ -143,19 +147,11 @@ def sum_cloud(data, out_path=None):
       # Add this number to the new feature at this grid box.
       col[i] = cloud
     # Add the new array as a feature in the dataset.
-    data = np.insert(data, 7, col, axis=0)   
-    # See how long the whole thing took.
-    end = time.time()
-    mins = round((end - start) )
-    print(f'The whole cloud column summing took {mins} minutes.')      
+    data = np.insert(data, 7, col, axis=0)       
     # Save the new dataset.
     if out_path is not None:
       print('Saving new dataset.')
-      start = time.time()
       np.save(out_path, data)
-      end = time.time()
-      mins = round((end - start) / 60)
-      print(f'Saving the dataset took {mins} minutes.')
   # Return the new dataset.
   return(data)
   
@@ -196,7 +192,61 @@ def get_name(idx, idx_names):
   
 def split_pressure(data):
   # Split the UKCA dataset into two: one above and one below the Fast-J cutoff, using pressure.
+  # Data: 2D np array of whole UKCA dataset.
   cutoff = 20 # Pascals.
-  bottom = data[:, np.where(data[7] > cutoff)].squeeze()
-  top = data[:, np.where(data[7] < cutoff)].squeeze()
+  # Check if the dataset includes cloud col and choose pressure index accordingly.
+  if len(data) > 85:
+    iP = 8
+  else:
+    iP = 7  
+  bottom = data[:, np.where(data[iP] > cutoff)].squeeze()
+  top = data[:, np.where(data[iP] < cutoff)].squeeze()
   return(bottom, top)
+  
+  
+def sample(data, size=None):
+  # Make a smaller dataset by randomly sampling the data, uniformly.
+  # Choose a big enough size to capture sufficient tropospheric density.
+  # To do: use a better function than random uniform sampling.
+  # data: np array of dataset, 1D or 2D of shape (features, samples).
+  # size: number of data points desired. Leave empty for auto.
+  if data.ndim == 1:
+    length = len(data)
+  else: 
+    length = len(data[0])
+  if size is None:
+    size = round(length / 10) # 10%.
+  i = con.rng.integers(0, length, size, dtype=np.int32)
+  if data.ndim == 1:
+    data = data[i] 
+  else:
+    data = data[:, i] 
+  return(data)
+  
+  
+# ML functions.
+
+def only_small(targets, in_test, out_test):
+  # Only test ML model on smallest 10% of values of J rates (not smallest 10% of data).
+  # Call just before fns.test() to ensure model is trained on all data but only tested on smallest.
+  # targets: array of targets.
+  # in_test: array of test inputs.
+  # out_test: array of test targets.   
+  if out_test.ndim == 1:
+    top = max(targets)
+    bottom = top / 10
+    i_smallest = np.where(out_test <= bottom)
+    in_test = in_test[i_smallest]
+    out_test = out_test[i_smallest]
+  else:
+    # For each target feature...
+    for i in range(len(targets[0])):
+      target = targets[:, i]
+      # Get the index of the smallest 10%
+      top = max(target)
+      bottom = top / 10
+      i_smallest = np.where(out_test[:, i] <= bottom)
+      # Reduce all the data to these indices.
+      in_test = in_test[i_smallest]
+      out_test = out_test[i_smallest]  
+  return(in_test, out_test)
