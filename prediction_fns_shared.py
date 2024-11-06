@@ -127,8 +127,8 @@ def show(out_test, out_pred, maxe, mse, mape, smape, r2):
   plt.ylabel('J rate from random forest / s\u207b\u00b9')
   plt.show() 
   plt.close()
-  
-  
+   
+   
 def col(data, lat, lon, hour, ij):
   # Show a column of J rate by altitude. 
   # data: 2d np array dataset e.g. full UKCA data or ML targets.
@@ -146,48 +146,102 @@ def col(data, lat, lon, hour, ij):
   j = data[ij]
   alts = data[1]
   alts = alts * 85
-  return(j, alts)
+  return(j, alts) 
   
   
-def show_col(data1, all_time=True, data2=None):
-  # Show a column of target and predicted J rate by altitude. 
-  # data1: 2d np array dataset e.g. full data or targets.
-  # data2: optional 2d np array dataset for comparisons e.g. predictions.
+def show_col_orig(data, ij=78, name='O3', all_time=True):
+  # Show a column of J rate by altitude for full UKCA datasets before ML. 
+  # data: 2d np array of full dataset.
+  # ij: index of J rate to look at. 78=O3 in full dataset.
+  # name: name of J rate.
   # all_time: whether to include all time steps (True) or plot a line of one time point (False).
   # Pick a lat-lon point and a time.
   # Cambridge at midday.
   lat, lon, hour = 51.875, 0.9375, 12
-  # The north pole at midday.
-  #lat, lon, hour = 89.375, 0.9375, 12
-  # The south pole at midday.
-  #lat, lon, hour = -89.375, 0.9375, 12  
-  # Gulf of Guinea at midday.
-  #lat, lon, hour = 0.625, 0.9375, 12
-  # Pick a J rate.
-  o3 = 78
+  #lat, lon, hour = 89.375, 0.9375, 12 # The north pole at midday.
+  #lat, lon, hour = -89.375, 0.9375, 12 # The south pole at midday. 
+  #lat, lon, hour = 0.625, 0.9375, 12 # Gulf of Guinea at midday.
+  # Choose whether to specify the time point.
+  if not all_time:
+    # Find the first occurance of this time so that we only select one day.
+    data = data[:, np.where(data[0] == hour)].squeeze()
+    dt0 = np.unique(data[4])[0]
+    data = data[:, np.where(data[4] == dt0)].squeeze()
+  # Fetch this grid col's data.
+  data = data[:, np.where((data[2] == lat) & (data[3] == lon))].squeeze() 
+  # Pick out the J rate and altitude.
+  j = data[ij]
+  alts = data[1]
+  alts = alts * 85
+  # Plot the J rate by altitude in that column.
+  if all_time:
+    plt.scatter(j, alts, label=f'J{name} from UKCA', alpha=0.2)
+    plt.title('UKCA column ozone J rates over Cambridge in 2015')
+  else:
+    plt.plot(j, alts, label=f'J{name} from UKCA')
+    plt.title('UKCA column ozone J rates over Cambridge at midday on 15/1/2015')
+  plt.xlabel('O3 -> O2 + O(1D) J rate')
+  plt.ylabel('Altitude / km')
+  plt.show()
+  plt.close()
+ 
+ 
+def col(data, coords, lat, lon, hour, ij):
+  # Show a column of J rate by altitude to compare targets and predictions. 
+  # data: 2d np array dataset e.g. full UKCA data or ML targets.
+  # lat, lon: latitude and longitude of chosen column.
+  # hour: hour of day of chosen sample or None if plotting all time points.
+  # ij: index of J rate to look at.
+  # Find the first occurance of this time so that we only select one day.
+  # Stick the coords on for easier processing.
+  data = np.append(coords, data, axis=1)
+  if hour is not None:
+    data = data[np.where(data[:, 0] == hour)].squeeze()
+    dt0 = np.unique(data[:, 4])[0]
+    data = data[np.where(data[:, 4] == dt0)].squeeze()
+  # Fetch this grid col's data.
+  data = data[np.where((data[:, 2] == lat) & (data[:, 3] == lon))].squeeze() 
+  # Pick out the J rate and altitude.
+  ij += 5 # Account for added coords.
+  j = data[:, ij]
+  alts = data[:, 1]
+  alts = alts * 85 # Convert proportion to km.
+  return(j, alts)
+  
+  
+def show_col(out_test, out_pred, coords, ij, name='O3', all_time=True):
+  # Show a column of J rate by altitude. 
+  # out_test: 2d np array dataset of targets.
+  # out_pred: 2d np array dataset of predictions.
+  # coords: 2d np array of time & space co-ordinates for datasets.
+  # ij: index of J rate to look at.
+  # name: name of J rate.
+  # all_time: whether to include all time steps (True) or plot a line of one time point (False).
+  # Pick a lat-lon point and a time.
+  lat, lon, hour = 51.875, 0.9375, 12 # Cambridge at midday.
+  #lat, lon, hour = 89.375, 0.9375, 12 # The north pole at midday.
+  #lat, lon, hour = -89.375, 0.9375, 12 # The south pole at midday. 
+  #lat, lon, hour = 0.625, 0.9375, 12 # Gulf of Guinea at midday.
+  # Swap the dimensions to make them compatible with sklearn.
+  coords = np.swapaxes(coords, 0, 1)
   # Choose whether to specify the time point.
   if all_time:
     hour = None
-  o31, alts1 = col(data1, lat, lon, hour, o3)
-  
+  j1, alts = col(out_test, coords, lat, lon, hour, ij)
+  j2, alts = col(out_pred, coords, lat, lon, hour, ij)  
   # Plot the J rate by altitude in that column.
   if all_time:
-    plt.scatter(o31, alts1, label='JO3 from UKCA', alpha=0.2)
+    plt.scatter(j1, alts, label=f'J{name} from UKCA', marker='|', s=50, alpha=0.5)
+    plt.scatter(j2, alts, label=f'J{name} from random forest', marker='_', s=50, alpha=0.5)
   else:
-    plt.plot(o31, alts1, label='JO3 from UKCA')
-  
-  if data2 is not None:
-    o32, alts2 = col(data2, lat, lon, hour, o3)
-    if all_time:
-      plt.scatter(o32, alts2, label='JO3 from random forest', alpha=0.2)
-    else:  
-      plt.plot(o32, alts2, label='JO3 from random forest')
-    plt.legend()
-    
+    plt.plot(j1, alts, label=f'J{name} from UKCA')
+    plt.plot(j2, alts, label=f'J{name} from random forest') 
+  plt.legend()    
   plt.title('UKCA column ozone J rates over Cambridge in 2015')
   plt.xlabel('O3 -> O2 + O(1D) J rate')
   plt.ylabel('Altitude / km')
   plt.show()
+  plt.close() 
  
 
 # Ancilliary functions.

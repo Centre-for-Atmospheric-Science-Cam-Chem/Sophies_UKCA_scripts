@@ -18,6 +18,7 @@ train = fns.train
 test = fns.test
 force_axes = fns.force_axes
 show = fns.show
+show_col_orig = fns.show_col_orig
 col = fns.col
 show_col = fns.show_col
 shrink = fns.shrink
@@ -223,6 +224,36 @@ def sample(data, size=None):
     data = data[:, i] 
   return(data)
   
+  
+def tts(data, i_inputs, i_targets, test_size=0.1):
+  # Train test split function which returns indices for coords.
+  # data: 2d np array of full dataset containing all inputs and targets.
+  # i_inputs: array of indices of input fields.
+  # i_targets: array of indices of target fields.
+  # test_size: float out of 1, proportion of data to use for test set. 
+  # Find length of data and size of test set.
+  len_all = len(data[0])
+  len_test = round(len_all * test_size)
+  i_all = np.arange(0, len_all, dtype=int)
+  # Generate random, unique indices for selecting test set.
+  i_test = con.rng.choice(i_all, len_test, replace=False) 
+  i_test = np.sort(i_test)
+  test_data = data[:, i_test]
+  # Remove these from the training set.
+  train_data = np.delete(data, i_test, axis=1)  
+  # Get inputs and targets.
+  in_train = train_data[i_inputs] 
+  in_test = test_data[i_inputs]
+  out_train = train_data[i_targets]
+  out_test = test_data[i_targets]
+  # Swap the dimensions to make them compatible with sklearn.
+  in_train = np.swapaxes(in_train, 0, 1)
+  in_test = np.swapaxes(in_test, 0, 1)
+  out_train = np.swapaxes(out_train, 0, 1)
+  out_test = np.swapaxes(out_test, 0, 1)
+  # Return train and test datasets and their indices from the full dataset.
+  return(in_train, in_test, out_train, out_test, i_test)
+ 
   
 # ML functions.
 
