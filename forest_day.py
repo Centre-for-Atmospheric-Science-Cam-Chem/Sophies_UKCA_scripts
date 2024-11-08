@@ -13,8 +13,8 @@ import prediction_fns_numpy as fns
 from sklearn.ensemble import RandomForestRegressor
 
 # File paths.
-train_file = f'{paths.npy}/low_res_yr_5k.npy' 
-test_file = f'{paths.npy}/20150715.npy'
+train_file = f'{paths.npy}/low_res_yr_500.npy' 
+test_file = f'{paths.npy}/20150301.npy'
 
 print()
 start = time.time()
@@ -42,7 +42,7 @@ train_data = np.delete(train_data, i_day, axis=1)
 
 # Choose input and target data.
 inputs = con.phys_all
-targets = con.J_core
+targets = con.J_all
 in_train = train_data[inputs]
 out_train = train_data[targets]
 in_test = test_data[inputs]
@@ -51,8 +51,9 @@ out_test = test_data[targets]
 # Swap dimensions to make them compatible with sklearn.
 in_train = np.swapaxes(in_train, 0, 1)
 in_test = np.swapaxes(in_test, 0, 1)
-out_train = np.swapaxes(out_train, 0, 1)
-out_test = np.swapaxes(out_test, 0, 1)
+if out_test.ndim > 1:
+  out_train = np.swapaxes(out_train, 0, 1)
+  out_test = np.swapaxes(out_test, 0, 1)
 
 # Make the regression model.
 model = RandomForestRegressor(n_estimators=5, n_jobs=5, max_features=0.3, max_samples=0.2, max_leaf_nodes=100000, random_state=con.seed)
@@ -78,4 +79,4 @@ fns.show(out_test, out_pred, maxe, mse, mape, smape, r2)
 # Get co-ordinates of test set.
 coords = test_data[0:5]
 # View column.
-fns.show_col(out_test, out_pred, coords, 19, 'O3', False)
+fns.show_col(out_test, out_pred, coords, 1, 'NO2', False)
