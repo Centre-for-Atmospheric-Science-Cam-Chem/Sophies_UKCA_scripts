@@ -254,34 +254,48 @@ def tts(data, i_inputs, i_targets, test_size=0.1):
  
   
 # ML functions.
-
-def only_small(targets, in_test, out_test):
-  # Only test ML model on smallest 10% of values of J rates (not smallest 10% of data).
-  # Call just before fns.test() to ensure model is trained on all data but only tested on smallest.
-  # targets: array of targets.
-  # in_test: array of test inputs.
-  # out_test: array of test targets.   
-  if out_test.ndim == 1:
-    top = max(targets)
-    bottom = top / 10
-    i_smallest = np.where(out_test <= bottom)
-    in_test = in_test[i_smallest]
-    out_test = out_test[i_smallest]
+    
+def only_range(inputs, targets, targets_all, bottom=0, top=1, min_samples=10):
+  # Only use a certain range of values of J rates.
+  # Call just before fns.test() and pass only test sets if you want model trained on all data but only tested on smallest.
+  # inputs: array of inputs (in_test for test-only).
+  # targets: array of targets (out_test for test-only).  
+  # targets_all: array of all targets in data, used for the test-only option. If using all data, just pass the targets for both target params.
+  # bottom: chosen proportion of data for lowest value, 0 to 1, inclusive.
+  # top: chosen proportion of data for highest value, 0 to 1, inclusive.
+  # min_samples: minimum number of samples a J rate needs for it to be included. 
+  assert bottom < top
+  if targets.ndim == 1:
+    top_all = max(targets_all)
+    bottom_new = top_all * bottom
+    top_new = top_all * top
+    i_range = np.where((targets >= bottom_new) & (targets <= top_new))
+    # Reduce the data to these indices.
+    inputs = inputs[i_range]
+    targets = targets[i_range]
   else:
+    deletes = np.array([], dtype=int)
     # For each target feature...
-    for i in range(len(targets[0])):
-      target = targets[:, i]
-      # Get the index of the smallest 10%
-      top = max(target)
-      bottom = top / 10
-      i_smallest = np.where(out_test[:, i] <= bottom)
-      # Reduce all the data to these indices.
-      in_test = in_test[i_smallest]
-      out_test = out_test[i_smallest]  
-  return(in_test, out_test)
+    for i in range(len(targets_all[0])):
+      target = targets_all[:, i]
+      # Get the index.
+      top_all = max(target)
+      bottom_new = top_all * bottom
+      top_new = top_all * top
+      i_range = np.where((targets[:, i] >= bottom_new) & (targets[:, i] <= top_new)) 
+      # Sometimes there are no data in this region for some J rates.
+      if len(i_range[0]) < min_samples:
+        deletes = np.append(deletes, i)
+      else:
+        # Reduce the data to these indices.
+        inputs = inputs[i_range]
+        targets = targets[i_range]
+    # Remove these J rates from the selection.
+    targets = np.delete(targets, deletes, axis=1)
+  return(inputs, targets, deletes)  
   
   
-  # Results functions.
+# Results functions.
   
 def show_col_orig(data, ij=78, name='O3', all_time=True):
   # Show a column of J rate by altitude for full UKCA datasets before ML. 
