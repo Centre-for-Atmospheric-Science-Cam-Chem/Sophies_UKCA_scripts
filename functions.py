@@ -11,10 +11,13 @@ Files are located at scratch/st838/netscratch.
 #!/usr/bin/env python
 
 import math
+import glob
 import psutil
 import warnings
 import numpy as np
+from PIL import Image
 import constants as con
+import file_paths as paths
 import matplotlib.pyplot as plt
 from sklearn import linear_model
 from sklearn.metrics import max_error, mean_squared_error, mean_absolute_percentage_error, r2_score 
@@ -355,7 +358,26 @@ def only_range(inputs, targets, targets_all, bottom=0, top=1, keep=True, min_sam
   return(inputs, targets, deletes)   
   
   
-# Results functions.  
+# Results & postprocessing functions.  
+
+def load_model_data(mod_name='rf'):
+  # Loads and returns input, target and prediction sample data from a trained ML model.
+  # mod_name: string, name of ML model and its folder.
+  # File paths.
+  mod_path = f'{paths.mod}/{mod_name}/{mod_name}'
+  inputs_path = f'{mod_path}_test_inputs.npy' 
+  targets_path = f'{mod_path}_test_targets.npy'
+  preds_path = f'{mod_path}_pred.npy'
+  # Load data.
+  print('\nLoading data.')
+  inputs = np.load(inputs_path)
+  targets = np.load(targets_path)
+  preds = np.load(preds_path)
+  print('Inputs:', inputs.shape)
+  print('Targets:', targets.shape)
+  print('Preds:', preds.shape)
+  return(inputs, targets, preds)
+
 
 def shrink(out_test, out_pred):
   # Don't plot an unnecessary number of data points i.e. >10000.  
@@ -537,7 +559,18 @@ def show_col(out_test, out_pred, coords, ij, name='O3', all_time=True):
   plt.xlabel('% difference')
   plt.ylabel('Altitude / km')
   plt.show()
-  plt.close()   
+  plt.close() 
+    
+  
+def make_gif(dir_path, ext='png', gif_name='GIF'):
+  # Makes a GIF file from a directory containing the desired images, and saves it in that directory. Uses all images in the dir with the specified extension.
+  # dir_path: string, file path to the desired directory.
+  # ext: optional string, file type extension of desired images.
+  # gif_name: optional string, file name of resultant GIF. 
+  img_paths = sorted(glob.glob(f'{dir_path}/*.{ext}'))
+  frames = [Image.open(image) for image in img_paths]
+  frame1 = frames[0]
+  frame1.save(f'{dir_path}/{gif_name}.gif', format='GIF', append_images=frames, save_all=True, duration=500, loop=0) # Half a second per image.   
  
 
 # Ancilliary functions.

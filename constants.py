@@ -7,6 +7,7 @@ Files are located at scratch/st838/netscratch.
 '''
 
 import numpy as np
+from matplotlib.colors import LinearSegmentedColormap
 
 # Annoying subscripts & superscripts for displaying units etc. on plots.
 sub2 = '\u2082'
@@ -86,3 +87,10 @@ GB = 1000000000
 seed = 6
 # For consistent numpy random numbers.
 rng = np.random.default_rng(seed)
+
+# Colourmap used for % differences with green for zero.
+cmap_diff = LinearSegmentedColormap.from_list("Cdiff", ["darkblue", "blue", "deepskyblue", "cyan", "lawngreen", "yellow", "orange", "red", "firebrick"]) 
+# Colourmap used for R2 scores (ideally from 0 to 1).
+cmap_r2 = LinearSegmentedColormap.from_list("Cr2", ["black", "black", "maroon", "darkred", "firebrick", "red", "crimson", "deeppink", "hotpink", "violet", "fuchsia", "orchid", "mediumorchid", "darkorchid", \
+                                           "blueviolet", "mediumslateblue", "blue", "royalblue", "cornflowerblue", "dodgerblue", "deepskyblue", "darkturquoise", "turquoise", "cyan", "aquamarine", \
+					   "mediumspringgreen", "lime", "limegreen", "forestgreen"])

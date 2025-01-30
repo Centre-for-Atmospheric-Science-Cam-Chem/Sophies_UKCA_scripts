@@ -6,36 +6,28 @@ Plot column performance on a map.
 '''
 import os
 import numpy as np
+import functions as fns
 import constants as con
 import cartopy.crs as ccrs
 import file_paths as paths
 import matplotlib.pyplot as plt
 from sklearn.metrics import r2_score
-from matplotlib.colors import ListedColormap, LinearSegmentedColormap, BoundaryNorm
 
-# File paths.
-mod_name = 'rf'
-mod_path = f'{paths.mod}/{mod_name}/{mod_name}'
-inputs_path = f'{mod_path}_test_inputs.npy' 
-targets_path = f'{mod_path}_test_targets.npy'
-preds_path = f'{mod_path}_pred.npy'
-#grid_path = f'{paths.npy}/cols_map_NO3_alltimes.npy'
-grid_path = f'{paths.npy}/cols_map_allJs_alltimes.npy'
-grid_path = 'test'
+# Choose which J rate to look at.
+j_idx, j_name = None, 'all' # Average over all J rates in J core.
+#j_idx, j_name = 11, 'NO3'
+# Choose whether to show R2 or % diff on map ('r2' or 'diff').
+show = 'r2'
 
-# Load data.
-print('\nLoading data.')
-inputs = np.load(inputs_path)
-targets = np.load(targets_path)
-preds = np.load(preds_path)
-print('Inputs:', inputs.shape)
-print('Targets:', targets.shape)
-print('Preds:', preds.shape)
+# Load trained random forest data.
+inputs, targets, preds = fns.load_model_data('rf')
 
+# Fetch or make the data for the map.
+grid_path = f'{paths.npy}/cols_map_{j_name}_alltimes.npy'
 if os.path.exists(grid_path):
   grid = np.load(grid_path)
 else:
-  # Takes about 200 minutes.
+  # Takes up to 200 minutes.
   # Create an array of column errors.
   print('Creating array of column errors.')
   # Get the unique lat & lon values.
@@ -57,16 +49,14 @@ else:
       lon = lons[j]
       # Get the indices of all the target & pred J rates in that column.
       idx = np.where((inputs[:, 2] == lat) & (inputs[:, 3] == lon))
+      idx = idx[0]
       # Get all the target J rates in that column.
-      target = targets[idx] # J core.
-      #target = targets[idx, 11].squeeze() # NO3.
+      target = targets[idx, j_idx].squeeze() 
       # There might not be a data point at this location, or only 1. Skip if so.
       if len(target) < 2:
-        #print('Skipping a missing data point')
         continue
       # Get the predicted J rates.
-      pred = preds[idx] # J core.
-      #pred = preds[idx, 11].squeeze() # NO3.
+      pred = preds[idx, j_idx].squeeze() 
       # Get the R2 score and % diff.
       r2 = r2_score(target, pred)
       diff = ((np.mean(pred) - np.mean(target)) / np.mean(target)) * 100
@@ -79,30 +69,24 @@ else:
     
 print(grid.shape)
 
-# Set negative R2s to zero to simplify the plot.
-grid[grid[:, 2] < 0, 2] = 0
-
-# Whether to show R2 or % diff on map.
-show = 'r2'
-
 # Colourmaps designed specifically for these data.
 if show == 'r2':
+  # Set negative R2s to zero to simplify the plot.
+  grid[grid[:, 2] < 0, 2] = 0
   # Create a colourmap to represent the data better than the default ones.
-  cmap = LinearSegmentedColormap.from_list("Cr2", ["black", "black", "maroon", "darkred", "firebrick", "red", "crimson", "deeppink", "hotpink", "violet", "fuchsia", "orchid", "mediumorchid", "darkorchid", \
-                                           "blueviolet", "mediumslateblue", "blue", "royalblue", "cornflowerblue", "dodgerblue", "deepskyblue", "darkturquoise", "turquoise", "cyan", "aquamarine", \
-					   "mediumspringgreen", "lime", "limegreen", "forestgreen"])
+  cmap = con.cmap_r2  
   vmin, vmax = 0, 1
   text = f'R{con.sup2} score of J rate predictions'
   c = grid[:, 2]
 elif show == 'diff':
-  cmap = LinearSegmentedColormap.from_list("Cdiff", ["darkblue", "blue", "deepskyblue", "cyan", "lawngreen", "yellow", "orange", "red", "firebrick"]) 
+  cmap = con.cmap_diff
   vmin, vmax = -10, 10
   text = '% difference of J rate predictions to targets'
   c = grid[:, 3]
 
 # Plot the metrics by lat & lon coords on the cartopy mollweide map.
 ax = plt.axes(projection=ccrs.Mollweide())
-plt.title(f'Column photolysis rates predicted by random forest') # NO{con.sub3}
+plt.title(f'Column {j_name} photolysis rates predicted by random forest')
 plt.scatter(grid[:, 1], grid[:, 0], c=c, cmap=cmap, vmin=vmin, vmax=vmax, transform=ccrs.PlateCarree(), s=3)
 plt.colorbar(shrink=0.5, label=f'{text} in column', orientation='horizontal')
 ax.coastlines()

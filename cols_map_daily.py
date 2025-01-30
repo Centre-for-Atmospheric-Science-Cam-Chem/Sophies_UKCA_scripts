@@ -7,31 +7,28 @@ Plot column performance on a map.
 import os
 import warnings
 import numpy as np
+import functions as fns
 import constants as con
 import cartopy.crs as ccrs
 import file_paths as paths
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
-from matplotlib.colors import LinearSegmentedColormap
+
+# Pick which J rate to look at.
+j_idx, j_name = None, 'all' # Average over all J rates in J core.
+#j_idx, j_name = 11, 'NO3'
 
 # No need to show the warning beacuse it's been caught.
 warnings.simplefilter('ignore')
 
-# File paths.
-mod_name = 'rf'
-mod_path = f'{paths.mod}/{mod_name}/{mod_name}'
-inputs_path = f'{mod_path}_test_inputs.npy' 
-targets_path = f'{mod_path}_test_targets.npy'
-preds_path = f'{mod_path}_pred.npy'
+# Get ready to save figs.
+dir_path = f'{paths.analysis}/col_maps_year_{j_name}'
+if not os.path.exists(dir_path):
+  print(f'Making a new directory: {dir_path}')
+  os.mkdir(dir_path)
 
-# Load data.
-print('\nLoading data.')
-inputs = np.load(inputs_path)
-targets = np.load(targets_path)
-preds = np.load(preds_path)
-print('Inputs:', inputs.shape)
-print('Targets:', targets.shape)
-print('Preds:', preds.shape)
+# Load trained random forest data.
+inputs, targets, preds = fns.load_model_data('rf')
  
 # Select daily timesteps for the year.
 times = inputs[:, 4]
@@ -71,15 +68,14 @@ for t in range(len(times)):
       lon = lons[j]
       # Get the indices of all the target & pred J rates in that column.
       idx = np.where((inputt[:, 2] == lat) & (inputt[:, 3] == lon))
+      idx = idx[0]
       # Get all the target J rates in that column.
-      #target = targett[idx] # J core.
-      target = targets[idx, 11] # NO3.
+      target = targett[idx, j_idx] 
       # There might not be a data point at this location. Skip if so.
       if len(target) < 1:
         continue
       # Get the predicted J rates.
-      #pred = predt[idx] # J core.      
-      pred = preds[idx, 11] # NO3.
+      pred = predt[idx, j_idx] 
       # Get the % diff.
       diff = np.nan_to_num(((np.mean(pred) - np.mean(target)) / np.mean(target)) * 100, nan=np.nan, posinf=0, neginf=0)
       # Save them in a 2d list for every lat & lon.
@@ -87,7 +83,7 @@ for t in range(len(times)):
 
   grid = np.array(grid)   
 
-  cmap = LinearSegmentedColormap.from_list("Cdiff", ["darkblue", "blue", "deepskyblue", "cyan", "lawngreen", "yellow", "orange", "red", "firebrick"]) 
+  cmap = con.cmap_diff  
   vmin, vmax = -20, 20
   # Clip diffs to bounds to simplify the plot.
   grid[grid[:, 2] < vmin, 2] = vmin
@@ -101,7 +97,7 @@ for t in range(len(times)):
   plt.figure(figsize=(10,6))
   # Plot the metrics by lat & lon coords on the cartopy mollweide map.
   ax = plt.axes(projection=ccrs.Mollweide())
-  plt.title(f'Column NO{con.sub3} photolysis rates predicted by random forest\n{date.strftime("%d/%m/%y")}')
+  plt.title(f'Column {j_name} photolysis rates predicted by random forest\n{date.strftime("%d/%m/%y")}')
   plt.scatter(x, y, c=c, cmap=cmap, vmin=vmin, vmax=vmax, transform=ccrs.PlateCarree(), marker='s', s=2)
   cbar = plt.colorbar(shrink=0.7, label=f'{text} in column', orientation='horizontal')
   cbar.ax.set_xticks([-20, -15, -10, -5, 0, 5, 10, 15, 20])
@@ -110,8 +106,16 @@ for t in range(len(times)):
   ax.coastlines()
   #plt.show()
 
+  # Prepend zeros to file name digits so that the GIF goes in the right order.
+  if time < 10:
+    fig_name = f'00{time}'
+  elif time < 100:
+    fig_name = f'0{time}'
+  else:
+    fig_name = time
+
   # Save the fig.
-  map_path = f'{paths.analysis}/col_maps_year_NO3/{time}.png'
+  map_path = f'{paths.analysis}/col_maps_year_allJs/{fig_name}.png'
   plt.savefig(map_path)
   plt.close()
 
