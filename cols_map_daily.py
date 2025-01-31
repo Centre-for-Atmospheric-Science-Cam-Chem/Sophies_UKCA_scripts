@@ -15,16 +15,18 @@ import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 
 # Pick which J rate to look at.
+j_idx = 11
+j_name = con.J_names_short[j_idx] 
 j_idx, j_name = None, 'all' # Average over all J rates in J core.
-#j_idx, j_name = 11, 'NO3'
 
 # No need to show the warning beacuse it's been caught.
 warnings.simplefilter('ignore')
 
 # Get ready to save figs.
-dir_path = f'{paths.analysis}/col_maps_year_{j_name}'
+dir_name = f'col_maps_year_{j_name}'
+dir_path = f'{paths.analysis}/{dir_name}'
 if not os.path.exists(dir_path):
-  print(f'Making a new directory: {dir_path}')
+  print(f'\nMaking a new directory: {dir_path}')
   os.mkdir(dir_path)
 
 # Load trained random forest data.
@@ -97,7 +99,7 @@ for t in range(len(times)):
   plt.figure(figsize=(10,6))
   # Plot the metrics by lat & lon coords on the cartopy mollweide map.
   ax = plt.axes(projection=ccrs.Mollweide())
-  plt.title(f'Column {j_name} photolysis rates predicted by random forest\n{date.strftime("%d/%m/%y")}')
+  plt.title(f'Columns of {j_name} photolysis rates predicted by random forest\n{date.strftime("%d/%m/%Y")}')
   plt.scatter(x, y, c=c, cmap=cmap, vmin=vmin, vmax=vmax, transform=ccrs.PlateCarree(), marker='s', s=2)
   cbar = plt.colorbar(shrink=0.7, label=f'{text} in column', orientation='horizontal')
   cbar.ax.set_xticks([-20, -15, -10, -5, 0, 5, 10, 15, 20])
@@ -115,9 +117,12 @@ for t in range(len(times)):
     fig_name = time
 
   # Save the fig.
-  map_path = f'{paths.analysis}/col_maps_year_allJs/{fig_name}.png'
+  map_path = f'{dir_path}/{fig_name}.png'
   plt.savefig(map_path)
   plt.close()
 
   # Add time to start date.
   date += timedelta(days=1)
+  
+# Turn the pictures into a GIF.
+fns.make_gif(dir_path, gif_name=dir_name)

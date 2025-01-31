@@ -15,16 +15,28 @@ import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 
 # Pick which J rate to look at.
-j_idx, j_name = None, 'all' # Average over all J rates in J core.
-#j_idx, j_name = 11, 'NO3'
+j_idx = 20
+j_name = con.J_names[j_idx] 
+j_name_s = con.J_names_short[j_idx] 
+#j_idx, j_name, j_name_s = None, 'all', 'all' # Average over all J rates in J core.
+
+# Pick a time to look at.
+# First and last hours of 3 days.
+spring = [1847, 1919, 'spring'] # A day each side of the equinox.
+summer = [4079, 4151, 'summer'] # A day each side of the solstice.
+autumn = [6335, 6407, 'autumn'] # A day each side of the equinox.
+winter = [8495, 8567, 'winter'] # A day each side of the solstice.
+season = autumn
+start, stop, season = season[0], season[1], season[2]
 
 # No need to show the warning beacuse it's been caught.
 warnings.simplefilter('ignore')
 
 # Get ready to save figs.
-dir_path = f'{paths.analysis}/col_maps_hourly_{j_name}'
+dir_name = f'col_maps_hourly_{j_name_s}'
+dir_path = f'{paths.analysis}/{dir_name}'
 if not os.path.exists(dir_path):
-  print(f'Making a new directory: {dir_path}')
+  print(f'\nMaking a new directory: {dir_path}')
   os.mkdir(dir_path)
 
 # Load trained random forest data.
@@ -33,11 +45,6 @@ inputs, targets, preds = fns.load_model_data('rf')
 # Select daily timesteps for the year.
 times = inputs[:, 4]
 times = np.unique(times)
-
-# Pick a time to look at.
-# 3 days in spring.
-start = 5999
-stop = 6071
 
 # Set start date and time.
 date = datetime(2015, 1, 1, 1)
@@ -101,14 +108,13 @@ for t in range(start, stop):
   plt.figure(figsize=(10,6))
   # Plot the metrics by lat & lon coords on the cartopy mollweide map.
   ax = plt.axes(projection=ccrs.Mollweide())
-  plt.title(f'Column {j_name} photolysis rates predicted by random forest\n{date.strftime("%d/%m/%y %H:%M")}')
+  plt.title(f'Columns of {j_name} photolysis rates predicted by random forest\n{date.strftime("%d/%m/%Y %H:%M")}')
   plt.scatter(x, y, s=7, c=c, cmap=cmap, vmin=vmin, vmax=vmax, transform=ccrs.PlateCarree())
   cbar = plt.colorbar(shrink=0.7, label=f'{text} in column', orientation='horizontal')
   cbar.ax.set_xticks([-20, -15, -10, -5, 0, 5, 10, 15, 20])
   cbar.ax.set_xticklabels(['< -20', '-15', '-10', '-5', '0', '5', '10', '15', '> 20'])
   ax.set_global()
   ax.coastlines()
-  #plt.show()
 
   # Save the fig.
   fig_name = date.strftime('%d%H')
@@ -118,3 +124,6 @@ for t in range(start, stop):
 
   # Add time to start date.
   date += timedelta(hours=1)  
+ 
+# Turn the pictures into a GIF.
+fns.make_gif(dir_path, gif_name=dir_name)
