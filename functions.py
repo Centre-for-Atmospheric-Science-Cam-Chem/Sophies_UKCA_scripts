@@ -50,7 +50,7 @@ def collate(training_data_path, input_files):
   else:
     # Memory usage limit.
     max_mem = 75 # Percentage.
-    days = np.empty((85, 0), dtype=np.float32)
+    days = np.empty((con.n_fields, 0), dtype=np.float32)
     for i in range(len(input_files)):
       print(f'Adding day {i+1} to array.')
       start = time.time()
@@ -82,7 +82,7 @@ def collate(training_data_path, input_files):
 def find_cloud_end(data):
   # Find out at what level there are no more clouds.
   # data: np array of the contents of an entire .npy file of data, of shape (features, samples).     
-  # For each grid & time point...
+  # For each grid & time point...l
   n_points = len(data[0])
   # First altitude value.
   first_alt = data[1,0] 
@@ -98,7 +98,7 @@ def find_cloud_end(data):
     # Indices of all data points at this altitude.  
     layer = np.where(data[1] == alt)  
     # Total cloud in this layer.
-    cloud_in_layer = np.sum(data[6, layer])
+    cloud_in_layer = np.sum(data[con.cloud, layer])
     if cloud_in_layer == 0:
       break
   return(alt)    
@@ -106,51 +106,49 @@ def find_cloud_end(data):
   
 def sum_cloud(data, out_path=None):
   # Sum the cloud in the column above each grid box and include that as a feature in training data.
-  # data: np array of the contents of an entire .npy file of data, of shape (features, samples).  
-  # See if the summed cloud col already exists.
-  if len(data) < 86: 
-    print('Summing cloud columns.')
-    # Check at which altitude clouds stop.
-    clear = find_cloud_end(data)
-    # Make a new array for cloud col.
-    col = np.zeros(data.shape[1], dtype=np.float32)   
-    # For each grid & time point...
-    n_points = len(data[0]) 
-    print(f'This will take a while. At least half an hour. Go for a walk or something.')      
-    for i in range(n_points):   
-      # Get the time, altitude, latitude and longitude.
-      alt = data[1,i]
+  # data: np array of the contents of an entire .npy file of data, of shape (features, samples).   
+  print('Summing cloud columns.')
+  # Check at which altitude clouds stop.
+  clear = find_cloud_end(data)
+  # Make a new array for cloud col.
+  col = np.zeros(data.shape[1], dtype=np.float32)   
+  # For each grid & time point...
+  n_points = len(data[0]) 
+  print(f'This will take a while. At least half an hour. Go for a walk or something.')      
+  for i in range(n_points):   
+    # Get the time, altitude, latitude and longitude.
+    alt = data[con.alt,i]
+    # Ignore any altitudes which are too high for clouds.
+    if alt >= clear:
+      continue
+    lat = data[con.lat,i]
+    lon = data[con.lon,i]
+    dt = data[con.days,i] # date-time
+    cloud = data[con.cloud,i]
+    # Search only grid boxes after this one, not before.
+    # Stride = lats x lons.
+    stride = 144 * 192      
+    for j in range(i, n_points, stride):
+      alt_j = data[con.alt,j]
       # Ignore any altitudes which are too high for clouds.
-      if alt >= clear:
-        continue
-      lat = data[2,i]
-      lon = data[3,i]
-      dt = data[4,i] # date-time
-      cloud = data[6,i]
-      # Search only grid boxes after this one, not before.
-      # Stride = lats x lons.
-      stride = 144 * 192      
-      for j in range(i, n_points, stride):
-        alt_j = data[1,j]
-	# Ignore any altitudes which are too high for clouds.
-        if alt_j >= clear:
-          break
-        lat_j = data[2,j]
-        lon_j = data[3,j]
-        dt_j = data[4,j] # date-time
-	# Get all the grid boxes where time, lat & lon are the same AND alt > this alt.
-        if dt_j == dt and alt_j > alt and lat_j == lat and lon_j == lon:
-          # Sum the cloud of those grid boxes.
-          cloud_j = data[6,j]
-          cloud += cloud_j
-      # Add this number to the new feature at this grid box.
-      col[i] = cloud
-    # Add the new array as a feature in the dataset.
-    data = np.insert(data, 7, col, axis=0)       
-    # Save the new dataset.
-    if out_path is not None:
-      print('Saving new dataset.')
-      np.save(out_path, data)
+      if alt_j >= clear:
+        break
+      lat_j = data[con.lat,j]
+      lon_j = data[con.lon,j]
+      dt_j = data[con.days,j] # date-time
+      # Get all the grid boxes where time, lat & lon are the same AND alt > this alt.
+      if dt_j == dt and alt_j > alt and lat_j == lat and lon_j == lon:
+        # Sum the cloud of those grid boxes.
+        cloud_j = data[con.cloud,j]
+        cloud += cloud_j
+    # Add this number to the new feature at this grid box.
+    col[i] = cloud
+  # Add the new array as a feature in the dataset, in a new column after the current cloud one.
+  data = np.insert(data, con.cloud+1, col, axis=0)       
+  # Save the new dataset.
+  if out_path is not None:
+    print('Saving new dataset.')
+    np.save(out_path, data)
   # Return the new dataset.
   return(data)
   
@@ -194,14 +192,9 @@ def get_name(idx, idx_names):
 def split_pressure(data):
   # Split the UKCA dataset into two: one above and one below the Fast-J cutoff, using pressure.
   # Data: 2D np array of whole UKCA dataset.
-  cutoff = 20 # Pascals.
-  # Check if the dataset includes cloud col and choose pressure index accordingly.
-  if len(data) > 85:
-    iP = 8
-  else:
-    iP = 7  
-  bottom = data[:, np.where(data[iP] > cutoff)].squeeze()
-  top = data[:, np.where(data[iP] < cutoff)].squeeze()
+  cutoff = 20 # Pascals. 
+  bottom = data[:, np.where(data[con.pressure] > cutoff)].squeeze()
+  top = data[:, np.where(data[con.pressure] < cutoff)].squeeze()
   return(bottom, top)
   
   
@@ -365,8 +358,8 @@ def load_model_data(mod_name='rf'):
   # mod_name: string, name of ML model and its folder.
   # File paths.
   mod_path = f'{paths.mod}/{mod_name}/{mod_name}'
-  inputs_path = f'{mod_path}_test_inputs.npy' 
-  targets_path = f'{mod_path}_test_targets.npy'
+  inputs_path = f'{mod_path}_inputs.npy' 
+  targets_path = f'{mod_path}_targets.npy'
   preds_path = f'{mod_path}_pred.npy'
   # Load data.
   print('\nLoading data.')
@@ -468,14 +461,15 @@ def show_col_orig(data, ij=78, name='O3', all_time=True):
   # Choose whether to specify the time point.
   if not all_time:
     # Find the first occurance of this time so that we only select one day.
-    data = data[:, np.where(data[0] == hour)].squeeze()
-    dt0 = np.unique(data[4])[0]
-    data = data[:, np.where(data[4] == dt0)].squeeze()
+    data = data[:, np.where(data[con.hour] == hour)].squeeze()
+    dt0 = np.unique(data[con.days])[0]
+    data = data[:, np.where(data[con.days] == dt0)].squeeze()
   # Fetch this grid col's data.
-  data = data[:, np.where((data[2] == lat) & (data[3] == lon))].squeeze() 
+  data = data[:, np.where((data[con.lat] == lat) & (data[con.lon] == lon))].squeeze() 
   # Pick out the J rate and altitude.
   j = data[ij]
-  alts = data[1]
+  alts = data[con.alt]
+  # Convert to km.
   alts = alts * 85
   # Plot the J rate by altitude in that column.
   if all_time:
@@ -502,15 +496,15 @@ def col(data, coords, lat, lon, hour, ij):
   data = np.append(coords, data, axis=1)
   if hour is not None:
     # Find the first occurance of this time so that we only select one day.
-    data = data[np.where(data[:, 0] == hour)].squeeze()
-    dt0 = np.unique(data[:, 4])[0]
-    data = data[np.where(data[:, 4] == dt0)].squeeze()
+    data = data[np.where(data[:, con.hour] == hour)].squeeze()
+    dt0 = np.unique(data[:, con.days])[0]
+    data = data[np.where(data[:, con.days] == dt0)].squeeze()
   # Fetch this grid col's data.
-  data = data[np.where((data[:, 2] == lat) & (data[:, 3] == lon))].squeeze() 
+  data = data[np.where((data[:, con.lat] == lat) & (data[:, con.lon] == lon))].squeeze() 
   # Pick out the J rate and altitude.
   ij += 5 # Account for added coords.
   j = data[:, ij]
-  alts = data[:, 1]
+  alts = data[:, con.alt]
   alts = alts * 85 # Convert proportion to km.
   return(j, alts)
   
@@ -525,9 +519,6 @@ def show_col(out_test, out_pred, coords, ij, name='O3', all_time=True):
   # all_time: whether to include all time steps (True) or plot a line of one time point (False).
   # Pick a lat-lon point and a time.
   lat, lon, hour = 51.875, 0.9375, 12 # Cambridge at midday.
-  #lat, lon, hour = 89.375, 0.9375, 12 # The north pole at midday.
-  #lat, lon, hour = -89.375, 0.9375, 12 # The south pole at midday. 
-  #lat, lon, hour = 0.625, 0.9375, 12 # Gulf of Guinea at midday.
   # Swap the dimensions to make them compatible with sklearn.
   coords = np.swapaxes(coords, 0, 1)
   # Choose whether to specify the time point.
@@ -562,15 +553,16 @@ def show_col(out_test, out_pred, coords, ij, name='O3', all_time=True):
   plt.close() 
     
   
-def make_gif(dir_path, ext='png', gif_name='GIF'):
+def make_gif(dir_path, ext='png', gif_name='GIF', ms=500):
   # Makes a GIF file from a directory containing the desired images, and saves it in that directory. Uses all images in the dir with the specified extension.
   # dir_path: string, file path to the desired directory.
   # ext: optional string, file type extension of desired images.
   # gif_name: optional string, file name of resultant GIF. 
+  # ms: int, milliseconds spent on each frame.
   img_paths = sorted(glob.glob(f'{dir_path}/*.{ext}'))
   frames = [Image.open(image) for image in img_paths]
   frame1 = frames[0]
-  frame1.save(f'{dir_path}/{gif_name}.gif', format='GIF', append_images=frames, save_all=True, duration=500, loop=0) # Half a second per image.   
+  frame1.save(f'{dir_path}/{gif_name}.gif', format='GIF', append_images=frames, save_all=True, duration=ms, loop=0) # Half a second per image.   
  
 
 # Ancilliary functions.

@@ -23,23 +23,42 @@ rxnO3 = f'O{sub3} -> O{sub2} + O({sup1}D)'
 
 # Indices of some common features to use as inputs and outputs.
 # Physics.
-phys_all = np.arange(15, dtype=np.int16)
-phys_all_cc = np.arange(16, dtype=np.int16) # With cloud column.
-# All physics except ozone col.
-phys_no_o3 = np.arange(14, dtype=np.int16)
-# Physics inputs chosen by feature selection.
-phys_best = [1, 7, 8, 9, 10, 14]
+# Number of fields in 2D dataset.
+n_phys = 15
+phys_all = np.arange(n_phys, dtype=np.int16)
 input_names = ['hour of day', 'altitude / km', 'latitude / deg', 'longitude / deg', 'days since 1/1/2015',
                'specific humidity', 'cloud fraction', 'pressure / Pa', 'solar zenith angle / degrees', 
               f'upward shortwave flux / {Wperm2}', f'downward shortwave flux / {Wperm2}', 
-              f'Upward longwave flux / {Wperm2}', f'Downward longwave flux / {Wperm2}', 'temperature / K']
+              f'upward longwave flux / {Wperm2}', f'downward longwave flux / {Wperm2}', 'temperature / K',
+	      'ozone column']
 input_names_short = ['hour', 'alt', 'lat', 'lon', 'days', 'humidity', 'cloud', 'pressure', 
-                     'sza', 'up_sw_flux', 'down_sw_flux', 'up_lw_flux', 'down_lw_flux', 'temp']
+                     'sza', 'up_sw_flux', 'down_sw_flux', 'up_lw_flux', 'down_lw_flux', 'temp', 'O3_col']
+# Indices of individual physics fields. 
+hour = 0
+alt = 1
+lat = 2
+lon = 3
+days = 4
+humidity = 5
+cloud = 6
+pressure = 7
+sza = 8
+up_sw_flux = 9
+down_sw_flux = 10
+up_lw_flux = 11
+down_lw_flux = 12
+temp = 13
+o3_col = 14
+# Without pointless fields.
+phys_main = [hour, alt, lat, lon, days, humidity, cloud, pressure, sza, up_sw_flux, down_sw_flux, temp]
+# Physics inputs chosen by feature selection.
+phys_best = [alt, pressure, sza, up_sw_flux, down_sw_flux]
 
 # J rates.
-J_all = np.arange(15, 85, dtype=np.int16)
-J_all_cc = np.arange(16, 86, dtype=np.int16) # With cloud column.
-# Add 1 to the below J rates if using cloud column.
+# Number of fields in 2D dataset.
+n_J = 71
+n_fields = n_phys + n_J
+J_all = np.arange(n_phys, n_fields, dtype=np.int16)
 NO2 = 16
 HCHOr = 18 # Radical product.
 HCHOm = 19 # Molecular product.
@@ -58,13 +77,10 @@ J_names = [f'NO{sub2}', 'formaldehyde (radical)', 'formaldehyde (molecular)', f'
 J_names_short = ['NO2', 'HCHOr', 'HCHOm', 'CH3COCHO', 'Cl2O2', 'OCS', 'SO3', 'MeONO2', 'ISON',
                  'MeCHO MeOO', 'propanal', 'NO3', 'HOBr', 'HOCl', 'HONO2', 'HO2NO2', 'H2O2',
 		 'MeOOH', 'O3', 'N2O', 'MACR', 'MeCHO CH4']
-
 # Aldehydes in J_core.
 alds = [18,19,20,51,52,80,82]
 ald_names = ['formaldehyde (radical)', 'formaldehyde (molecular)', f'CH{sub3}COCHO', 
              'MeCHO -> MeOO', 'propanal', 'methacrolein', f'MeCHO -> CH{sub4}']
-# Nox.
-nox = [79,16,66] # NO, NO2, NO3.
 # Nitrates.
 nitrates = [31,33]
 # Nitric acids.
@@ -90,7 +106,5 @@ rng = np.random.default_rng(seed)
 
 # Colourmap used for % differences with green for zero.
 cmap_diff = LinearSegmentedColormap.from_list("Cdiff", ["darkblue", "blue", "deepskyblue", "cyan", "lawngreen", "yellow", "orange", "red", "firebrick"]) 
-# Colourmap used for R2 scores (ideally from 0 to 1).
-cmap_r2 = LinearSegmentedColormap.from_list("Cr2", ["black", "black", "maroon", "darkred", "firebrick", "red", "crimson", "deeppink", "hotpink", "violet", "fuchsia", "orchid", "mediumorchid", "darkorchid", \
-                                           "blueviolet", "mediumslateblue", "blue", "royalblue", "cornflowerblue", "dodgerblue", "deepskyblue", "darkturquoise", "turquoise", "cyan", "aquamarine", \
-					   "mediumspringgreen", "lime", "limegreen", "forestgreen"])
+# Colourmap used for R2 scores (ideally from 0.5 to 1).
+cmap_r2 = LinearSegmentedColormap.from_list("Cr2", ["red", "orange", "yellow", "lime"])
