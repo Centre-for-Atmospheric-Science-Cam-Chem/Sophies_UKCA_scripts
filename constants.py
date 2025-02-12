@@ -56,7 +56,7 @@ phys_best = [alt, pressure, sza, up_sw_flux, down_sw_flux]
 
 # J rates.
 # Number of fields in 2D dataset.
-n_J = 71
+n_J = 70
 n_fields = n_phys + n_J
 J_all = np.arange(n_phys, n_fields, dtype=np.int16)
 NO2 = 16

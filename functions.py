@@ -187,11 +187,21 @@ def get_name(idx, idx_names):
       name = idx_name[1].split()[1]
       name = name.split('_')[0]
       return(name)
+ 
+ 
+def day_trop(data):
+  # Remove night and upper stratosphere were Fast-J shouldn't be used.
+  # data: 2d numpy array of flattened UM output data, of shape (features, samples).
+  # Remove night.
+  data = data[:, np.where(data[con.down_sw_flux] > 0)].squeeze()
+  # Remove upper portion where Fast-J might not work.
+  data = data[:, np.where(data[con.pressure] > 20)].squeeze()  
+  return(data) 
       
   
 def split_pressure(data):
   # Split the UKCA dataset into two: one above and one below the Fast-J cutoff, using pressure.
-  # Data: 2D np array of whole UKCA dataset.
+  # Data: 2D np array of whole UKCA dataset, of shape (features, samples).
   cutoff = 20 # Pascals. 
   bottom = data[:, np.where(data[con.pressure] > cutoff)].squeeze()
   top = data[:, np.where(data[con.pressure] < cutoff)].squeeze()
@@ -216,6 +226,25 @@ def sample(data, size=None):
   else:
     data = data[:, i] 
   return(data)
+  
+  
+def in_out_swap(data, i_inputs=con.phys_main, i_targets=con.J_core):
+  # Select inputs and targets for using ML and swap dimensions over to make data compatible with random forest shape.
+  # data: 2D numpy array of flattened UKCA output data, of shape (features, samples).
+  # i_inputs, i_targets: optional 1D list of ints, indices of input/target features. 
+  # Returns data in shape (samples, features).
+  # Input data.
+  inputs = data[i_inputs]
+  if inputs.ndim == 1:
+    inputs = inputs.reshape(1, -1) 
+  inputs = np.swapaxes(inputs, 0, 1)
+  print('Inputs:', inputs.shape)
+  # Target data.
+  targets = data[i_targets]
+  if targets.ndim > 1:
+    targets = np.swapaxes(targets, 0, 1) 
+  print('Targets:', targets.shape)
+  return(inputs, targets)
   
   
 def tts(data, i_inputs, i_targets, test_size=0.1):
