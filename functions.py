@@ -17,6 +17,7 @@ import warnings
 import numpy as np
 from PIL import Image
 import constants as con
+import cartopy.crs as ccrs
 import file_paths as paths
 import matplotlib.pyplot as plt
 from sklearn import linear_model
@@ -247,35 +248,29 @@ def in_out_swap(data, i_inputs=con.phys_main, i_targets=con.J_core):
   return(inputs, targets)
   
   
-def tts(data, i_inputs, i_targets, test_size=0.1):
-  # Train test split function which returns indices for coords.
-  # data: 2d np array of full dataset containing all inputs and targets of shape (features, samples).
-  # i_inputs: array of indices of input fields.
-  # i_targets: array of indices of target fields.
+def tts(inputs, targets, test_size=0.1):
+  # Random but sorted train test split function which returns indices for coords.
+  # inputs: 2d np array of input data, of shape (samples, features).
+  # targets: 2d np array of target data, of shape (samples, features).
   # test_size: float out of 1, proportion of data to use for test set. 
-  # Find length of data and size of test set.
-  len_all = len(data[0])
+  # Returns TTS data and indices of split in shape (samples, features).
+  # Find length of data and size of test set.  
+  len_all = len(inputs)
   len_test = round(len_all * test_size)
   i_all = np.arange(0, len_all, dtype=int)
   # Generate random, unique indices for selecting test set.
   i_test = con.rng.choice(i_all, len_test, replace=False) 
+  # Put them back into the right order.
   i_test = np.sort(i_test)
-  test_data = data[:, i_test]
+  # Make test set.
+  in_test = inputs[i_test]
+  out_test = targets[i_test]
   # Remove these from the training set.
-  train_data = np.delete(data, i_test, axis=1)  
-  # Get inputs and targets.
-  in_train = train_data[i_inputs]
-  out_train = train_data[i_targets] 
-  in_test = test_data[i_inputs]
-  out_test = test_data[i_targets]
-  # Swap the dimensions to make them compatible with sklearn.
-  in_train = np.swapaxes(in_train, 0, 1)
-  in_test = np.swapaxes(in_test, 0, 1)
-  out_train = np.swapaxes(out_train, 0, 1)
-  out_test = np.swapaxes(out_test, 0, 1)
+  in_train = np.delete(inputs, i_test, axis=0)
+  out_train = np.delete(targets, i_test, axis=0)  
   # Return train and test datasets and their indices from the full dataset.
-  return(in_train, in_test, out_train, out_test, i_test)  
-   
+  return(in_train, in_test, out_train, out_test, i_test) 
+  
   
 # ML functions.  
   
@@ -399,7 +394,52 @@ def load_model_data(mod_name='rf'):
   print('Targets:', targets.shape)
   print('Preds:', preds.shape)
   return(inputs, targets, preds)
+  
+  
+def make_cols_map(inputs, targets, preds, j_idx=None, out_path=None):
+  # Make an array of column performance.
+  # inputs, targets, preds: 2d numpy arrays of ML model data, of shape(samples, features).
+  # j_idx: int or None, index in target data of which J rate to look at. If None, plot avg of all.
+  # out_path: string or None. File path to save map as.
+  warnings.filterwarnings('ignore') # R2 score on 1 datapoint.
+  # Get the unique lat & lon values.
+  lats = inputs[:, con.lat]
+  lats = np.unique(lats)
+  lons = inputs[:, con.lon]
+  lons = np.unique(lons)
+  # Make a 2d list of coords, R2 scores and % differences for each lat and lon point.
+  grid = []
+  # For each lat...
+  for i in range(len(lats)):
+    lat = lats[i]
+    # And each lon...
+    for j in range(len(lons)):
+      lon = lons[j]
+      # Get the indices of all the target & pred J rates in that column.
+      idx = np.where((inputs[:, con.lat] == lat) & (inputs[:, con.lon] == lon))
+      idx = idx[0]
+      # Get all the target J rates in that column.
+      target = targets[idx, j_idx].squeeze()
+      # There might not be a data point at this location. Skip if so.
+      if not np.any(target) or target.ndim == 0:
+        continue
+      # Get the predicted J rates.
+      pred = preds[idx, j_idx].squeeze() 
+      # Get the R2 score and % diff.
+      r2 = r2_score(target, pred)
+      diff = np.nan_to_num(((np.mean(pred) - np.mean(target)) / np.mean(target)) * 100, nan=np.nan, posinf=0, neginf=0)
+      # Save the R2 scores in a 2d list for every lat & lon.
+      grid.append([lat, lon, r2, diff])     
+  grid = np.array(grid)
+  print(grid.shape)
+  if out_path is not None:
+    # Save the array because it takes ages to make.
+    np.save(out_path, grid)
+  # Returns the map as a 2d numpy array of lat, lon, r2, diff for each col.
+  return(grid)
+  
 
+# Plot functions.
 
 def shrink(out_test, out_pred):
   # Don't plot an unnecessary number of data points i.e. >10000.  
@@ -580,7 +620,7 @@ def show_col(out_test, out_pred, coords, ij, name='O3', all_time=True):
   plt.ylabel('Altitude / km')
   plt.show()
   plt.close() 
-    
+  
   
 def make_gif(dir_path, ext='png', gif_name='GIF', ms=500):
   # Makes a GIF file from a directory containing the desired images, and saves it in that directory. Uses all images in the dir with the specified extension.
