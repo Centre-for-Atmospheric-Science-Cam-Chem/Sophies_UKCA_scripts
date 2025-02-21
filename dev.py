@@ -1,147 +1,178 @@
 '''
 Name: Sophie Turner.
-Date: 16/1/2025.
+Date: 11/2/2025.
 Contact: st838@cam.ac.uk.
-Plot column performance on a map.
+Simulate the simulation! Actually, simulate the emulation of the simulation!!
+Assume the UM provides the random forest with inputs for only the current timestep.
+Test giving the random forest the whole spatial grid at once.
+Test giving the random forest one column at a time.
+Compare accuracy. Timings are for info only, not indicative of the final implementation.
 '''
+
 import os
-import warnings
+import time
+import joblib
 import numpy as np
+import functions as fns
 import constants as con
 import cartopy.crs as ccrs
 import file_paths as paths
+from idx_names import idx_names
 import matplotlib.pyplot as plt
 from sklearn.metrics import r2_score
-from datetime import datetime, timedelta
-from matplotlib.colors import LinearSegmentedColormap
 
-# Ignore warnings about r2 with 1 sample. It doesn't matter.
-warnings.simplefilter('ignore')
 
-# File paths.
-mod_name = 'rf'
-mod_path = f'{paths.mod}/{mod_name}/{mod_name}'
-inputs_path = f'{mod_path}_test_inputs.npy' 
-targets_path = f'{mod_path}_test_targets.npy'
-preds_path = f'{mod_path}_pred.npy'
-
-# Load data.
-print('\nLoading data.')
-inputs = np.load(inputs_path)
-targets = np.load(targets_path)
-preds = np.load(preds_path)
-print('Inputs:', inputs.shape)
-print('Targets:', targets.shape)
-print('Preds:', preds.shape)
- 
-# Select daily timesteps for the year.
-times = inputs[:, 4]
-times = np.round(times)
-inputs[:, 4] = times
-times = np.unique(times)
-
-# Set start date.
-date = datetime(2015, 1, 1)
-  
-# For each timestep...
-for t in range(len(times)):
-  time = times[t]
-  print(f'Mapping timestep {t+1} of {len(times)}.')  
-  
-  # Get the data in this timestep.
-  idx = np.where(inputs[:, 4] == time)
-  targett = targets[idx]
-  predt = preds[idx]
-  inputt = inputs[idx]
-  
-  # Get the unique lat & lon values.
-  lats = inputt[:, 2]
-  lats = np.unique(lats)
-  lons = inputt[:, 3]
-  lons = np.unique(lons) 
-
-  # Make a 2d list of coords, R2 scores and % differences for each lat and lon point.
-  grid = []
-
-  # For each lat...
-  for i in range(len(lats)):
-    lat = lats[i]
-    # And each lon...
-    for j in range(len(lons)):
-      lon = lons[j]
-      # Get the indices of all the target & pred J rates in that column.
-      idx = np.where((inputt[:, 2] == lat) & (inputt[:, 3] == lon))
-      # Get all the target J rates in that column.
-      target = targett[idx] # J core.
-      #target = targets[idx, 11] # NO3.
-      # There might not be a data point at this location. Skip if so.
-      if len(target) < 1:
-        continue
-      # Get the predicted J rates.
-      pred = predt[idx] # J core.      
-      #pred = preds[idx, 11] # NO3.
-      # Get the R2 score and % diff.
-      # R2 doesn't work properly with too few samples.
-      if len(target) < 10:
-        r2 = np.nan
-      else:
-        r2 = r2_score(target, pred)
-      diff = ((np.mean(pred) - np.mean(target)) / np.mean(target)) * 100
-      # Save the R2 scores in a 2d list for every lat & lon.
-      grid.append([lat, lon, r2, diff])
-
-  grid = np.array(grid)
-  # Save the array because it takes ages to make.
-  grid_path = f'{paths.npy}/col_maps_year_allJs/{time}.npy' 
-  np.save(grid_path, grid)    
-    
-  print(grid.shape)
-
-  # Set negative R2s to zero to simplify the plot.
-  grid[grid[:, 2] < 0, 2] = 0
-
-  # Whether to show R2 or % diff on map.
-  show = 'r2'
-
-  # Colourmaps designed specifically for these data.
-  if show == 'r2':
-    # Create a colourmap to represent the data better than the default ones.
-    cmap = LinearSegmentedColormap.from_list("Cr2", ["black", "black", "maroon", "darkred", "firebrick", "red", "crimson", "deeppink", "hotpink", "violet", "fuchsia", "orchid", "mediumorchid", "darkorchid", \
-                                             "blueviolet", "mediumslateblue", "blue", "royalblue", "cornflowerblue", "dodgerblue", "deepskyblue", "darkturquoise", "turquoise", "cyan", "aquamarine", \
-	       				     "mediumspringgreen", "lime", "limegreen", "forestgreen"])
-    vmin, vmax = 0, 1
-    text = f'R{con.sup2} score of J rate predictions'
-    # Remove nans.    
-    idx = ~np.isnan(grid[:, 2])    
-    x = grid[idx, 1]
-    y = grid[idx, 0]
-    c = grid[idx, 2]
-
-  elif show == 'diff':
-    cmap = LinearSegmentedColormap.from_list("Cdiff", ["darkblue", "blue", "deepskyblue", "cyan", "lawngreen", "yellow", "orange", "red", "firebrick"]) 
-    vmin, vmax = -10, 10
-    text = '% difference of J rate predictions to targets'
-    x = grid[:, 1]
-    y = grid[:, 0]
-    c = grid[:, 3]
-
+def show_map(fullname, grid, r2, out_path):
+  '''Show a map of the column % diffs for a specific J rate.
+  fullname: string, fully formatted name of J rate.
+  grid: 2d numpy array of lat, lon, r2, diff for each column.
+  r2: number, overall R2 score of whole grid at this timestep.
+  out_path: string, file path to save fig as.
+  '''
+  # Show plot for this J rate and ts. 
+  cmap = con.cmap_diff
+  vmin, vmax = -20, 20
+  # Clip the bounds to +- 20% to remove ridiculous outliers and simplify the plot visuals.
+  grid[grid[:, 3] < vmin, 3] = vmin
+  grid[grid[:, 3] > vmax, 3] = vmax
+  x = grid[:, 1]
+  y = grid[:, 0]
+  c = grid[:, 3]
   # Set the fig to a consistent size.
-  plt.figure(figsize=(10,6))
+  plt.figure(figsize=(10,7.5))
   # Plot the metrics by lat & lon coords on the cartopy mollweide map.
-  ax = plt.axes(projection=ccrs.Mollweide())
-  plt.title(f'Column photolysis rates predicted by random forest\n{date.strftime("%d/%m/%y")}')
-  plt.scatter(x, y, c=c, cmap=cmap, vmin=vmin, vmax=vmax, transform=ccrs.PlateCarree(), s=2)
-  cbar = plt.colorbar(shrink=0.7, label=f'{text} in column', orientation='horizontal')
-  if show == 'diff':
-    cbar.ax.set_xticks([-10, -5, 0, 5, 10])
-    cbar.ax.set_xticklabels(['-10', '-5', '0', '5', '10'])
+  ax = plt.axes(projection=ccrs.Mollweide()) 
+  plt.title(f'Columns of {fullname} photolysis rates predicted by random forest. Overall {con.r2} = {r2}')
+  plt.scatter(x, y, c=c, s=3, vmin=vmin, vmax=vmax, cmap=cmap, transform=ccrs.PlateCarree()) 
+  plt.colorbar(shrink=0.5, label=f'% difference of J rate predictions to targets in column', orientation='horizontal')
+  ax.set_global()
   ax.coastlines()
   plt.show()
-
   # Save the fig.
-  map_path = f'{paths.analysis}/col_maps_year_allJs/{time}.png'
-  plt.savefig(map_path)
+  plt.savefig(out_path)
   plt.close()
 
-  # Add time to start date.
-  date += timedelta(days=1)
+
+# File paths.
+day_path = f'{paths.npy}/20160401.npy'
+rf_path = f'{paths.mod}/rf/rf.pkl'
+
+# Load a full day of np data (ALL J rates and full resolution).
+print('\nLoading data.')
+data = np.load(day_path)
+
+# Load the trained (not scaled) random forest.
+rf = joblib.load(rf_path) 
+# Pick out 1 timestep.
+data = data[:, data[con.hour] == 12] # Midday.
+print('Timestep:', data.shape)
+'''
+# Test giving the random forest the whole grid at once (for 1 ts) as if it was in UKCA.
+print('\nUsing random forest on whole timestep.')
+start = time.time()
+# Ignore night and upper strat.
+data = fns.day_trop(data)
+# Select inputs and targets.
+inputs, targets = fns.in_out_swap(data, con.phys_main, con.J_all)
+
+# Use the random forest on them.
+preds = rf.predict(inputs)
+# Calculate R2 of whole grid at this timestep.
+r2 = round(r2_score(targets, preds), 3)
+# Record time taken.
+end = time.time()
+sec = end - start
+print(f'Using the random forest on the whole grid at one timestep took {round(sec)} seconds.')
+print(f'\nOverall R2 for all J rates and whole grid in timestep: {r2}\n')
+name = 'all'
+
+# Get performance metrics for this J rate for each column and save array of performance per col.
+grid = fns.make_cols_map(inputs, targets, preds, None)
+# Plot it on the map.
+map_path = f'{paths.analysis}/col_maps_full_res/all_whole_grid'
+show_map(name, grid, r2, map_path)
+
+# Now do the grid and map for each J rate individually.
+for i in range(10, len(targets[0])):
+  
+  # Skip if this is an empty output.
+  if np.all(targets[:, i] == 0):
+    continue
+  
+  # Get the name of the reaction.
+  shortname = idx_names[i + con.n_phys][3]
+  fullname = idx_names[i + con.n_phys][2]
+
+  # Get performance metrics for this J rate for this column. 
+  grid = fns.make_cols_map(inputs, targets, preds, i)
+  
+  # Get total R2 for this J rate.
+  target = targets[:, i]
+  pred = preds[:, i]
+  r2 = round(r2_score(target, pred), 3)
+  print(f'Overall R2 for {fullname} in whole grid at this timestep: {r2}') 
+
+  # Show plot for this J rate and ts. 
+  map_path = f'{paths.analysis}/col_maps_full_res/{shortname}_whole_grid.png'
+  show_map(fullname, grid, r2, map_path)
+
+# Record time taken.
+end = time.time()
+sec = end - start
+print(f'It took {round(sec/60)} minutes in total, to make & save maps of every J rate in this timestep using the whole grid.')
+'''
+
+# Test giving the random forest single columns at a time as if it was in UKCA.
+# If it's worse, inputs from previous timesteps could be included at little extra cost. This would mean the first few sim hours should be discarded from science like in spin-up.
+# The reason things are done in a weird and long-winded order here is to try and replicate how the steps will have to be done in UKCA run-time.
+print('\nUsing random forest on individual columns.')
+start = time.time()
+# Select inputs and targets.
+inputs, targets = fns.in_out_swap(data, con.phys_main, con.J_all)
+# Pick out each column.
+# Get the unique lat & lon values.
+lats = inputs[:, con.lat]
+lats = np.unique(lats)
+lons = inputs[:, con.lon]
+lons = np.unique(lons)
+# Make a 2d list of coords and % differences for each lat and lon point.
+grid = []  
+# For each lat...
+for i in range(len(lats)):
+  lat = lats[i]
+  # And each lon...
+  for j in range(len(lons)):
+    lon = lons[j]
+    # Get the indices of this column.
+    idx = np.where((inputs[:, con.lat] == lat) & (inputs[:, con.lon] == lon))
+    
+    # Test
+    print(idx)
+    print(len(idx[0]))
+    exit()
+    
+    idx = idx[0]
+    # Get the inputs in this column.
+    input = inputs[idx]
+    # Skip if the column is at night.
+    if np.all(input[con.down_sw_flux] == 0):
+      continue
+    # Get the targets in the column.
+    target = targets[idx]
+    # Select the pressures within range of fast-J.
+    input, _ = fns.split_pressure(input)
+    target, _ = fns.split_pressure(target)
+    # Use the trained (not scaled) RF on the inputs for this column only.
+    pred = rf.predict(input)
+    # Get % diff for this column.
+    diff = np.nan_to_num(((np.mean(pred) - np.mean(target)) / np.mean(target)) * 100, nan=np.nan, posinf=0, neginf=0)
+    # Place preds and % diff in an array for the full grid. Pad 2nd index to keep to same structure as other grid, for use in fns.
+    grid.append([lat, lon, 0, diff])
+# Record time taken.
+end = time.time()
+sec = end - start
+print(f'Using the random forest on each individual column in the whole grid at one timestep took {round(sec)} seconds.')
+# Save preds and % diffs of whole grid.
+# Calculate R2 of whole grid at this timestep. 
+# Show plots for each J rate and a combined one of all.
+

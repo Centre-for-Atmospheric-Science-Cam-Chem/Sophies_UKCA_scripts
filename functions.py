@@ -27,9 +27,9 @@ from sklearn.metrics import max_error, mean_squared_error, mean_absolute_percent
 # Metadata functions.
 
 def get_idx_names(name_file):
-  # Names of the fields, taken from metadata.
-  # name_file: file path containing array of fields' indices and names.
-  # Returns a list of indices and names.
+  '''Names of the fields, taken from metadata.
+  name_file: file path containing array of fields' indices and names.
+  Returns a list of indices and names.'''
   lines = open(name_file, 'r')
   idx_names = []
   for line in lines: 
@@ -43,9 +43,9 @@ def get_idx_names(name_file):
 # Data preprocessing functions.  
   
 def collate(training_data_path, input_files):
-  # Collate the data from multiple files, if it hasn't already been done.
-  # training_data_path: file path of where to save the combined data.
-  # input_files: list of training data file paths.
+  '''Collate the data from multiple files, if it hasn't already been done.
+  training_data_path: file path of where to save the combined data.
+  input_files: list of training data file paths.'''
   if os.path.exists(training_data_path):
     days = np.load(training_data_path)
   else:
@@ -81,9 +81,10 @@ def collate(training_data_path, input_files):
 
 
 def find_cloud_end(data):
-  # Find out at what level there are no more clouds.
-  # data: np array of the contents of an entire .npy file of data, of shape (features, samples).     
-  # For each grid & time point...l
+  '''Find out at what level there are no more clouds.
+  data: np array of the contents of an entire .npy file of data, of shape (features, samples).     
+  '''
+  # For each grid & time point...
   n_points = len(data[0])
   # First altitude value.
   first_alt = data[1,0] 
@@ -106,8 +107,9 @@ def find_cloud_end(data):
 
   
 def sum_cloud(data, out_path=None):
-  # Sum the cloud in the column above each grid box and include that as a feature in training data.
-  # data: np array of the contents of an entire .npy file of data, of shape (features, samples).   
+  '''Sum the cloud in the column above each grid box and include that as a feature in training data.
+  data: np array of the contents of an entire .npy file of data, of shape (features, samples).   
+  '''
   print('Summing cloud columns.')
   # Check at which altitude clouds stop.
   clear = find_cloud_end(data)
@@ -155,15 +157,16 @@ def sum_cloud(data, out_path=None):
   
 
 def shape(rows):
-  # Make single input fields 2d so that they fit with other parameters going into the ML functions.
-  # rows: np array of fields chosen for training or testing.
+  '''Make single input fields 2d so that they fit with other parameters going into the ML functions.
+  rows: np array of fields chosen for training or testing.
+  '''
   if rows.ndim == 1:
     rows = np.vstack((rows, ))
   return(rows) 
   
   
 def remove_all_zero(data):
-  # Remove all-zero fields from dataset.
+  '''Remove all-zero fields from dataset.'''
   removes = []
   for i in range(len(data)):
     field = data[i]
@@ -174,7 +177,7 @@ def remove_all_zero(data):
   
   
 def all_zeros(field):
-  # Check if a field contains only zeros.
+  '''Check if a field contains only zeros.'''
   zeros = False
   if np.all(field == 0):
     zeros = True
@@ -182,7 +185,7 @@ def all_zeros(field):
   
  
 def get_name(idx, idx_names):
-  # Get the name of a field from its index number.
+  '''Get the name of a field from its index number.'''
   for idx_name in idx_names:
     if idx_name[0] == idx:
       name = idx_name[1].split()[1]
@@ -191,8 +194,9 @@ def get_name(idx, idx_names):
  
  
 def day_trop(data):
-  # Remove night and upper stratosphere were Fast-J shouldn't be used.
-  # data: 2d numpy array of flattened UM output data, of shape (features, samples).
+  '''Remove night and upper stratosphere were Fast-J shouldn't be used.
+  data: 2d numpy array of flattened UM output data, of shape (features, samples).
+  '''
   # Remove night.
   data = data[:, np.where(data[con.down_sw_flux] > 0)].squeeze()
   # Remove upper portion where Fast-J might not work.
@@ -201,8 +205,9 @@ def day_trop(data):
       
   
 def split_pressure(data):
-  # Split the UKCA dataset into two: one above and one below the Fast-J cutoff, using pressure.
-  # Data: 2D np array of whole UKCA dataset, of shape (features, samples).
+  '''Split the UKCA dataset into two: one above and one below the Fast-J cutoff, using pressure.
+  Data: 2D np array of whole UKCA dataset, of shape (features, samples).
+  '''
   cutoff = 20 # Pascals. 
   bottom = data[:, np.where(data[con.pressure] > cutoff)].squeeze()
   top = data[:, np.where(data[con.pressure] < cutoff)].squeeze()
@@ -210,11 +215,12 @@ def split_pressure(data):
   
   
 def sample(data, size=None):
-  # Make a smaller dataset by randomly sampling the data, uniformly.
-  # Choose a big enough size to capture sufficient tropospheric density.
-  # To do: use a better function than random uniform sampling.
-  # data: np array of dataset, 1D or 2D of shape (features, samples).
-  # size: number of data points desired. Leave empty for auto (10%).
+  '''Make a smaller dataset by randomly sampling the data, uniformly.
+  Choose a big enough size to capture sufficient tropospheric density.
+  To do: use a better function than random uniform sampling.
+  data: np array of dataset, 1D or 2D of shape (features, samples).
+  size: number of data points desired. Leave empty for auto (10%).
+  '''
   if data.ndim == 1:
     length = len(data)
   else: 
@@ -230,10 +236,11 @@ def sample(data, size=None):
   
   
 def in_out_swap(data, i_inputs=con.phys_main, i_targets=con.J_core):
-  # Select inputs and targets for using ML and swap dimensions over to make data compatible with random forest shape.
-  # data: 2D numpy array of flattened UKCA output data, of shape (features, samples).
-  # i_inputs, i_targets: optional 1D list of ints, indices of input/target features. 
-  # Returns data in shape (samples, features).
+  '''Select inputs and targets for using ML and swap dimensions over to make data compatible with random forest shape.
+  data: 2D numpy array of flattened UKCA output data, of shape (features, samples).
+  i_inputs, i_targets: optional 1D list of ints, indices of input/target features. 
+  Returns data in shape (samples, features).
+  '''
   # Input data.
   inputs = data[i_inputs]
   if inputs.ndim == 1:
@@ -249,11 +256,12 @@ def in_out_swap(data, i_inputs=con.phys_main, i_targets=con.J_core):
   
   
 def tts(inputs, targets, test_size=0.1):
-  # Random but sorted train test split function which returns indices for coords.
-  # inputs: 2d np array of input data, of shape (samples, features).
-  # targets: 2d np array of target data, of shape (samples, features).
-  # test_size: float out of 1, proportion of data to use for test set. 
-  # Returns TTS data and indices of split in shape (samples, features).
+  '''Random but sorted train test split function which returns indices for coords.
+  inputs: 2d np array of input data, of shape (samples, features).
+  targets: 2d np array of target data, of shape (samples, features).
+  test_size: float out of 1, proportion of data to use for test set. 
+  Returns TTS data and indices of split in shape (samples, features).
+  '''
   # Find length of data and size of test set.  
   len_all = len(inputs)
   len_test = round(len_all * test_size)
@@ -275,16 +283,17 @@ def tts(inputs, targets, test_size=0.1):
 # ML functions.  
   
 def train(in_train, out_train):
-  # Set up simple model.
+  '''Set up simple model.'''
   model = linear_model.LinearRegression()
   model.fit(in_train, out_train)
   return(model)
 
 
 def sMAPE(out_test, out_pred):
-  # Compute the symmetric mean absolute percentage error.
-  # Like MAPE but handles values close to zero better.
-  # test: array of test targets. pred: array of prediction outputs. 
+  '''Compute the symmetric mean absolute percentage error.
+  Like MAPE but handles values close to zero better.
+  test: array of test targets. pred: array of prediction outputs. 
+  '''
   warnings.filterwarnings('ignore') 
   n = len(out_test)
   diffs = 0
@@ -295,8 +304,9 @@ def sMAPE(out_test, out_pred):
   
   
 def metrics_2d(out_test, out_pred):
-  # Get metrics over 2 dimensions for metrics which can only be used on 1 dim.
-  # out_test, out_pred: 2D arrays.
+  '''Get metrics over 2 dimensions for metrics which can only be used on 1 dim.
+  out_test, out_pred: 2D arrays.
+  '''
   n = len(out_test[0])
   maxes = [] # Array of max errors for each target.
   smape = 0 # Average percentage error.
@@ -326,15 +336,16 @@ def test(model, in_test, out_test):
   
   
 def only_range(inputs, targets, targets_all, bottom=0, top=1, keep=True, min_samples=10):
-  # Only use a certain range of values of J rates.
-  # Call just before fns.test() and pass only test sets if you want model trained on all data but only tested on smallest.
-  # inputs: array of inputs (in_test for test-only).
-  # targets: array of targets (out_test for test-only).  
-  # targets_all: array of all targets in data, used for the test-only option. If using all data, just pass the targets for both target params.
-  # bottom: chosen proportion of data for lowest value, 0 to 1, inclusive.
-  # top: chosen proportion of data for highest value, 0 to 1, inclusive.
-  # min_samples: minimum number of samples a J rate needs for it to be included. 
-  # keep: whether to keep the selected portion and remove the rest (True), or remove the selected portion and keep the rest (False). 
+  '''Only use a certain range of values of J rates.
+  Call just before fns.test() and pass only test sets if you want model trained on all data but only tested on smallest.
+  inputs: array of inputs (in_test for test-only).
+  targets: array of targets (out_test for test-only).  
+  targets_all: array of all targets in data, used for the test-only option. If using all data, just pass the targets for both target params.
+  bottom: chosen proportion of data for lowest value, 0 to 1, inclusive.
+  top: chosen proportion of data for highest value, 0 to 1, inclusive.
+  min_samples: minimum number of samples a J rate needs for it to be included. 
+  keep: whether to keep the selected portion and remove the rest (True), or remove the selected portion and keep the rest (False). 
+  '''
   assert bottom < top
   if targets.ndim == 1:
     top_all = max(targets_all)
@@ -378,8 +389,9 @@ def only_range(inputs, targets, targets_all, bottom=0, top=1, keep=True, min_sam
 # Results & postprocessing functions.  
 
 def load_model_data(mod_name='rf'):
-  # Loads and returns input, target and prediction sample data from a trained ML model.
-  # mod_name: string, name of ML model and its folder.
+  '''Loads and returns input, target and prediction sample data from a trained ML model.
+  mod_name: string, name of ML model and its folder.
+  '''
   # File paths.
   mod_path = f'{paths.mod}/{mod_name}/{mod_name}'
   inputs_path = f'{mod_path}_inputs.npy' 
@@ -397,10 +409,11 @@ def load_model_data(mod_name='rf'):
   
   
 def make_cols_map(inputs, targets, preds, j_idx=None, out_path=None):
-  # Make an array of column performance.
-  # inputs, targets, preds: 2d numpy arrays of ML model data, of shape(samples, features).
-  # j_idx: int or None, index in target data of which J rate to look at. If None, plot avg of all.
-  # out_path: string or None. File path to save map as.
+  '''Make an array of column performance.
+  inputs, targets, preds: 2d numpy arrays of ML model data, of shape(samples, features).
+  j_idx: int or None, index in target data of which J rate to look at. If None, plot avg of all.
+  out_path: string or None. File path to save map as.
+  '''
   warnings.filterwarnings('ignore') # R2 score on 1 datapoint.
   # Get the unique lat & lon values.
   lats = inputs[:, con.lat]
@@ -415,19 +428,19 @@ def make_cols_map(inputs, targets, preds, j_idx=None, out_path=None):
     # And each lon...
     for j in range(len(lons)):
       lon = lons[j]
-      # Get the indices of all the target & pred J rates in that column.
+      # Get the indices of all the data in that column.
       idx = np.where((inputs[:, con.lat] == lat) & (inputs[:, con.lon] == lon))
       idx = idx[0]
       # Get all the target J rates in that column.
-      target = targets[idx, j_idx].squeeze()
+      target = targets[idx, j_idx].squeeze()      
       # There might not be a data point at this location. Skip if so.
       if not np.any(target) or target.ndim == 0:
         continue
-      # Get the predicted J rates.
+      # Get the predicted J rates in the column.
       pred = preds[idx, j_idx].squeeze() 
       # Get the R2 score and % diff.
       r2 = r2_score(target, pred)
-      diff = np.nan_to_num(((np.mean(pred) - np.mean(target)) / np.mean(target)) * 100, nan=np.nan, posinf=0, neginf=0)
+      diff = np.nan_to_num(((np.mean(pred) - np.mean(target)) / np.mean(target)) * 100, posinf=0, neginf=0)
       # Save the R2 scores in a 2d list for every lat & lon.
       grid.append([lat, lon, r2, diff])     
   grid = np.array(grid)
@@ -442,7 +455,7 @@ def make_cols_map(inputs, targets, preds, j_idx=None, out_path=None):
 # Plot functions.
 
 def shrink(out_test, out_pred):
-  # Don't plot an unnecessary number of data points i.e. >10000.  
+  '''Don't plot an unnecessary number of data points i.e. >10000.'''  
   # Make them the right shape.
   out_test = out_test.squeeze()
   out_pred = out_pred.squeeze()
@@ -463,7 +476,7 @@ def shrink(out_test, out_pred):
 
 
 def force_axes():
-  # Make plot axes exactly the same.
+  '''Make plot axes exactly the same.'''
   plt.axis('square')
   xticks, xlabels = plt.xticks()
   yticks, ylabels = plt.yticks()
@@ -479,11 +492,12 @@ def force_axes():
   
 
 def line(xdata, ydata, xdata2=None, ydata2=None, title='', xlab='', ylab='', leg1='', leg2=''):
-  # Show a line plot of 2 vars.
-  # xdata, ydata: arrays to plot.
-  # xdata2, ydata2: optional 2nd line to plot.
-  # xlab, ylab: optional axis text.
-  # leg1, leg2: optional legend labels if using 2 lines.  
+  '''Show a line plot of 2 vars.
+  xdata, ydata: arrays to plot.
+  xdata2, ydata2: optional 2nd line to plot.
+  xlab, ylab: optional axis text.
+  leg1, leg2: optional legend labels if using 2 lines.  
+  '''
   plt.plot(xdata, ydata, label=leg1)
   if xdata2 is not None:
     plt.plot(xdata2, ydata2, label=leg2)
@@ -519,11 +533,12 @@ def show(out_test, out_pred, maxe=None, mse=None, mape=None, smape=None, r2=None
   
   
 def show_col_orig(data, ij=78, name='O3', all_time=True):
-  # Show a column of J rate by altitude for full UKCA datasets before ML. 
-  # data: 2d np array of full dataset.
-  # ij: index of J rate to look at. 78=O3 in full dataset.
-  # name: name of J rate.
-  # all_time: whether to include all time steps (True) or plot a line of one time point (False).
+  '''Show a column of J rate by altitude for full UKCA datasets before ML. 
+  data: 2d np array of full dataset.
+  ij: index of J rate to look at. 78=O3 in full dataset.
+  name: name of J rate.
+  all_time: whether to include all time steps (True) or plot a line of one time point (False).
+  '''
   # Pick a lat-lon point and a time.
   # Cambridge at midday.
   lat, lon, hour = 51.875, 0.9375, 12
@@ -554,11 +569,12 @@ def show_col_orig(data, ij=78, name='O3', all_time=True):
  
  
 def col(data, coords, lat, lon, hour, ij):
-  # Show a column of J rate by altitude to compare targets and predictions. 
-  # data: 2d np array dataset e.g. full UKCA data or ML targets.
-  # lat, lon: latitude and longitude of chosen column.
-  # hour: hour of day of chosen sample or None if plotting all time points.
-  # ij: index of J rate to look at.
+  '''Show a column of J rate by altitude to compare targets and predictions. 
+  data: 2d np array dataset e.g. full UKCA data or ML targets.
+  lat, lon: latitude and longitude of chosen column.
+  hour: hour of day of chosen sample or None if plotting all time points.
+  ij: index of J rate to look at.
+  '''
   # Stick the coords on for easier processing.
   if data.ndim == 1:
     data = np.expand_dims(data, 1)
@@ -579,13 +595,14 @@ def col(data, coords, lat, lon, hour, ij):
   
   
 def show_col(out_test, out_pred, coords, ij, name='O3', all_time=True):
-  # Show a column of J rate by altitude. 
-  # out_test: 2d np array dataset of targets.
-  # out_pred: 2d np array dataset of predictions.
-  # coords: 2d np array of time & space co-ordinates for datasets.
-  # ij: index of J rate to look at.
-  # name: name of J rate.
-  # all_time: whether to include all time steps (True) or plot a line of one time point (False).
+  '''Show a column of J rate by altitude. 
+  out_test: 2d np array dataset of targets.
+  out_pred: 2d np array dataset of predictions.
+  coords: 2d np array of time & space co-ordinates for datasets.
+  ij: index of J rate to look at.
+  name: name of J rate.
+  all_time: whether to include all time steps (True) or plot a line of one time point (False).
+  '''
   # Pick a lat-lon point and a time.
   lat, lon, hour = 51.875, 0.9375, 12 # Cambridge at midday.
   # Swap the dimensions to make them compatible with sklearn.
@@ -623,11 +640,12 @@ def show_col(out_test, out_pred, coords, ij, name='O3', all_time=True):
   
   
 def make_gif(dir_path, ext='png', gif_name='GIF', ms=500):
-  # Makes a GIF file from a directory containing the desired images, and saves it in that directory. Uses all images in the dir with the specified extension.
-  # dir_path: string, file path to the desired directory.
-  # ext: optional string, file type extension of desired images.
-  # gif_name: optional string, file name of resultant GIF. 
-  # ms: int, milliseconds spent on each frame.
+  '''Makes a GIF file from a directory containing the desired images, and saves it in that directory. Uses all images in the dir with the specified extension.
+  dir_path: string, file path to the desired directory.
+  ext: optional string, file type extension of desired images.
+  gif_name: optional string, file name of resultant GIF. 
+  ms: int, milliseconds spent on each frame.
+  '''
   img_paths = sorted(glob.glob(f'{dir_path}/*.{ext}'))
   frames = [Image.open(image) for image in img_paths]
   frame1 = frames[0]
@@ -637,13 +655,14 @@ def make_gif(dir_path, ext='png', gif_name='GIF', ms=500):
 # Ancilliary functions.
 
 def format_date(date):
-  # Turn date into dd/mm/yyyy format.
-  # date: string of format yyyymmdd.
+  '''Turn date into dd/mm/yyyy format.
+  date: string of format yyyymmdd.
+  '''
   return(f'{date[6:]}/{date[4:6]}/{date[0:4]}')
  
 
 def mem():
-  # Memory usage.
+  '''Memory usage.'''
   GB = 1000000000
   mem_used = psutil.virtual_memory().used / GB
   print(f'Current memory usage: {mem_used} GB.')

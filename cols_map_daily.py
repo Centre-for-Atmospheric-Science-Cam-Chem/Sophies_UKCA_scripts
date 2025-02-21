@@ -24,14 +24,14 @@ j_idx, j_name = None, 'all' # Average over all J rates in J core.
 warnings.simplefilter('ignore')
 
 # Get ready to save figs.
-dir_name = f'col_maps_year_{j_name}_scaled'
+dir_name = f'col_maps_year_{j_name}'
 dir_path = f'{paths.analysis}/{dir_name}'
 if not os.path.exists(dir_path):
   print(f'\nMaking a new directory: {dir_path}')
   os.mkdir(dir_path)
 
 # Load trained random forest data.
-inputs, targets, preds = fns.load_model_data('rf_scaled')
+inputs, targets, preds = fns.load_model_data('rf')
  
 # Select daily timesteps for the year.
 times = inputs[:, 4]
@@ -79,6 +79,10 @@ for t in range(len(times)):
   cbar.ax.set_xticklabels(['< -20', '-15', '-10', '-5', '0', '5', '10', '15', '> 20'])
   ax.set_global()
   ax.coastlines()
+  
+  # Test.
+  #plt.show()
+  #exit()
 
   # Prepend zeros to file name digits so that the GIF goes in the right order.
   if time < 10:

@@ -18,7 +18,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler as scaler
 
 # Whether or not to standardise data.
-scale = False
+scale = True
 
 # File paths.
 data_path = f'{paths.npy}/low_res_yr_500k.npy'

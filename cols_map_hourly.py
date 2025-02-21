@@ -12,13 +12,14 @@ import constants as con
 import cartopy.crs as ccrs
 import file_paths as paths
 import matplotlib.pyplot as plt
+from sklearn.metrics import r2_score
 from datetime import datetime, timedelta
 
 # Pick which J rate to look at.
-j_idx = 20
+j_idx = 11
 j_name = con.J_names[j_idx] 
 j_name_s = con.J_names_short[j_idx] 
-#j_idx, j_name, j_name_s = None, 'all', 'all' # Average over all J rates in J core.
+j_idx, j_name, j_name_s = None, 'all', 'all' # Average over all J rates in J core.
 
 # Pick a time to look at.
 # First and last hours of 3 days.
@@ -40,10 +41,10 @@ if not os.path.exists(dir_path):
   os.mkdir(dir_path)
 
 # Load trained random forest data.
-inputs, targets, preds = fns.load_model_data('rf')
+inputs, targets, preds = fns.load_model_data('rf') 
  
 # Select daily timesteps for the year.
-times = inputs[:, 4]
+times = inputs[:, con.days]
 times = np.unique(times)
 
 # Set start date and time.
@@ -54,67 +55,44 @@ date += timedelta(hours=start)
 for t in range(start, stop):
   
   time = times[t]
-  print(f'Mapping timestep {date}.')  
+  print(f'Mapping timestep {date}.') 
   
   # Get the data in this timestep.
-  idx = np.where(inputs[:, 4] == time)
+  idx = np.where(inputs[:, con.days] == time)
   targett = targets[idx]
   predt = preds[idx]
   inputt = inputs[idx]
   
-  # Get the unique lat & lon values.
-  lats = inputt[:, 2]
-  lats = np.unique(lats)
-  lons = inputt[:, 3]
-  lons = np.unique(lons) 
-
-  # Make a 2d list of coords and % differences for each lat and lon point.
-  grid = []
-
-  # For each lat...
-  for i in range(len(lats)):
-    lat = lats[i]
-    # And each lon...
-    for j in range(len(lons)):
-      lon = lons[j]
-      # Get the indices of all the target & pred J rates in that column.
-      idx = np.where((inputt[:, 2] == lat) & (inputt[:, 3] == lon))
-      idx = idx[0]
-      # Get all the target J rates in that column.
-      target = targett[idx, j_idx]
-      # There might not be a data point at this location. Skip if so.
-      if len(target) < 1:
-        continue
-      # Get the predicted J rates.
-      pred = predt[idx, j_idx] 
-      # Get the % diff.
-      diff = np.nan_to_num(((np.mean(pred) - np.mean(target)) / np.mean(target)) * 100, nan=np.nan, posinf=0, neginf=0)
-      # Save them in a 2d list for every lat & lon.
-      grid.append([lat, lon, diff])
-
-  grid = np.array(grid)   
+  # Get the R2 score for this timestep.
+  r2 = r2_score(targett, predt)
+  
+  # Make grid of cols. Returns 2d numpy array of lat, lon, r2, diff for each col.
+  grid = fns.make_cols_map(inputt, targett, predt, j_idx)
 
   cmap = con.cmap_diff
-  vmin, vmax = -20, 20
   # Clip diffs to bounds to simplify the plot.
-  grid[grid[:, 2] < vmin, 2] = vmin
-  grid[grid[:, 2] > vmax, 2] = vmax
-  text = '% difference of J rate predictions to targets'
+  vmin, vmax = -20, 20
+  grid[grid[:, 3] < vmin, 3] = vmin
+  grid[grid[:, 3] > vmax, 3] = vmax
   x = grid[:, 1]
   y = grid[:, 0]
-  c = grid[:, 2]
+  c = grid[:, 3]
 
   # Set the fig to a consistent size.
   plt.figure(figsize=(10,6))
   # Plot the metrics by lat & lon coords on the cartopy mollweide map.
   ax = plt.axes(projection=ccrs.Mollweide())
-  plt.title(f'Columns of {j_name} photolysis rates predicted by random forest\n{date.strftime("%d/%m/%Y %H:%M")}')
+  plt.title(f'Columns of {j_name} photolysis rates predicted by random forest\n{date.strftime("%d/%m/%Y %H:%M")}  R{con.sup2} = {r2:.3f}')
   plt.scatter(x, y, s=7, c=c, cmap=cmap, vmin=vmin, vmax=vmax, transform=ccrs.PlateCarree())
-  cbar = plt.colorbar(shrink=0.7, label=f'{text} in column', orientation='horizontal')
+  cbar = plt.colorbar(shrink=0.7, label=f'% difference of J rate predictions to targets in column', orientation='horizontal')
   cbar.ax.set_xticks([-20, -15, -10, -5, 0, 5, 10, 15, 20])
   cbar.ax.set_xticklabels(['< -20', '-15', '-10', '-5', '0', '5', '10', '15', '> 20'])
   ax.set_global()
   ax.coastlines()
+  
+  # Test.
+  #plt.show()
+  #exit()
 
   # Save the fig.
   fig_name = date.strftime('%d%H')
