@@ -60,12 +60,14 @@ rf_path = f'{paths.mod}/rf/rf.pkl'
 # Load a full day of np data (ALL J rates and full resolution).
 print('\nLoading data.')
 data = np.load(day_path)
+print('Data:', data.shape)
 
 # Load the trained (not scaled) random forest.
 rf = joblib.load(rf_path) 
 # Pick out 1 timestep.
 data = data[:, data[con.hour] == 12] # Midday.
 print('Timestep:', data.shape)
+
 '''
 # Test giving the random forest the whole grid at once (for 1 ts) as if it was in UKCA.
 print('\nUsing random forest on whole timestep.')
@@ -93,10 +95,9 @@ map_path = f'{paths.analysis}/col_maps_full_res/all_whole_grid'
 show_map(name, grid, r2, map_path)
 
 # Now do the grid and map for each J rate individually.
-for i in range(10, len(targets[0])):
-  
+for i in range(len(targets[0])):  
   # Skip if this is an empty output.
-  if np.all(targets[:, i] == 0):
+  if np.all(targets[:, i] == 0):          
     continue
   
   # Get the name of the reaction.
@@ -144,14 +145,7 @@ for i in range(len(lats)):
   for j in range(len(lons)):
     lon = lons[j]
     # Get the indices of this column.
-    idx = np.where((inputs[:, con.lat] == lat) & (inputs[:, con.lon] == lon))
-    
-    # Test
-    print(idx)
-    print(len(idx[0]))
-    exit()
-    
-    idx = idx[0]
+    idx = np.where((inputs[:, con.lat] == lat) & (inputs[:, con.lon] == lon))[0]   
     # Get the inputs in this column.
     input = inputs[idx]
     # Skip if the column is at night.
@@ -159,11 +153,15 @@ for i in range(len(lats)):
       continue
     # Get the targets in the column.
     target = targets[idx]
+        
     # Select the pressures within range of fast-J.
-    input, _ = fns.split_pressure(input)
-    target, _ = fns.split_pressure(target)
+    trop = np.where(input[:, con.pressure] > 20)[0]
+    input = input[trop].squeeze()
+    target = target[trop].squeeze()  
+    
     # Use the trained (not scaled) RF on the inputs for this column only.
     pred = rf.predict(input)
+    
     # Get % diff for this column.
     diff = np.nan_to_num(((np.mean(pred) - np.mean(target)) / np.mean(target)) * 100, nan=np.nan, posinf=0, neginf=0)
     # Place preds and % diff in an array for the full grid. Pad 2nd index to keep to same structure as other grid, for use in fns.
@@ -175,4 +173,3 @@ print(f'Using the random forest on each individual column in the whole grid at o
 # Save preds and % diffs of whole grid.
 # Calculate R2 of whole grid at this timestep. 
 # Show plots for each J rate and a combined one of all.
-
