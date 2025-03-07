@@ -12,6 +12,7 @@ Compare accuracy. Timings are for info only, not indicative of the final impleme
 import os
 import time
 import joblib
+import warnings
 import numpy as np
 import functions as fns
 import constants as con
@@ -86,13 +87,12 @@ end = time.time()
 sec = end - start
 print(f'Using the random forest on the whole grid at one timestep took {round(sec)} seconds.')
 print(f'\nOverall R2 for all J rates and whole grid in timestep: {r2}\n')
-name = 'all'
 
 # Get performance metrics for this J rate for each column and save array of performance per col.
 grid = fns.make_cols_map(inputs, targets, preds, None)
 # Plot it on the map.
-map_path = f'{paths.analysis}/col_maps_full_res/all_whole_grid'
-show_map(name, grid, r2, map_path)
+map_path = f'{paths.analysis}/col_maps_full_res/all_whole_grid.png'
+show_map('all', grid, r2, map_path)
 
 # Now do the grid and map for each J rate individually.
 for i in range(len(targets[0])):  
@@ -130,6 +130,9 @@ print('\nUsing random forest on individual columns.')
 start = time.time()
 # Select inputs and targets.
 inputs, targets = fns.in_out_swap(data, con.phys_main, con.J_all)
+# Make an array to put all the preds in. Start with the targets array just because it's the right shape and will be indexed the same.
+preds, truths = np.full(targets.shape, np.nan), np.full(targets.shape, np.nan)
+
 # Pick out each column.
 # Get the unique lat & lon values.
 lats = inputs[:, con.lat]
@@ -138,18 +141,22 @@ lons = inputs[:, con.lon]
 lons = np.unique(lons)
 # Make a 2d list of coords and % differences for each lat and lon point.
 grid = []  
+# Ignore warnings about div by zero because we've caught that.
+warnings.filterwarnings('ignore') 
+
 # For each lat...
 for i in range(len(lats)):
   lat = lats[i]
   # And each lon...
   for j in range(len(lons)):
     lon = lons[j]
+    
     # Get the indices of this column.
     idx = np.where((inputs[:, con.lat] == lat) & (inputs[:, con.lon] == lon))[0]   
     # Get the inputs in this column.
     input = inputs[idx]
     # Skip if the column is at night.
-    if np.all(input[con.down_sw_flux] == 0):
+    if np.all(input[:, con.down_sw_flux] == 0):
       continue
     # Get the targets in the column.
     target = targets[idx]
@@ -157,19 +164,45 @@ for i in range(len(lats)):
     # Select the pressures within range of fast-J.
     trop = np.where(input[:, con.pressure] > 20)[0]
     input = input[trop].squeeze()
-    target = target[trop].squeeze()  
+    target = target[trop].squeeze()   
+    # Keep these indices for later.
+    idx = idx[trop]
     
     # Use the trained (not scaled) RF on the inputs for this column only.
     pred = rf.predict(input)
     
-    # Get % diff for this column.
+    # Store these preds in the full preds array.
+    preds[idx] = pred
+    truths[idx] = target
+    
+    # Get overall % diff for this column.
     diff = np.nan_to_num(((np.mean(pred) - np.mean(target)) / np.mean(target)) * 100, nan=np.nan, posinf=0, neginf=0)
+    
     # Place preds and % diff in an array for the full grid. Pad 2nd index to keep to same structure as other grid, for use in fns.
     grid.append([lat, lon, 0, diff])
+    '''
+    # Get % diffs for each J rate.
+    for k in range(len(pred[0])):
+      pred_rate = pred[:, k]
+      target_rate = target[:, k]
+      # Get % diff for this J rate in this column.
+      diff = np.nan_to_num(((np.mean(pred) - np.mean(target)) / np.mean(target)) * 100, nan=np.nan, posinf=0, neginf=0)
+    '''
+    
 # Record time taken.
 end = time.time()
 sec = end - start
 print(f'Using the random forest on each individual column in the whole grid at one timestep took {round(sec)} seconds.')
-# Save preds and % diffs of whole grid.
-# Calculate R2 of whole grid at this timestep. 
-# Show plots for each J rate and a combined one of all.
+grid = np.array(grid)
+print('grid:', grid.shape)
+
+# Calculate R2 of whole grid at this timestep. Remove nans first.
+truths, preds = truths[~np.isnan(truths)], preds[~np.isnan(preds)] 
+r2 = round(r2_score(truths, preds), 3)
+print(f'\nOverall R2 for all J rates at each column in timestep: {r2}\n')
+
+# Show plots for all combined J rates.
+map_path = f'{paths.analysis}/col_maps_full_res/all_individual_cols.png'
+show_map('all', grid, r2, map_path)
+
+
