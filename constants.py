@@ -10,16 +10,23 @@ import numpy as np
 from matplotlib.colors import LinearSegmentedColormap
 
 # Annoying subscripts & superscripts for displaying units etc. on plots.
+sub0 = '\u2080'
+sub1 = '\u2081'
 sub2 = '\u2082'
 sub3 = '\u2083'
 sub4 = '\u2084'
+sub6 = '\u2086'
+sub7 = '\u2087'
+sub9 = '\u2089'
 sup1 = '\u00b9'
 sup2 = '\u00b2'
+sup3 = '\u00b3'
 supminus = '\u207b'
+to = '\u2192' # R arrow.
 r2 = f'R{sup2}'
 pers = f's{supminus}{sup1}' 
 Wperm2 = f'Wm{supminus}{sup2}'
-rxnO3 = f'O{sub3} -> O{sub2} + O({sup1}D)'
+rxnO3 = f'O{sub3} {to} O{sub2} + O({sup1}D)'
 
 # Indices of some common features to use as inputs and outputs.
 # Physics.
@@ -66,6 +73,8 @@ NO3 = 66
 HOCl = 71
 H2O2 = 74
 O3 = 78 # O(1D) product.
+# All 33 tropospheric J rates in strat-trop.
+J_trop = [15,16,17,18,19,20,21,22,23,24,25,26,28,30,31,32,33,51,52,66,68,70,71,72,73,74,75,76,78,79,80,81,82]
 # J rates which are not summed or duplicate fg. with usually zero rates removed.
 #           0  1 2  3 4  5  6 7  8 9 10 11 1213 14 1516 17 1819 20 21   
 J_core    = [16,18,19,20,24,28,30,31,33,51,52,66,70,71,72,73,74,75,78,79,80,82]
