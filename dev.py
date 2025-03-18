@@ -1,6 +1,6 @@
 '''
 Name: Sophie Turner.
-Date: 11/2/2025.
+Date: 13/3/2025.
 Contact: st838@cam.ac.uk.
 Simulate the simulation! Actually, simulate the emulation of the simulation!!
 Assume the UM provides the random forest with inputs for only the current timestep.
@@ -20,7 +20,7 @@ from sklearn.metrics import r2_score
 
 # File paths.
 day_path = f'{paths.npy}/20160401.npy'
-rf_path = f'{paths.mod}/rf/rf.pkl'
+rf_path = f'{paths.mod}/rf_trop/rf_trop.pkl'
 
 # Load a full day of np data (ALL J rates and full resolution).
 print('\nLoading data.')
@@ -49,8 +49,9 @@ lons = np.unique(lons)
 # Ignore warnings about div by zero because we've caught that.
 warnings.filterwarnings('ignore') 
 
-# Get number of reactions.
+# Get number of reactions and desired shapes of results.
 n_J = len(con.J_trop)
+rows = n_J + 1
 
 # Make empty preds and targets array. This is so that we only save data where there are J rates and not a load of null space.
 # It will have [lat, lon, target, pred, diffs] for each col.
@@ -58,7 +59,7 @@ results = []
 
 # Make empty diff array, to append to results array for each col.
 # It will be 2d with diff for each J rate.
-diff_Js = []
+diffs = []
 
 # For each lat...
 for i in range(len(lats)):
@@ -83,16 +84,6 @@ for i in range(len(lats)):
 
     # Use the trained (not scaled) RF on the inputs for this column only.
     pred = rf.predict(input)
-    
-    # TEST.
-    # Remove any excess dimensions. Should all be 1d because it's only a column.
-    print(pred.shape)
-    print(input.shape)
-    print(target.shape)
-    print(pred.ndim)
-    print(input.ndim)
-    print(target.ndim)
-    exit()
 
     # Get overall % diffs for all J rates in this column.
     diff = np.nan_to_num(((np.mean(pred) - np.mean(target)) / np.mean(target)) * 100, nan=np.nan, posinf=0, neginf=0)
@@ -108,44 +99,56 @@ for i in range(len(lats)):
       # Store diff in diffs array.
       diffs.append(diff)
 
-    # Pad lat and lon so they fit nicely with the dims in results array.
-    lat = [lat] * n_J
-    lon = [lon] * n_J
-    
-    # TEST.
-    # Make sure everything is the right shape.
-    print(lat.shape)
-    print(lon.shape)
-    print(target.shape)
-    print(pred.shape)
-    print(diffs.shape)
-    print(lat.ndim)
-    print(lon.ndim)
-    print(target.ndim)
-    print(pred.ndim)
-    print(diffs.ndim)
-    exit()
+    # Pad lat, lon and diffs so they fit nicely with the dims in results array.
+    cols = target.shape[0]
+    lat_res = np.full((rows, cols), lat)
+    lon_res = np.full((rows, cols), lon)
+    diffs_res = [diffs] * cols
+    diffs_res = np.array(diffs_res)
+    diffs_res = diffs_res.T    
+    # Pad target and pred to account for the 0th index being the average.
+    target_res = np.pad(target, ((0,0), (1,0)), mode='constant', constant_values=0)
+    pred_res = np.pad(pred, ((0,0), (1,0)), mode='constant', constant_values=0)
+    # Flip target and pred so they're in the same shape as the others.
+    target_res, pred_res = target_res.T, pred_res.T
     
     # Add all this data to the full results array.
     # [lat, lon, target, pred, diffs].   
-    results.append([lat, lon, target, pred, diffs])
+    results.append([lat_res, lon_res, target_res, pred_res, diffs_res])
+    
+    '''
+    # TEST.    
+    print('\ntarget', target.shape)
+    print('pred', pred.shape)
+    print('diffs', diffs.shape)
+    print('lat', lat.shape)
+    print('lon', lon.shape)
+    results = np.array(results).squeeze()
+    print('\nresults', results.shape)
+    exit()
+    '''
+    
 # Turn the results into a np array for easier operations.
 results = np.array(results)
+print(results.shape)
 
 # For each J rate...
 for r in range(n_J):
-  # Get the name unless it's the average one of all.
+  # Get the name unless it's the average one of all. 
+  # Pred and target data will be different too if it's the average of all.
   if r == 0:
-    fullname, shortname = 'all', 'all' 
+    fullname, shortname = 'all', 'all'
+    target = results[:, 2]
+    pred = results[:, 3] 
   else:
     fullname = idx_names[r + 1 + con.n_phys][2]
     shortname = idx_names[r + 1 + con.n_phys][3]
+    target = results[:, 2, r]
+    pred = results[:, 3, r]
   
-  # Get all the preds, targets and data for this J rate.
+  # Get the rest of the data for this J rate.
   lat = results[:, 0, r] 
   lon = results[:, 1, r]
-  target = results[:, 2, r]
-  pred = results[:, 3, r]
   diff = results[:, 4, r]
   
   # Get the overall R2 for this J rate.
@@ -156,8 +159,8 @@ for r in range(n_J):
   cmap = con.cmap_diff
   # Clip the bounds to +- 20% to remove ridiculous outliers and simplify the plot visuals.
   vmin, vmax = -20, 20
-  grid[grid[:, 3] < vmin, 3] = vmin
-  grid[grid[:, 3] > vmax, 3] = vmax
+  grid[grid[:, 4] < vmin, 3] = vmin
+  grid[grid[:, 4] > vmax, 3] = vmax
   # Set the fig to a consistent size.
   plt.figure(figsize=(10,7.5))
   # Plot the metrics by lat & lon coords on the cartopy mollweide map.
@@ -176,32 +179,3 @@ for r in range(n_J):
   exit()
 
 
-
-
-
-
-# For each lat...
-
-  # And each lon...
-
-    # Get the indices of this column.
-      
-    # Get the inputs in this column.
-     
-    # Skip if the column is at night.
-      
-    # Get the target J rates in the column.
-        
-    # Select the pressures within range of fast-J.
-
-    # Use the trained (not scaled) RF on the inputs for this column only.
-
-    # Store these preds in the full preds array, and their corresponding targets.
-
-    # Get overall % diffs for all J rates in this column.
-    
-    # Store diff in the full diffs array at lat, lon.  
-
-# Get overall R2 of all J rates in whole grid.
-
-# Show map of overall diffs for all J rates.
