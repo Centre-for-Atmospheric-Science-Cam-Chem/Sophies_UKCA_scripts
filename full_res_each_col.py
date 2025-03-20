@@ -158,6 +158,6 @@ for r in range(n_J + 1):
   ax.coastlines()
   
   # Save the fig.
-  plt.savefig(out_path)
+  plt.savefig(map_path)
   plt.show()
   plt.close() 
