@@ -15,7 +15,9 @@ import numpy as np
 import functions as fns
 import constants as con
 import file_paths as paths
+import cartopy.crs as ccrs
 from idx_names import idx_names
+import matplotlib.pyplot as plt
 from sklearn.metrics import r2_score
 
 # File paths.
@@ -60,7 +62,7 @@ results = []
 # For each lat...
 for i in range(len(lats)):
   lat = lats[i]  
-  print(f'{i + 1} of {len(lats)}')
+  print(f'Processing latitude {i + 1} of {len(lats)}')
   # And each lon...
   for j in range(len(lons)):
     lon = lons[j]
@@ -68,25 +70,25 @@ for i in range(len(lats)):
     idx = np.where((inputs[:, con.lat] == lat) & (inputs[:, con.lon] == lon))[0]      
     # Get the inputs in this column.
     input = inputs[idx]
-    # Skip if the column is at night.
-    if np.all(input[:, con.down_sw_flux] == 0):          
-      continue   
-    # Get the target J rates in the column.
-    target = targets[idx]
-        
-    # Select the pressures within range of fast-J.
-    trop = np.where(input[:, con.pressure] > 20)[0]
+    
+    # Select the lowest altitudes within range of fast-J.
+    # Normally it would be pressure but altitude used here to allow 2D indexing later.
+    # Needs to be done before checking for night or we get empty cols of perfect preds.
+    trop = np.where(input[:, con.alt] < 0.62)[0]
     input = input[trop].squeeze()
-    target = target[trop].squeeze()
+    
+    # Skip if the column is at night.
+    if np.all(input[-1, con.down_sw_flux] == 0):          
+      continue   
+      
+    # Get the target J rates in the column.
+    target = targets[idx][trop].squeeze()
 
     # Use the trained (not scaled) RF on the inputs for this column only.
     pred = rf.predict(input)
 
-    # Get overall % diffs for all J rates in this column.
-    diff = np.nan_to_num(((np.mean(pred) - np.mean(target)) / np.mean(target)) * 100, nan=np.nan, posinf=0, neginf=0)
-    # Store diff in diffs array.
-    diffs = []
-    diffs.append(diff)  
+    # Array of % differences for each J rate in this column. 
+    diffs = [] 
 
     # For each J rate...
     for r in range(n_J):
@@ -97,45 +99,54 @@ for i in range(len(lats)):
       # Store diff in diffs array.
       diffs.append(diff)
    
-    # Pad target and pred to account for the 0th index being the average.
-    target = np.pad(target, ((0,0), (1,0)), mode='constant', constant_values=0)
-    pred = np.pad(pred, ((0,0), (1,0)), mode='constant', constant_values=0)
+    # Get overall % diffs for all J rates in this column.
+    diff = np.nan_to_num(((np.mean(pred) - np.mean(target)) / np.mean(target)) * 100, nan=np.nan, posinf=0, neginf=0)
+    # Stick it on the end.
+    diffs.append(diff) 
+   
+    # Pad target and pred to account for the last index being the average.
+    target = np.pad(target, ((0,0), (0,1)), mode='constant', constant_values=0)
+    pred = np.pad(pred, ((0,0), (0,1)), mode='constant', constant_values=0)
     # Flip target and pred so they're in the same shape as the others.
     target, pred = target.T, pred.T
-    
+      
     # Add all this data to the full results array.
     # [lat, lon, target, pred, diffs].   
-    results.append([lat, lon, target, pred, diffs])        
+    results.append([lat, lon, target, pred, diffs])  
     
+# Keep track of the R2 scores to get an average after.
+r2_sum = 0
 # For each J rate...
-for r in range(n_J):
-  # Get the name unless it's the average one of all. 
+for r in range(n_J + 1):
+  # Get the name unless it's the average one of all (at the last index). 
   # Pred and target data will be different too if it's the average of all.
-  if r == 0:
+  if r == n_J:
     fullname, shortname = 'all', 'all'
-    target = [row[2] for row in results] # target = results[:, 2]
-    pred = [row[3] for row in results] # pred = results[:, 3]
+    r2 = round(r2_sum / n_J, 3)
   else:
-    fullname = idx_names[r + 1 + con.n_phys][2]
-    shortname = idx_names[r + 1 + con.n_phys][3]
+    fullname = idx_names[r + con.n_phys][2]
+    shortname = idx_names[r + con.n_phys][3]
     target = [row[2][r] for row in results] # target = results[:, 2, r]
     pred = [row[3][r] for row in results] # pred = results[:, 3, r]
+    # Flatten.
+    target = [item for sublist in target for item in sublist]
+    pred = [item for sublist in pred for item in sublist]
+    
+    # Get the overall R2 for this J rate.
+    r2 = round(r2_score(target, pred), 3)
+    # Keep track of the R2 scores to get an average after.
+    r2_sum += r2 
   
   # Get the rest of the data for this J rate.
   lat = [row[0] for row in results] # lat = results[:, 0, r] 
   lon = [row[1] for row in results] # lon = results[:, 1, r]
   diff = [row[4][r] for row in results] # diff = results[:, 4, r]
-   
-  # Get the overall R2 for this J rate.
-  r2 = round(r2_score(target, pred), 3)  
 
   # Show lat-lon map of diffs for this J rate and time.
   map_path = f'{paths.analysis}/col_maps_full_res/{shortname}_individual_cols.png'
   cmap = con.cmap_diff
   # Clip the bounds to +- 20% to remove ridiculous outliers and simplify the plot visuals.
   vmin, vmax = -20, 20
-  grid[grid[:, 4] < vmin, 3] = vmin
-  grid[grid[:, 4] > vmax, 3] = vmax
   # Set the fig to a consistent size.
   plt.figure(figsize=(10,7.5))
   # Plot the metrics by lat & lon coords on the cartopy mollweide map.
@@ -146,11 +157,7 @@ for r in range(n_J):
   ax.set_global()
   ax.coastlines()
   
-  # TEST.
   # Save the fig.
-  #plt.savefig(out_path)
+  plt.savefig(out_path)
   plt.show()
   plt.close() 
-  exit()
-
-
