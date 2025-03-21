@@ -14,12 +14,14 @@ import numpy as np
 import functions as fns
 import constants as con
 import file_paths as paths
+import cartopy.crs as ccrs
 from idx_names import idx_names
+import matplotlib.pyplot as plt
 from sklearn.metrics import r2_score
 
 
-def show_diff_map(fullname, grid, r2, out_path):
-    '''Show a map of the column % diffs for a specific J rate.
+def show_map(fullname, grid, r2, out_path):
+  '''Show a map of the column % diffs for a specific J rate.
   fullname: string, fully formatted name of J rate.
   grid: 2d numpy array of lat, lon, r2, diff for each column.
   r2: number, overall R2 score of whole grid at this timestep.
@@ -105,11 +107,12 @@ for i in range(len(targets[0])):
   target = targets[:, i]
   pred = preds[:, i]
   r2 = round(r2_score(target, pred), 3)
-  print(f'Overall R2 for {fullname} in whole grid at this timestep: {r2}') 
+  #print(f'Overall R2 for {fullname} in whole grid at this timestep: {r2}') 
+  print(i, fullname, r2)
 
   # Show plot for this J rate and ts. 
   map_path = f'{paths.analysis}/col_maps_full_res/{shortname}_whole_grid.png'
-  show_map(fullname, grid, r2, map_path)
+  #show_map(fullname, grid, r2, map_path)
 
 # Record time taken.
 end = time.time()

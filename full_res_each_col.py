@@ -53,7 +53,6 @@ warnings.filterwarnings('ignore')
 
 # Get number of reactions and desired shapes of results.
 n_J = len(con.J_trop)
-rows = n_J + 1
 
 # Make empty preds and targets array. This is so that we only save data where there are J rates and not a load of null space.
 # It will have [lat, lon, target, pred, diffs] for each col.
@@ -124,8 +123,8 @@ for r in range(n_J + 1):
     fullname, shortname = 'all', 'all'
     r2 = round(r2_sum / n_J, 3)
   else:
-    fullname = idx_names[r + con.n_phys][2]
-    shortname = idx_names[r + con.n_phys][3]
+    fullname = idx_names[con.J_trop[r]][2]
+    shortname = idx_names[con.J_trop[r]][3]
     target = [row[2][r] for row in results] # target = results[:, 2, r]
     pred = [row[3][r] for row in results] # pred = results[:, 3, r]
     # Flatten.
@@ -159,5 +158,4 @@ for r in range(n_J + 1):
   
   # Save the fig.
   plt.savefig(map_path)
-  plt.show()
   plt.close() 
