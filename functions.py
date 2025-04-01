@@ -413,6 +413,7 @@ def make_cols_map(inputs, targets, preds, j_idx=None, out_path=None):
   inputs, targets, preds: 2d numpy arrays of ML model data, of shape(samples, features).
   j_idx: int or None, index in target data of which J rate to look at. If None, plot avg of all.
   out_path: string or None. File path to save map as.
+  Returns the map as a 2d numpy array of lat, lon, r2, diff for each col.
   '''
   warnings.filterwarnings('ignore') # R2 score on 1 datapoint.
   # Get the unique lat & lon values.
@@ -444,7 +445,7 @@ def make_cols_map(inputs, targets, preds, j_idx=None, out_path=None):
       # Save the R2 scores in a 2d list for every lat & lon.
       grid.append([lat, lon, r2, diff])     
   grid = np.array(grid)
-  print(grid.shape)
+  #print(grid.shape)
   if out_path is not None:
     # Save the array because it takes ages to make.
     np.save(out_path, grid)
@@ -530,6 +531,37 @@ def show(out_test, out_pred, maxe=None, mse=None, mape=None, smape=None, r2=None
   plt.ylabel(f'{j} J rate from random forest / {con.pers}')
   plt.show() 
   plt.close()
+  
+  
+def show_diff_map(fullname, grid, r2, out_path=None):
+  '''Show a map of the column % diffs for a specific J rate.
+  fullname: string, fully formatted name of J rate.
+  grid: 2d numpy array of lat, lon, r2, diff for each column.
+  r2: number, overall R2 score of whole grid at this timestep.
+  out_path: string, file path to save fig as.
+  '''
+  # Show plot for this J rate and ts. 
+  cmap = con.cmap_diff
+  # Clip the bounds to +- 20% to remove ridiculous outliers and simplify the plot visuals.
+  vmin, vmax = -20, 20
+  x = grid[:, 1]
+  y = grid[:, 0]
+  c = grid[:, 3]
+  # Set the fig to a consistent size.
+  plt.figure(figsize=(10,7.5))
+  # Plot the metrics by lat & lon coords on the cartopy mollweide map.
+  ax = plt.axes(projection=ccrs.Mollweide()) 
+  plt.title(f'Columns of {fullname} photolysis rates predicted by random forest. Overall {con.r2} = {r2}')
+  plt.scatter(x, y, c=c, s=3, vmin=vmin, vmax=vmax, cmap=cmap, transform=ccrs.PlateCarree()) 
+  plt.colorbar(shrink=0.5, label=f'% difference of J rate predictions to targets in column', orientation='horizontal')
+  ax.set_global()
+  ax.coastlines()
+  # Save or show the map.
+  if out_path is None:
+    plt.show()
+  else:
+    plt.savefig(out_path)
+  plt.close() 
   
   
 def show_col_orig(data, ij=78, name='O3', all_time=True):
@@ -636,7 +668,7 @@ def show_col(out_test, out_pred, coords, ij, name='O3', all_time=True):
   plt.xlabel('% difference')
   plt.ylabel('Altitude / km')
   plt.show()
-  plt.close() 
+  plt.close()    
   
   
 def make_gif(dir_path, ext='png', gif_name='GIF', ms=500):

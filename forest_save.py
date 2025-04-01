@@ -18,7 +18,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler as scaler
 
 # Whether or not to standardise data.
-scale = True
+scale = False
 
 # File paths.
 data_path = f'{paths.npy}/low_res_yr_500k.npy'
@@ -44,7 +44,7 @@ end = time.time()
 print(f'Loading the data took {round(end-start)} seconds.')
 
 # Get inputs and targets.
-inputs, targets = fns.in_out_swap(data, con.phys_main, con.J_all)
+inputs, targets = fns.in_out_swap(data, con.phys_main, con.J_trop)
 
 # Scale inputs.
 if scale:
@@ -122,8 +122,8 @@ meta = f'Date: {datetime.date.today()}\n\
 {in_test_path}: 2d numpy array of inputs used to make the above datasets, of shape(samples, features).\n\
 Training data: {data_path}\n\
 Data alterations: night times and upper stratosphere removed.\n\
-Inputs: phys_main. Hour of day, altitude km, latitude deg, longitude deg, days since 1/1/2015, humidity, cloud fraction, pressure Pa, cos solar zenith angle, upward shortwave flux, downward shortwave flux, temperature K.\n\
-Targets: J_core. All strat-trop J rates which are not duplicate functional groups or all zero.\n\
+Inputs: phys_main. Hour of day, altitude km, latitude deg, longitude deg, days since 1/1/2015, humidity, cloud fraction, pressure Pa, solar zenith angle in cos radians, upward shortwave flux, downward shortwave flux, temperature K.\n\
+Targets: J_trop. All tropospheric strat-trop J rates which are not duplicate functional groups or all zero.\n\
 Trees: {len(model.estimators_)}.\n\
 Max leaves per tree: 100,000.\n\
 Nodes per tree: {model.estimators_[0].tree_.node_count}.\n\
