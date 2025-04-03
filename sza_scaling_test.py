@@ -48,3 +48,5 @@ def compare_sza_scaling(model_name, title):
 compare_sza_scaling('rf_trop', 'surface-level')
 # Look at performance of random forest trained on scaled SZA.
 compare_sza_scaling('rf_scaled_sza', 'vertically scaled')
+# Look at performance of random forest trained on geometrically snd refractively scaled SZA.
+compare_sza_scaling('rf_scaled_sza_refrac', 'geometrically and refractively scaled')
