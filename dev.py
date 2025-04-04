@@ -95,41 +95,20 @@ day_file = f'{paths.npy}/20160701.npy'
 print('\nLoading data.')
 data = np.load(day_file) 
 print(data.shape) # (85, 56401920)
-
 print('Calculating model level altitudes.')
 
 # Select one timestep (midday).
 data = data[:, (data[con.hour] == 12)]
-'''
-# Test
-print('\nmidday data')
-print(data)
-print(data.shape)
-'''
 # Get latitudes and longitudes in the data.
 lats = np.unique(data[con.lat]) 
 lons = np.unique(data[con.lon]) 
-'''
-# Test
-print('\nlons')
-print(lons)
-print(lons.shape)
-'''
 # Select one latitude (middle).
 data = data[:, (data[con.lat] == lats[71])]
 
 # Fetch the current values for altitude. They are the same across the entire lat-lon grid.
 # To do: Add a new column of data for altitude instead of overwriting alt.
-alts_sea = data[con.alt]
+alts_sea = data[con.alt].copy()
 alts_sea_sequence = np.unique(alts_sea)
-
-# Test
-print('\nalts sea')
-print(alts_sea)
-print(alts_sea.shape)
-print('\nalts sea sequence')
-print(alts_sea_sequence)
-print(alts_sea_sequence.shape)
 
 # Start the ground height at sea level and keep track of the ground surface.
 ground = 0
@@ -138,75 +117,38 @@ surface = []
 # Get the vertical columns along one longitude in the dataset.
 # And each lon...
 for lon in lons: 
-
   # Get the data in that column.
   col_idx = np.where(data[con.lon] == lon)[0]
   col = data[:, col_idx] 
-  '''  
-  # Test
-  print('\ncol')
-  print(col)
-  print(col.shape)
-  '''  
+  
   # Dummy data for ground height for each column, because I haven't yet got the real data for this.
-  # Let it go up or down by <= 50 metres from the previous value so that it's not ridiculously jagged.
-  ground += (con.rng.random(dtype=np.float32) - 0.5) * 50
+  # Let it go up or down by <= 100 metres from the previous value so that it's not ridiculously jagged.
+  ground += (con.rng.random(dtype=np.float32) - 0.5) * 100
   # Don't let it go below sea level for now. 
   if ground < 0:
     ground = 0
-    
   # Add this bit of ground to the surface.
   surface.append(ground)      
-  '''	
-  # Test
-  print('\nground')
-  print(ground)
-  print('\nsurface')
-  print(surface)
-  '''
+
   # Get the altitudes for each level in the column.
   alts_hills = lvl_to_alt(levels, ground)
-  '''      
-  # Test
-  print('\nalts new')
-  print(alts)
-  print(len(alts))
-  '''
+
   # Update the column's altitudes in the dataset.
   # To do: Add a new column of data for altitude instead of overwriting alt.
-  data[con.alt, col_idx] = alts_hills
-  '''  
-  # Test
-  print('\nalts in col in data')
-  print(data[con.alt, col_idx])
-  print(data[con.alt, col_idx].shape)
-  '''  
+  data[con.alt, col_idx] = alts_hills 
 
 # See how altitude compares to model level along this mid-latitude sample slice. 
 # Hidden lines just to get the legend to work.
-plt.plot(lons, surface, color='green', label='Model levels without orography')
-plt.plot(lons, surface, color='magenta', label='Model levels with orography')
+plt.plot(lons, surface, color='limegreen', label='Model levels without orography')
+plt.plot(lons, surface, color='mediumorchid', label='Model levels with orography')
+# A hoizontal line for each model level. Just look at the lowest 20 levels.
+for lvl in range(20):
+  alt_idx = np.where(alts_sea == alts_sea_sequence[lvl])[0]
+  # The actual lines for levels with and without orography.
+  plt.plot(lons, alts_sea[alt_idx] * 85, color='limegreen')
+  plt.plot(lons, data[con.alt, alt_idx], color='mediumorchid', linestyle='--')
 # The actual surface line.
 plt.plot(lons, surface, color='orange', label='Ground surface (random dummy data)')
-# A hoizontal line for each model level.
-for lvl in range(85):
-  alt_idx = np.where(alts_sea == alts_sea_sequence[lvl])[0]
-  
-  # Test
-  print('\nalt_idx')
-  print(alt_idx)
-  print(alt_idx.shape)
-  print('\nalts_sea[alt_idx]')
-  print(alts_sea[alt_idx])
-  print(alts_sea[alt_idx].shape)
-  print('\ndata[con.alt, alt_idx]')
-  print(data[con.alt, alt_idx])
-  print(data[con.alt, alt_idx].shape)
-  exit()
-  
-  # The actual lines for levels with and without orography.
-  plt.plot(lons, alts_sea[alt_idx], color='green')
-  plt.plot(lons, data[con.alt, alt_idx], color='magenta')
 plt.title('A test of level altitude calculation along one latitude')
 plt.xlabel('Longitude')
 plt.ylabel('Altitude')
