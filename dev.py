@@ -1,156 +1,215 @@
 '''
 Name: Sophie Turner.
-Date: 13/3/2025.
+Date: 4/4/2025.
 Contact: st838@cam.ac.uk.
-Simulate the simulation! Actually, simulate the emulation of the simulation!!
-Assume the UM provides the random forest with inputs for only the current timestep.
-Test giving the random forest one column at a time.
-Compare accuracy. Timings are for info only, not indicative of the final implementation.
+Implement Rob's level-to-altitude conversion on the whole grid.
+It might seem like there's a lot of unnecessary code in the loop, 
+but that's code I'll need later to overwrite altitude values in the datasets.
 '''
 
-import time
-import joblib
-import warnings
 import numpy as np
-import functions as fns
 import constants as con
 import file_paths as paths
-from idx_names import idx_names
-from sklearn.metrics import r2_score
+import matplotlib.pyplot as plt 
 
-# File paths.
-day_path = f'{paths.npy}/20160401.npy'
-rf_path = f'{paths.mod}/rf_trop/rf_trop.pkl'
 
-# Load a full day of np data (ALL J rates and full resolution).
+# Rob's code.
+def lvl_to_alt(grid_dict: dict, orography: float, 
+                             include_surface: bool = False) -> list:
+    """
+    Function to calculate model level heights above ground for a single vertical column. 
+    Args:
+        grid_dict (dict): dictionary version of the data held in the level control file (see below for 85-level grid). 
+        orography (float): ground height for a vertical column, usually from STASH section 0, item 33.
+        include_surface (bool, optional): whether or not to include the lowest model level. Defaults to False.
+    Returns:
+        list: list of altitudes of model levels. 
+    """
+    # checking sigma
+    eta_first_constant_rho = grid_dict['eta_rho'][
+        grid_dict['first_constant_r_rho_level'] - 1]
+    z_list = []
+    if include_surface:
+        starting_index = 0
+    else:
+        starting_index = 1
+    for i in range(starting_index, len(grid_dict['eta_theta'])):
+        eta = grid_dict['eta_theta'][i]
+        if i >= grid_dict['first_constant_r_rho_level'] :
+            # i.e. not terrain following
+            sigma = 0
+        else:
+            # scaling factor for topography following coords
+            sigma = (1.0 - (eta / eta_first_constant_rho))**2
+        # with no terrain use eta.
+        delta = eta * grid_dict['z_top_of_model']
+        z_list.append(delta + (sigma * orography))
+    return z_list
+    
+# These arrays are proportional heights out of 85km of each of the 85 levels.    
+levels = dict(
+  z_top_of_model=85000.00,
+  first_constant_r_rho_level=51, 
+  eta_theta=[
+    0.0000000E+00,   0.2352941E-03,   0.6274510E-03,   0.1176471E-02,   0.1882353E-02,
+    0.2745098E-02,   0.3764706E-02,   0.4941176E-02,   0.6274510E-02,   0.7764705E-02,
+    0.9411764E-02,   0.1121569E-01,   0.1317647E-01,   0.1529412E-01,   0.1756863E-01,
+    0.2000000E-01,   0.2258823E-01,   0.2533333E-01,   0.2823529E-01,   0.3129411E-01,
+    0.3450980E-01,   0.3788235E-01,   0.4141176E-01,   0.4509804E-01,   0.4894118E-01,
+    0.5294117E-01,   0.5709804E-01,   0.6141176E-01,   0.6588235E-01,   0.7050980E-01,
+    0.7529411E-01,   0.8023529E-01,   0.8533333E-01,   0.9058823E-01,   0.9600001E-01,
+    0.1015687E+00,   0.1072942E+00,   0.1131767E+00,   0.1192161E+00,   0.1254127E+00,
+    0.1317666E+00,   0.1382781E+00,   0.1449476E+00,   0.1517757E+00,   0.1587633E+00,
+    0.1659115E+00,   0.1732221E+00,   0.1806969E+00,   0.1883390E+00,   0.1961518E+00,
+    0.2041400E+00,   0.2123093E+00,   0.2206671E+00,   0.2292222E+00,   0.2379856E+00,
+    0.2469709E+00,   0.2561942E+00,   0.2656752E+00,   0.2754372E+00,   0.2855080E+00,
+    0.2959203E+00,   0.3067128E+00,   0.3179307E+00,   0.3296266E+00,   0.3418615E+00,
+    0.3547061E+00,   0.3682416E+00,   0.3825613E+00,   0.3977717E+00,   0.4139944E+00,
+    0.4313675E+00,   0.4500474E+00,   0.4702109E+00,   0.4920571E+00,   0.5158098E+00,
+    0.5417201E+00,   0.5700686E+00,   0.6011688E+00,   0.6353697E+00,   0.6730590E+00,
+    0.7146671E+00,   0.7606701E+00,   0.8115944E+00,   0.8680208E+00,   0.9305884E+00,
+    0.1000000E+01],
+   eta_rho=[
+    0.1176471E-03,   0.4313726E-03,   0.9019608E-03,   0.1529412E-02,   0.2313725E-02,
+    0.3254902E-02,   0.4352941E-02,   0.5607843E-02,   0.7019607E-02,   0.8588235E-02,
+    0.1031373E-01,   0.1219608E-01,   0.1423529E-01,   0.1643137E-01,   0.1878431E-01,
+    0.2129412E-01,   0.2396078E-01,   0.2678431E-01,   0.2976470E-01,   0.3290196E-01,
+    0.3619608E-01,   0.3964706E-01,   0.4325490E-01,   0.4701960E-01,   0.5094118E-01,
+    0.5501961E-01,   0.5925490E-01,   0.6364705E-01,   0.6819607E-01,   0.7290196E-01,
+    0.7776470E-01,   0.8278431E-01,   0.8796078E-01,   0.9329412E-01,   0.9878433E-01,
+    0.1044314E+00,   0.1102354E+00,   0.1161964E+00,   0.1223144E+00,   0.1285897E+00,
+    0.1350224E+00,   0.1416128E+00,   0.1483616E+00,   0.1552695E+00,   0.1623374E+00,
+    0.1695668E+00,   0.1769595E+00,   0.1845180E+00,   0.1922454E+00,   0.2001459E+00,
+    0.2082247E+00,   0.2164882E+00,   0.2249446E+00,   0.2336039E+00,   0.2424783E+00,
+    0.2515826E+00,   0.2609347E+00,   0.2705562E+00,   0.2804726E+00,   0.2907141E+00,
+    0.3013166E+00,   0.3123218E+00,   0.3237787E+00,   0.3357441E+00,   0.3482838E+00,
+    0.3614739E+00,   0.3754014E+00,   0.3901665E+00,   0.4058831E+00,   0.4226810E+00,
+    0.4407075E+00,   0.4601292E+00,   0.4811340E+00,   0.5039334E+00,   0.5287649E+00,
+    0.5558944E+00,   0.5856187E+00,   0.6182693E+00,   0.6542144E+00,   0.6938630E+00,
+    0.7376686E+00,   0.7861323E+00,   0.8398075E+00,   0.8993046E+00,   0.9652942E+00]
+)    
+# End of Rob's code.
+
+# A full day of hourly UM output data as a 2d numpy array.
+day_file = f'{paths.npy}/20160701.npy'
 print('\nLoading data.')
-data = np.load(day_path)
-print('Data:', data.shape)
+data = np.load(day_file) 
+print(data.shape) # (85, 56401920)
 
-# Load the trained (not scaled) random forest.
-rf = joblib.load(rf_path) 
-# Pick out 1 timestep.
-data = data[:, data[con.hour] == 12] # Midday.
-print('Timestep:', data.shape)
+print('Calculating model level altitudes.')
 
-# Test giving the random forest single columns at a time as if it was in UKCA.
-# If it's worse, inputs from previous timesteps could be included at little extra cost. This would mean the first few sim hours should be discarded from science like in spin-up.
-# The reason things are done in a weird and long-winded order here is to try and replicate how the steps will have to be done in UKCA run-time.
-print('\nUsing random forest on individual columns.')
-# Select inputs and targets. 
-inputs, targets = fns.in_out_swap(data, con.phys_main, con.J_trop)
+# Select one timestep (midday).
+data = data[:, (data[con.hour] == 12)]
+'''
+# Test
+print('\nmidday data')
+print(data)
+print(data.shape)
+'''
+# Get latitudes and longitudes in the data.
+lats = np.unique(data[con.lat]) 
+lons = np.unique(data[con.lon]) 
+'''
+# Test
+print('\nlons')
+print(lons)
+print(lons.shape)
+'''
+# Select one latitude (middle).
+data = data[:, (data[con.lat] == lats[71])]
 
-# Pick out each column.
-# Get the unique lat & lon values.
-lats = inputs[:, con.lat]
-lats = np.unique(lats)
-lons = inputs[:, con.lon]
-lons = np.unique(lons) 
-# Ignore warnings about div by zero because we've caught that.
-warnings.filterwarnings('ignore') 
+# Fetch the current values for altitude. They are the same across the entire lat-lon grid.
+# To do: Add a new column of data for altitude instead of overwriting alt.
+alts_sea = data[con.alt]
+alts_sea_sequence = np.unique(alts_sea)
 
-# Get number of reactions and desired shapes of results.
-n_J = len(con.J_trop)
-rows = n_J + 1
+# Test
+print('\nalts sea')
+print(alts_sea)
+print(alts_sea.shape)
+print('\nalts sea sequence')
+print(alts_sea_sequence)
+print(alts_sea_sequence.shape)
 
-# Make empty preds and targets array. This is so that we only save data where there are J rates and not a load of null space.
-# It will have [lat, lon, target, pred, diffs] for each col.
-results = [] 
+# Start the ground height at sea level and keep track of the ground surface.
+ground = 0
+surface = []
 
-# For each lat...
-for i in range(len(lats)):
-  lat = lats[i]  
-  print(f'{i + 1} of {len(lats)}')
-  # And each lon...
-  for j in range(len(lons)):
-    lon = lons[j]
-    # Get the indices of all the data in this column.
-    idx = np.where((inputs[:, con.lat] == lat) & (inputs[:, con.lon] == lon))[0]      
-    # Get the inputs in this column.
-    input = inputs[idx]
-    # Skip if the column is at night.
-    if np.all(input[:, con.down_sw_flux] == 0):          
-      continue   
-    # Get the target J rates in the column.
-    target = targets[idx]
-        
-    # Select the pressures within range of fast-J.
-    trop = np.where(input[:, con.pressure] > 20)[0]
-    input = input[trop].squeeze()
-    target = target[trop].squeeze()
+# Get the vertical columns along one longitude in the dataset.
+# And each lon...
+for lon in lons: 
 
-    # Use the trained (not scaled) RF on the inputs for this column only.
-    pred = rf.predict(input)
-
-    # Get overall % diffs for all J rates in this column.
-    diff = np.nan_to_num(((np.mean(pred) - np.mean(target)) / np.mean(target)) * 100, nan=np.nan, posinf=0, neginf=0)
-    # Store diff in diffs array.
-    diffs = []
-    diffs.append(diff)  
-
-    # For each J rate...
-    for r in range(n_J):
-      target_J = target[:, r]
-      pred_J = pred[:, r]
-      # Get % diff for this J rate in this column.
-      diff = np.nan_to_num(((np.mean(pred_J) - np.mean(target_J)) / np.mean(target_J)) * 100, nan=np.nan, posinf=0, neginf=0)     
-      # Store diff in diffs array.
-      diffs.append(diff)
-   
-    # Pad target and pred to account for the 0th index being the average.
-    target = np.pad(target, ((0,0), (1,0)), mode='constant', constant_values=0)
-    pred = np.pad(pred, ((0,0), (1,0)), mode='constant', constant_values=0)
-    # Flip target and pred so they're in the same shape as the others.
-    target, pred = target.T, pred.T
+  # Get the data in that column.
+  col_idx = np.where(data[con.lon] == lon)[0]
+  col = data[:, col_idx] 
+  '''  
+  # Test
+  print('\ncol')
+  print(col)
+  print(col.shape)
+  '''  
+  # Dummy data for ground height for each column, because I haven't yet got the real data for this.
+  # Let it go up or down by <= 50 metres from the previous value so that it's not ridiculously jagged.
+  ground += (con.rng.random(dtype=np.float32) - 0.5) * 50
+  # Don't let it go below sea level for now. 
+  if ground < 0:
+    ground = 0
     
-    # Add all this data to the full results array.
-    # [lat, lon, target, pred, diffs].   
-    results.append([lat, lon, target, pred, diffs])        
-    
-# For each J rate...
-for r in range(n_J):
-  # Get the name unless it's the average one of all. 
-  # Pred and target data will be different too if it's the average of all.
-  if r == 0:
-    fullname, shortname = 'all', 'all'
-    target = [row[2] for row in results] # target = results[:, 2]
-    pred = [row[3] for row in results] # pred = results[:, 3]
-  else:
-    fullname = idx_names[r + 1 + con.n_phys][2]
-    shortname = idx_names[r + 1 + con.n_phys][3]
-    target = [row[2][r] for row in results] # target = results[:, 2, r]
-    pred = [row[3][r] for row in results] # pred = results[:, 3, r]
-  
-  # Get the rest of the data for this J rate.
-  lat = [row[0] for row in results] # lat = results[:, 0, r] 
-  lon = [row[1] for row in results] # lon = results[:, 1, r]
-  diff = [row[4][r] for row in results] # diff = results[:, 4, r]
-   
-  # Get the overall R2 for this J rate.
-  r2 = round(r2_score(target, pred), 3)  
+  # Add this bit of ground to the surface.
+  surface.append(ground)      
+  '''	
+  # Test
+  print('\nground')
+  print(ground)
+  print('\nsurface')
+  print(surface)
+  '''
+  # Get the altitudes for each level in the column.
+  alts_hills = lvl_to_alt(levels, ground)
+  '''      
+  # Test
+  print('\nalts new')
+  print(alts)
+  print(len(alts))
+  '''
+  # Update the column's altitudes in the dataset.
+  # To do: Add a new column of data for altitude instead of overwriting alt.
+  data[con.alt, col_idx] = alts_hills
+  '''  
+  # Test
+  print('\nalts in col in data')
+  print(data[con.alt, col_idx])
+  print(data[con.alt, col_idx].shape)
+  '''  
 
-  # Show lat-lon map of diffs for this J rate and time.
-  map_path = f'{paths.analysis}/col_maps_full_res/{shortname}_individual_cols.png'
-  cmap = con.cmap_diff
-  # Clip the bounds to +- 20% to remove ridiculous outliers and simplify the plot visuals.
-  vmin, vmax = -20, 20
-  grid[grid[:, 4] < vmin, 3] = vmin
-  grid[grid[:, 4] > vmax, 3] = vmax
-  # Set the fig to a consistent size.
-  plt.figure(figsize=(10,7.5))
-  # Plot the metrics by lat & lon coords on the cartopy mollweide map.
-  ax = plt.axes(projection=ccrs.Mollweide()) 
-  plt.title(f'Columns of {fullname} photolysis rates predicted by random forest. Overall {con.r2} = {r2}')
-  plt.scatter(lon, lat, c=diff, s=3, vmin=vmin, vmax=vmax, cmap=cmap, transform=ccrs.PlateCarree()) 
-  plt.colorbar(shrink=0.5, label=f'% difference of J rate predictions to targets in column', orientation='horizontal')
-  ax.set_global()
-  ax.coastlines()
+# See how altitude compares to model level along this mid-latitude sample slice. 
+# Hidden lines just to get the legend to work.
+plt.plot(lons, surface, color='green', label='Model levels without orography')
+plt.plot(lons, surface, color='magenta', label='Model levels with orography')
+# The actual surface line.
+plt.plot(lons, surface, color='orange', label='Ground surface (random dummy data)')
+# A hoizontal line for each model level.
+for lvl in range(85):
+  alt_idx = np.where(alts_sea == alts_sea_sequence[lvl])[0]
   
-  # TEST.
-  # Save the fig.
-  #plt.savefig(out_path)
-  plt.show()
-  plt.close() 
+  # Test
+  print('\nalt_idx')
+  print(alt_idx)
+  print(alt_idx.shape)
+  print('\nalts_sea[alt_idx]')
+  print(alts_sea[alt_idx])
+  print(alts_sea[alt_idx].shape)
+  print('\ndata[con.alt, alt_idx]')
+  print(data[con.alt, alt_idx])
+  print(data[con.alt, alt_idx].shape)
   exit()
-
-
+  
+  # The actual lines for levels with and without orography.
+  plt.plot(lons, alts_sea[alt_idx], color='green')
+  plt.plot(lons, data[con.alt, alt_idx], color='magenta')
+plt.title('A test of level altitude calculation along one latitude')
+plt.xlabel('Longitude')
+plt.ylabel('Altitude')
+plt.legend()
+plt.show()
+plt.close()
