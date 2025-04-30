@@ -7,7 +7,6 @@ It might seem like there's a lot of unnecessary code in the loop,
 but that's code I'll need later to overwrite altitude values in the datasets.
 '''
 
-import time
 import numpy as np
 import constants as con
 import file_paths as paths
@@ -116,8 +115,8 @@ alts_sea_sequence = np.unique(alts_sea)
 ground = 0
 surface = []
 
-# Get the vertical columns along one longitude in the dataset.
-# And each lon...
+# Get the vertical columns along one latitude in the dataset.
+# For each lon...
 for lon in lons: 
   # Get the data in that column.
   col_idx = np.where(data[con.lon] == lon)[0]
