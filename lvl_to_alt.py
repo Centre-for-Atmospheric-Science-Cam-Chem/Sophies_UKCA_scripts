@@ -33,8 +33,8 @@ def lvl_to_alt(grid_dict: dict, orography: float,
         starting_index = 0
     else:
         starting_index = 1
-    for i in range(starting_index, len(grid_dict['eta_rho'])): # Previously eta_theta.
-        eta = grid_dict['eta_rho'][i] # # Previously eta_theta.
+    for i in range(starting_index, len(grid_dict['eta_theta'])): # Previously eta_theta.
+        eta = grid_dict['eta_theta'][i] # # Previously eta_theta.
         if i >= grid_dict['first_constant_r_rho_level'] :
             # i.e. not terrain following
             sigma = 0
@@ -91,23 +91,22 @@ levels = dict(
 # End of Rob's code.
 
 # A full day of hourly UM output data as a 2d numpy array.
-midday_file = f'{paths.npy}/20160701_midday.npy'
+np_file = f'{paths.npy}/test_day.npy'
 print('\nLoading data.')
-data = np.load(midday_file) 
+data = np.load(np_file) 
 print(data.shape) # (85, 56401920) or (85, 2350080)
 print('Calculating model level altitudes.')
 
 # Select one timestep (midday).
-#data = data[:, (data[con.hour] == 12)]
+data = data[:, (data[con.hour] == 12)]
 
 # Get latitudes and longitudes in the data.
 lats = np.unique(data[con.lat]) 
 lons = np.unique(data[con.lon]) 
-# Select one latitude (middle).
-data = data[:, (data[con.lat] == lats[71])]
+# Select one latitude.
+data = data[:, (data[con.lat] == lats[71])] # Middle = lats[71].
 
 # Fetch the current values for altitude. They are the same across the entire lat-lon grid.
-# To do: Add a new column of data for altitude instead of overwriting alt.
 alts_sea = data[con.alt].copy()
 alts_sea_sequence = np.unique(alts_sea)
 
@@ -122,17 +121,23 @@ for lon in lons:
   col_idx = np.where(data[con.lon] == lon)[0]
   col = data[:, col_idx] 
   
+  '''
   # Dummy data for ground height for each column, because I haven't yet got the real data for this.
   # Let it go up or down by <= 100 metres from the previous value so that it's not ridiculously jagged.
   ground += (con.rng.random(dtype=np.float32) - 0.5) * 100
   # Don't let it go below sea level for now. 
   if ground < 0:
-    ground = 0
-  # Add this bit of ground to the surface.
-  surface.append(ground)      
+    ground = 0      
+  '''
+  
+  # Ground height for each column.
+  ground = col[7][0]
 
+  # Add this bit of ground to the surface.
+  surface.append(ground) 
+  
   # Get the altitudes for each level in the column.
-  alts_hills = lvl_to_alt(levels, ground, True)
+  alts_hills = lvl_to_alt(levels, ground, False)
 
   # Update the column's altitudes in the dataset.
   # To do: Add a new column of data for altitude instead of overwriting alt.
@@ -143,13 +148,13 @@ for lon in lons:
 plt.plot(lons, surface, color='limegreen', label='Model levels without orography')
 plt.plot(lons, surface, color='mediumorchid', label='Model levels with orography')
 # A hoizontal line for each model level. Just look at the lowest 20 levels.
-for lvl in range(85):
+for lvl in range(85): 
   alt_idx = np.where(alts_sea == alts_sea_sequence[lvl])[0]
   # The actual lines for levels with and without orography.
   plt.plot(lons, alts_sea[alt_idx] * 85000, color='limegreen')
   plt.plot(lons, data[con.alt, alt_idx], color='mediumorchid', linestyle='--')
 # The actual surface line.
-plt.plot(lons, surface, color='orange', label='Ground surface (random dummy data)')
+plt.plot(lons, surface, color='orange', label='Ground surface') # label='Ground surface (random dummy data)'
 plt.title('A test of level altitude calculation along one latitude')
 plt.xlabel('Longitude')
 plt.ylabel('Altitude')

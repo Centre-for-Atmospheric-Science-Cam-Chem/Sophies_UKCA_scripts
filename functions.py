@@ -110,14 +110,13 @@ def sum_cloud(data, out_path=None):
   '''Sum the cloud in the column above each grid box and include that as a feature in training data.
   data: np array of the contents of an entire .npy file of data, of shape (features, samples).   
   '''
-  print('Summing cloud columns.')
+  print('Summing cloud columns. This will take around half an hour or even longer.')
   # Check at which altitude clouds stop.
   clear = find_cloud_end(data)
   # Make a new array for cloud col.
   col = np.zeros(data.shape[1], dtype=np.float32)   
   # For each grid & time point...
   n_points = len(data[0]) 
-  print(f'This will take a while. At least half an hour. Go for a walk or something.')      
   for i in range(n_points):   
     # Get the time, altitude, latitude and longitude.
     alt = data[con.alt,i]
@@ -278,6 +277,35 @@ def tts(inputs, targets, test_size=0.1):
   out_train = np.delete(targets, i_test, axis=0)  
   # Return train and test datasets and their indices from the full dataset.
   return(in_train, in_test, out_train, out_test, i_test) 
+  
+  
+def lvl_to_alt(orography: float, include_surface: bool = False) -> list:
+    '''Function to calculate model level heights above ground for a single vertical column. 
+    Based on code written by Rob Walters.
+    orography: float of ground height for a vertical column, usually from STASH section 0, item 33.
+    include_surface: optional bool of whether or not to include the lowest model level. Defaults to False.
+    Returns alts: list of altitudes of model levels. 
+    '''
+    # Check sigma.
+    eta_first_constant_rho = con.levels['eta_rho'][
+        con.levels['first_constant_r_rho_level'] - 1]
+    alts = []
+    if include_surface:
+        starting_index = 0
+    else:
+        starting_index = 1
+    for i in range(starting_index, len(con.levels['eta_rho'])): 
+        eta = con.levels['eta_rho'][i]
+        if i >= con.levels['first_constant_r_rho_level'] :
+            # Not terrain following.
+            sigma = 0
+        else:
+            # Scaling factor for topography following coords.
+            sigma = (1.0 - (eta / eta_first_constant_rho))**2
+        # With no terrain use eta.
+        delta = eta * con.levels['z_top_of_model']
+        alts.append(delta + (sigma * orography))
+    return(alts)  
   
   
 # ML functions.  

@@ -47,7 +47,7 @@ lat = 2
 lon = 3
 days = 4
 humidity = 5
-cloud = 6
+cloud = 6 # or 8
 pressure = 7
 sza = 8
 up_sw_flux = 9
@@ -58,6 +58,7 @@ temp = 13
 o3_col = 14
 # Without pointless fields.
 phys_main = [hour, alt, lat, lon, days, humidity, cloud, pressure, sza, up_sw_flux, down_sw_flux, temp]
+phys_no_alt = [hour, lat, lon, days, humidity, cloud, pressure, sza, up_sw_flux, down_sw_flux, temp]
 # Physics inputs chosen by feature selection.
 phys_best = [alt, pressure, sza, up_sw_flux, down_sw_flux]
 
@@ -117,3 +118,29 @@ rng = np.random.default_rng(seed)
 cmap_diff = LinearSegmentedColormap.from_list("Cdiff", ["darkblue", "blue", "deepskyblue", "cyan", "lawngreen", "yellow", "orange", "red", "firebrick"]) 
 # Colourmap used for R2 scores (ideally from 0.5 to 1).
 cmap_r2 = LinearSegmentedColormap.from_list("Cr2", ["red", "orange", "yellow", "lime"])
+
+# UM levels used for calculation of altitudes.
+# Based on code written by Rob Walters.
+# These arrays are proportional heights out of 85km of each of the 85 levels.    
+levels = dict(
+  z_top_of_model=85000.00,
+  first_constant_r_rho_level=51, 
+  eta_rho=[
+    0.1176471E-03,   0.4313726E-03,   0.9019608E-03,   0.1529412E-02,   0.2313725E-02,
+    0.3254902E-02,   0.4352941E-02,   0.5607843E-02,   0.7019607E-02,   0.8588235E-02,
+    0.1031373E-01,   0.1219608E-01,   0.1423529E-01,   0.1643137E-01,   0.1878431E-01,
+    0.2129412E-01,   0.2396078E-01,   0.2678431E-01,   0.2976470E-01,   0.3290196E-01,
+    0.3619608E-01,   0.3964706E-01,   0.4325490E-01,   0.4701960E-01,   0.5094118E-01,
+    0.5501961E-01,   0.5925490E-01,   0.6364705E-01,   0.6819607E-01,   0.7290196E-01,
+    0.7776470E-01,   0.8278431E-01,   0.8796078E-01,   0.9329412E-01,   0.9878433E-01,
+    0.1044314E+00,   0.1102354E+00,   0.1161964E+00,   0.1223144E+00,   0.1285897E+00,
+    0.1350224E+00,   0.1416128E+00,   0.1483616E+00,   0.1552695E+00,   0.1623374E+00,
+    0.1695668E+00,   0.1769595E+00,   0.1845180E+00,   0.1922454E+00,   0.2001459E+00,
+    0.2082247E+00,   0.2164882E+00,   0.2249446E+00,   0.2336039E+00,   0.2424783E+00,
+    0.2515826E+00,   0.2609347E+00,   0.2705562E+00,   0.2804726E+00,   0.2907141E+00,
+    0.3013166E+00,   0.3123218E+00,   0.3237787E+00,   0.3357441E+00,   0.3482838E+00,
+    0.3614739E+00,   0.3754014E+00,   0.3901665E+00,   0.4058831E+00,   0.4226810E+00,
+    0.4407075E+00,   0.4601292E+00,   0.4811340E+00,   0.5039334E+00,   0.5287649E+00,
+    0.5558944E+00,   0.5856187E+00,   0.6182693E+00,   0.6542144E+00,   0.6938630E+00,
+    0.7376686E+00,   0.7861323E+00,   0.8398075E+00,   0.8993046E+00,   0.9652942E+00]
+)    
