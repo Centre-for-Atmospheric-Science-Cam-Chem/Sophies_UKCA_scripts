@@ -6,6 +6,7 @@ Compare performace of random forests with and without corrected altitude and SZA
 Not for use with my standard .npy data before May 2025.
 '''
 
+import os
 import time
 import numpy as np
 import constants as con
@@ -40,7 +41,7 @@ def scale_sza_with_height(cos_theta0, altitude_km, pressure_pa):
 #print('\nWithout the correct altitudes.')
 #data_file = f'{paths.npy}/test_day.npy'
 
-print('\nWith the correct altitudes.')
+print('\nWith the correct altitudes and sza.')
 data_file = f'{paths.npy}/test_day_corrected_alt.npy'
 
 data = np.load(data_file)
@@ -50,11 +51,9 @@ data = data[:, data[9] > 20]
 # Remove night.
 data = data[:, data[12] > 0]
 
-print(data[con.alt, 0])
 # Make sure altitude is in km.
 #data[con.alt] = data[con.alt] * 85 # If using non-corrected alt.
 data[con.alt] = data[con.alt] / 1000 # If using correct alt.
-print(data[con.alt, 0])
 
 # Test on lowest 10 km of altitude.
 #data = data[:, data[con.alt] <= 10]
@@ -63,12 +62,18 @@ print(data[con.alt, 0])
 szas = data[10]
 alts = data[con.alt]
 press = data[9]
+
 szas = scale_sza_with_height(szas, alts, press)
+
+#metres = data[con.alt] * 1000
+#rad = 6.371e6
+#szas = np.sqrt(1 - ((rad / (rad + metres))**2) * (1 - szas**2))
+
 data[10] = szas
 
 input_i = [0,1,2,3,4,5,8,9,10,11,12,16] # Original.
-#target_i = np.arange(18, 88) # All.
-target_i = 71 # H2O.
+target_i = np.arange(18, 88) # All.
+#target_i = 71 # H2O.
 #target_i = 69 # NO3.
 #target_i = 19 # NO2.
 #target_i = 18 # O3.
@@ -86,3 +91,19 @@ out_pred, maxe, mse, mape, smape, r2 = fns.test(model, in_test, out_test)
 
 # View performance.
 fns.show(out_test, out_pred, maxe, mse, mape, smape, r2)
+
+'''
+out_name = 'corrected_alt_sza_geo_refrac'
+out_dir = f'{paths.mod}/{out_name}'
+out_path = f'{out_dir}/{out_name}'
+model_path = f'{out_path}.pkl' 
+out_test_path = f'{out_path}_targets.npy'
+pred_path = f'{out_path}_pred.npy'
+in_test_path = f'{out_path}_inputs.npy'
+
+os.mkdir(out_dir)
+
+np.save(out_test_path, out_test)
+np.save(pred_path, out_pred)
+np.save(in_test_path, in_test)
+'''
