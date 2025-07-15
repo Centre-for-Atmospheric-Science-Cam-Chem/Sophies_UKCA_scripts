@@ -305,8 +305,8 @@ def lvl_to_alt(orography: float, include_surface: bool = False) -> list:
         # With no terrain use eta.
         delta = eta * con.levels['z_top_of_model']
         alts.append(delta + (sigma * orography))
-    return(alts)  
-  
+    return(alts)   
+ 
   
 # ML functions.  
   
@@ -438,7 +438,7 @@ def load_model_data(mod_name='rf'):
   
 def make_cols_map(inputs, targets, preds, j_idx=None, out_path=None):
   '''Make an array of column performance.
-  inputs, targets, preds: 2d numpy arrays of ML model data, of shape(samples, features).
+  inputs, targets, preds: 2d numpy arrays of ML model test data, of shape(samples, features).
   j_idx: int or None, index in target data of which J rate to look at. If None, plot avg of all.
   out_path: string or None. File path to save map as.
   Returns the map as a 2d numpy array of lat, lon, r2, diff for each col.
@@ -458,10 +458,9 @@ def make_cols_map(inputs, targets, preds, j_idx=None, out_path=None):
     for j in range(len(lons)):
       lon = lons[j]
       # Get the indices of all the data in that column.
-      idx = np.where((inputs[:, con.lat] == lat) & (inputs[:, con.lon] == lon))
-      idx = idx[0]
+      idx = np.where((inputs[:, con.lat] == lat) & (inputs[:, con.lon] == lon))[0]
       # Get all the target J rates in that column.
-      target = targets[idx, j_idx].squeeze()      
+      target = targets[idx, j_idx].squeeze()     
       # There might not be a data point at this location. Skip if so.
       if not np.any(target) or target.ndim == 0:
         continue
@@ -561,11 +560,12 @@ def show(out_test, out_pred, maxe=None, mse=None, mape=None, smape=None, r2=None
   plt.close()
   
   
-def show_diff_map(fullname, grid, r2, out_path=None):
+def show_diff_map(fullname, grid, r2, extra_info=None, out_path=None):
   '''Show a map of the column % diffs for a specific J rate.
   fullname: string, fully formatted name of J rate.
   grid: 2d numpy array of lat, lon, r2, diff for each column.
   r2: number, overall R2 score of whole grid at this timestep.
+  extra_info: string, any more text needed in plot title.
   out_path: string, file path to save fig as.
   '''
   # Show plot for this J rate and ts. 
@@ -579,7 +579,7 @@ def show_diff_map(fullname, grid, r2, out_path=None):
   plt.figure(figsize=(10,7.5))
   # Plot the metrics by lat & lon coords on the cartopy mollweide map.
   ax = plt.axes(projection=ccrs.Mollweide()) 
-  plt.title(f'Columns of {fullname} photolysis rates predicted by random forest. Overall {con.r2} = {r2}')
+  plt.title(f'Columns of {fullname} photolysis rates predicted by random forest {extra_info}\nOverall {con.r2} = {r2}')
   plt.scatter(x, y, c=c, s=3, vmin=vmin, vmax=vmax, cmap=cmap, transform=ccrs.PlateCarree()) 
   plt.colorbar(shrink=0.5, label=f'% difference of J rate predictions to targets in column', orientation='horizontal')
   ax.set_global()
