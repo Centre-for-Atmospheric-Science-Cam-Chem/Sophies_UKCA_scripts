@@ -12,6 +12,7 @@ Files are located at scratch/st838/netscratch.
 
 import math
 import glob
+import time
 import psutil
 import warnings
 import numpy as np
@@ -442,7 +443,12 @@ def make_cols_map(inputs, targets, preds, j_idx=None, out_path=None):
   j_idx: int or None, index in target data of which J rate to look at. If None, plot avg of all.
   out_path: string or None. File path to save map as.
   Returns the map as a 2d numpy array of lat, lon, r2, diff for each col.
-  '''
+  Returns None if there are no data for the specified J rate.
+  ''' 
+  # Cancel this if there are no data for the rxn.
+  if np.all(targets[:, j_idx] == 0):
+    print('There are no data.')
+    return(None)  
   warnings.filterwarnings('ignore') # R2 score on 1 datapoint.
   # Get the unique lat & lon values.
   lats = inputs[:, con.lat]
@@ -451,28 +457,36 @@ def make_cols_map(inputs, targets, preds, j_idx=None, out_path=None):
   lons = np.unique(lons)
   # Make a 2d list of coords, R2 scores and % differences for each lat and lon point.
   grid = []
+  
   # For each lat...
   for i in range(len(lats)):
     lat = lats[i]
+    start = time.time()    
     # And each lon...
     for j in range(len(lons)):
       lon = lons[j]
       # Get the indices of all the data in that column.
       idx = np.where((inputs[:, con.lat] == lat) & (inputs[:, con.lon] == lon))[0]
       # Get all the target J rates in that column.
-      target = targets[idx, j_idx].squeeze()     
+      target = targets[idx, j_idx].squeeze()          
       # There might not be a data point at this location. Skip if so.
-      if not np.any(target) or target.ndim == 0:
+      if (not np.any(target)) or (target.ndim == 0):
         continue
       # Get the predicted J rates in the column.
-      pred = preds[idx, j_idx].squeeze() 
+      pred = preds[idx, j_idx].squeeze()
       # Get the R2 score and % diff.
       r2 = r2_score(target, pred)
       diff = np.nan_to_num(((np.mean(pred) - np.mean(target)) / np.mean(target)) * 100, posinf=0, neginf=0)
       # Save the R2 scores in a 2d list for every lat & lon.
-      grid.append([lat, lon, r2, diff])     
+      grid.append([lat, lon, r2, diff])   
+    end = time.time()
+    seconds = end - start
+    mins_left = (seconds * (len(lats) - (i + 1))) / 60
+    print(f'\rLatitude {i+1} of {len(lats)} took {round(seconds)} seconds. Estimated time remaining: {round(mins_left)} minutes.', \
+          end='', flush=True)
+  print()
   grid = np.array(grid)
-  #print(grid.shape)
+  print(grid.shape)
   if out_path is not None:
     # Save the array because it takes ages to make.
     np.save(out_path, grid)
