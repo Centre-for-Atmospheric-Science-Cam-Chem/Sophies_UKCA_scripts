@@ -1,1 +1,2 @@
-Sophie's Python scripts for PhD work. Most are for processing UKCA data and working with machine learning models and their data.
+Sophie's Python scripts for PhD work. Most are for processing UKCA data and working with machine learning models and their data. 
+All of the scripts were written to run on Cambridge chemistry department's atmospheric servers, except for .ipynb files, which are notebooks that can be run in Colab on a browser, and scripts in the 'jasmin' directory, which are specifically to be run on the JASMIN supercomputer.
