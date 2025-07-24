@@ -17,22 +17,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 
 
-# Just for tests.
-class MiniModel(nn.Module):
-
-  # Set up NN structure.
-  def __init__(self, inputs=5, h1=1, outputs=1):
-    super().__init__() # Instantiate nn.module.
-    self.fc1 = nn.Linear(inputs, h1) 
-    self.out = nn.Linear(h1, outputs) 
-
-  # Set up movement of data through net.
-  def forward(self, x):
-    x = F.relu(self.fc1(x))  
-    x = self.out(x) 
-    return(x)
-
-
 # 2 layer.
 # Create a class that inherits nn.Module.
 class Model(nn.Module):
@@ -119,7 +103,7 @@ for n in range(3):
   target_idx = targets[n]
   target = days[target_idx]
 
-  inputs = np.rot90(inputs, 3)
+  inputs = np.swapaxes(inputs, 0, 1)
   target = np.reshape(target, (len(target), 1))
 
   in_train, in_test, out_train, out_test = train_test_split(inputs, target, test_size=0.1, random_state=6)
@@ -141,7 +125,7 @@ for n in range(3):
   print('out_test:', out_test.shape)
 
   # Create instance of model.
-  model = MiniModel()
+  model = BigModel()
 
   # Tell the model to measure the error as fitness function to compare pred with label.
   criterion = nn.MSELoss()
@@ -149,7 +133,7 @@ for n in range(3):
   opt = torch.optim.Adam(model.parameters(), lr=0.01)
 
   # Train model.
-  epochs = 1 # Choose num epochs.
+  epochs = 200 # Choose num epochs.
   print()
   start = time.time()
 
@@ -190,7 +174,7 @@ for n in range(3):
   # Plotting this many datapoints is excessive and costly. 
   length = len(pred)
   # Reduce it to 10%.
-  idxs = np.arange(0, length, 1000)
+  idxs = np.arange(0, length, 10)
   pred = pred[idxs]
   out_test = out_test[idxs]
   del(idxs)

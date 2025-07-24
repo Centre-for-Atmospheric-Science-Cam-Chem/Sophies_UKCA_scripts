@@ -10,6 +10,7 @@ Files are located at scratch/st838/netscratch.
 # Tell this script to run with the currently active Python environment, not the computer's local versions. 
 #!/usr/bin/env python
 
+import os
 import math
 import glob
 import time
@@ -426,6 +427,12 @@ def load_model_data(mod_name='rf'):
   inputs_path = f'{mod_path}_inputs.npy' 
   targets_path = f'{mod_path}_targets.npy'
   preds_path = f'{mod_path}_pred.npy'
+  meta_path = f'{mod_path}_metadata.txt'
+  # Read metadata if it exists.
+  if os.path.exists(meta_path):
+    meta = open(meta_path, 'r')
+    print(f'\n{meta.read()}')
+    meta.close()
   # Load data.
   print('\nLoading data.')
   inputs = np.load(inputs_path)

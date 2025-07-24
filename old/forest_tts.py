@@ -22,7 +22,7 @@ GB = 1000000000
 mem_start = psutil.virtual_memory().used / GB
 
 # File paths.
-data_file = f'{paths.npy}/low_res_yr_5k.npy'
+data_file = f'{paths.npy}/low_res_yr_2015.npy'
 #data_file = paths.four
 
 print()
@@ -33,24 +33,24 @@ print(data.shape)
 end = time.time()
 print(f'Loading the data took {round(end-start)} seconds.')
 
-
+'''
 # Split the dataset by Fast-J cutoff pressure.
 print('Removing upper stratosphere')
 data, _ = fns.split_pressure(data)
 # Remove zero flux.
 print('Removing night times.')
 data = data[:, np.where(data[10] > 0)].squeeze()
-
+'''
 
 # Input data.
-inputs = data[con.phys_all]
+inputs = data[con.phys_no_o3]
 if inputs.ndim == 1:
   inputs = inputs.reshape(1, -1) 
 inputs = np.swapaxes(inputs, 0, 1)
 print('Inputs:', inputs.shape)
 
 # Target data.
-targets = data[con.J_core]
+targets = data[[con.NO2, con.HCHOr]]
 if targets.ndim > 1:
   targets = np.swapaxes(targets, 0, 1) 
 print('Targets:', targets.shape)
@@ -59,8 +59,8 @@ print('Targets:', targets.shape)
 in_train, in_test, out_train, out_test = train_test_split(inputs, targets, test_size=0.1)
 
 # Make the regression model.
-model = RandomForestRegressor(n_estimators=5, n_jobs=5, max_features=0.3, max_samples=0.2, max_leaf_nodes=100000, random_state=con.seed)
-#model = RandomForestRegressor(n_estimators=20, n_jobs=20, max_features=0.3, max_samples=0.2, max_leaf_nodes=100000, random_state=con.seed)
+#model = RandomForestRegressor(n_estimators=5, n_jobs=5, max_features=0.3, max_samples=0.2, max_leaf_nodes=100000, random_state=con.seed)
+model = RandomForestRegressor(n_estimators=20, n_jobs=20, max_features=0.3, max_samples=0.2, max_leaf_nodes=100000, random_state=con.seed)
 
 '''
 # Cross-validate. Use on smaller data or a smaller forest.

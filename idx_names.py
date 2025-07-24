@@ -7,7 +7,7 @@ Names and indices of fields for easier indexing and analysis of ML stuff. Import
 
 import constants as con
 
-# ['index', 'UM stash code', 'full, formatted name', 'short, simple name']
+# [index, 'UM stash code', 'full, formatted name', 'short, simple name']
 # The short names are for file paths and stuff like that so they contain no whitespaces.
 idx_names = [
 [0, '', 'hour of day', 'hour'], 
@@ -48,7 +48,7 @@ idx_names = [
 [35, 'm01s50i518', f'RN{con.sub1}{con.sub0}NO{con.sub3}', 'RN10NO3'],
 [36, 'm01s50i519', f'i-PrONO{con.sub2}', 'i-PrONO2'],
 [37, 'm01s50i520', f'RN{con.sub1}{con.sub3}NO{con.sub3} {con.to} MeCHO', 'RN13NO3-MeCHO'],
-[38, 'm01s50i521', f'RN{con.sub1}{con.sub3}NO{con.sub3} {con.to} CARB{con.sub1}{con.sub1}A', 'RN13NO3->CARB11A'],
+[38, 'm01s50i521', f'RN{con.sub1}{con.sub3}NO{con.sub3} {con.to} CARB{con.sub1}{con.sub1}A', 'RN13NO3-CARB11A'],
 [39, 'm01s50i522', f'RN{con.sub1}{con.sub6}NO{con.sub3}', 'RN16NO3'],
 [40, 'm01s50i523', f'RN{con.sub1}{con.sub9}NO{con.sub3}', 'RN19NO3'],
 [41, 'm01s50i524', f'RA{con.sub1}{con.sub3}NO{con.sub3}', 'RA13NO3'],
@@ -77,9 +77,9 @@ idx_names = [
 [64, 'm01s50i553', f'DHCARB{con.sub9}', 'DHCARB9'],
 [65, 'm01s50i554', f'NUCARB{con.sub1}{con.sub2} {con.to} CARB{con.sub7}', 'NUCARB12-CARB7'],
 [66, 'm01s50i555', f'NO{con.sub3}', 'NO3'], 
-[67, 'm01s50i556' f'DHPCARB{con.sub9}', 'DHPCARB9'], # Identical to 59.
+[67, 'm01s50i556', f'DHPCARB{con.sub9}', 'DHPCARB9'], # Identical to 59.
 [68, 'm01s50i557', f'H{con.sub2}O', 'H2O'],
-[69, 'm01s50i558' 'methane', 'CH4'],
+[69, 'm01s50i558', 'methane', 'CH4'],
 [70, 'm01s50i559', 'HOBr', 'HOBr'],
 [71, 'm01s50i560', 'HOCl', 'HOCl'],
 [72, 'm01s50i561', f'HNO{con.sub3}', 'HNO3'],
@@ -96,3 +96,12 @@ idx_names = [
 [83, 'm01s50i615', f'NRU{con.sub1}{con.sub2}OOH {con.to} CO', 'NRU12OOH-CO'],
 [84, 'm01s50i616', f'NRU{con.sub1}{con.sub2}OOH {con.to} CARB{con.sub3}', 'NRU12OOH-CARB3']
 ]
+
+# Items that have data present in the tropospheric npy datasets.
+trop_idxs = list(range(27)) + [28,30,31,32,33,51,52,66,68] + list(range(70,77)) + list(range(78,83))
+idx_names_trop = [idx_names[i] for i in trop_idxs]
+
+# Items that have data present in the strat-trop npy datasets.
+strat_trop_idxs = trop_idxs + [29,69,77]
+strat_trop_idxs.sort()
+idx_names_strat_trop = [idx_names[i] for i in strat_trop_idxs]

@@ -22,6 +22,7 @@ code_names = [['specific_humidity'   , 'SPECIFIC HUMIDITY'],
               ['UM_m01s30i296_vn1300', 'RELATIVE HUMIDITY ON PLEV/T GRID'],
 	      ['UM_m01s30i301_vn1300', 'HEAVYSIDE FN ON P LEV/UV GRID'], 
               ['UM_m01s30i304_vn1300', 'HEAVYSIDE FN ON P LEV/T GRID'], 
+	      ['UM_m01s50i219_vn1300', 'Ozone column in Dobson Units'], 
               ['UM_m01s50i228_vn1300', 'O1D'], 
 	      ['UM_m01s50i229_vn1300', 'jNO2_NO_O3P'], # Matched to ATom
 	      ['UM_m01s50i500_vn1300', 'organic nitrate J rates (summed)'],

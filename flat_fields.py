@@ -16,12 +16,15 @@ import cf
 import time
 import glob
 import numpy as np
+import file_paths as paths
 
 
-def write_metadata(day, out_path):
-  # Function to write metadata file.
-  # day: an opened .pp file as a cfpython FieldsList.
-  # out_path: the metadata output file path.
+def write_metadata(day, out_path, dt=False):
+  '''Function to write metadata file.
+  day: an opened .pp file as a cfpython FieldsList.
+  out_path: the metadata output file path.
+  dt: bool whether to include examples of date-time representations.
+  '''
   # Identities of all 68 of the J rates output from Strat-Trop + some physics outputs.
   import codes_to_names as codes  
   code_names = np.array(codes.code_names)
@@ -35,15 +38,17 @@ def write_metadata(day, out_path):
   meta_file = open(out_path, 'w')
   metadata = 'These are the ordered indices and column names of the numpy arrays in the .npy files in this directory.\
   \nSTASH code identities are included for each field where possible. \
-  \nDate-times have been converted to numerical interpretations of time. \
-  \nThe date-times which they represent are shown here, in the same order as the numpy data.\n\
-  \nDate-times:\n'
-  # Get date-times.
-  for timestep in day[0]:
-    metadata += f"{timestep.coord('time').data}\n"
+  \nDate-times have been converted to numerical interpretations of time, as days since the start of the model run.\n'
+  # If the data-times are to be included in metadata.
+  if dt:
+    metadata += 'A 1-day example of date-times which they represent are shown here, in the same order as the numpy data.\n\
+    \nDate-times:\n'
+    # Get date-times.
+    for timestep in day[0]:
+      metadata += f"{timestep.coord('time').data}\n"
   metadata += '\nColumn names:\n'
   # Add the time, alt, lat and long column names and units.
-  metadata += '0 time\n1 altitude m\n2 latitude deg N\n3 longitude deg E\n'
+  metadata += '0 hour of day\n1 altitude m\n2 latitude deg N\n3 longitude deg E\n4 date-time\n'
   # Get the code-name of each field and write it in metadata.
   i = 0
   for field in day:
@@ -54,25 +59,40 @@ def write_metadata(day, out_path):
     i += 1
     idx = np.where(code_names[:,0] == code)
     name = code_names[idx, 1][0][0]
-    metadata += f'{i+3} {code} {name}\n'
+    metadata += f'{i+4} {code} {name}\n'
   # Write all this to the file.
   meta_file.write(metadata)
   meta_file.close()
-
-
-# Base.
-dir_path = '/scratch/st838/netscratch/ukca_npy/' 
+  
+  
+def pad_time(field, rows):
+  '''Add 'days since' measurement as a row, in addition to the hour from dims.
+  field: any cf field from the necessary day.
+  rows: 2d numpy array of flattened data (to build up). 
+  '''
+  print('Padding time.')
+  # Get the padding factors for time.
+  times = field.coord('time').array # Days since some moment.
+  nalts = field.coord('atmosphere_hybrid_height_coordinate').size
+  nlats = field.coord('latitude').size
+  nlons = field.coord('longitude').size
+  stride = nalts * nlats * nlons 
+  # Pad time so that it fits, and add to flat table.
+  new_times = np.repeat(times, stride)
+  rows = np.r_[rows, [new_times]] 
+  del(new_times) 
+  return(rows) 
+  
+ 
 # Input files.
-ukca_files = glob.glob(dir_path + '/*.pp') # Just .pp files. 
-dims_file = dir_path + 'dims.npy' # Dims to match the flattened data.
+ukca_files = glob.glob(f'{paths.pp}/*20150102.pp') # The new files of test data.
+dims_file = f'{paths.npy}/dims.npy' # Dims to match the flattened data.
 # Output paths.
-meta_file = dir_path + 'metadata.txt'
-npy_file = dir_path + 'fields.npy' # Flattened fields to re-use.
+meta_file = f'{paths.npy}/metadata.txt'
+npy_file = f'{paths.npy}/fields.npy' # Flattened fields to re-use.
 
 # True if 1 npy file for each day of data, False if 1 npy file for all the data.
 npy_day = True
-
-field = cf.read(ukca_files[0], select='stash_code=50500')[0]
 
 # If there are dims available, use them. If not, continue without them and add them later.
 if os.path.exists(dims_file):
@@ -94,18 +114,17 @@ if not npy_day:
 
 # Pick the day file to read.
 for fi in range(len(ukca_files)):
+  start = time.time()
   ukca_file = ukca_files[fi]
   print(f'Reading .pp file {fi+1} of {len(ukca_files)}:')
   print(ukca_file)
   day = cf.read(ukca_file)
-  
+  '''  
   # Write metadata if needed.
   if not os.path.exists(meta_file):
     print(f'Writing metadata to {meta_file}.')
     write_metadata(day, meta_file)
-    
-  exit()
-
+  '''
   # Get the number of vertical levels.
   field = day[0]
   nalts = field.coord('atmosphere_hybrid_height_coordinate').size
@@ -114,14 +133,18 @@ for fi in range(len(ukca_files)):
   if npy_day:
     table = dims.copy() # Re-use the dims if making multiple files. 
 
+  # Add the absolute time (as 'days since some moment') as a row.
+  table = pad_time(field, table)
+
   # For each field, save all the field data in another row.
   for i in range(len(day)):
-    start = time.time()
     print(f'Converting field {i+1} of {len(day)}.')
     field = day[i]
+    print(field.long_name) 
     # We don't want section 30 pressure level outputs here.
     if field.identity()[:13] == 'id%UM_m01s30i':
-      continue    
+      continue     
+      
     # If there are only 3 dimensions add a 4th and pad it so that the data match the flattened dims.
     if field.ndim == 3:    
       field = field.array
@@ -142,17 +165,19 @@ for fi in range(len(ukca_files)):
     else:
       field = field.flatten()     
     table = np.vstack((table, field), dtype=np.float32)
-    print('Shape of table:', table.shape)
-    end = time.time()
-    elapsed = end - start
-    print(f'That field took {round(elapsed / 1)} seconds.')
+    print('Shape of table:', table.shape) 
   
   # Save the np array as a npy file containing this day of data.
   if npy_day:
-    npy_file = dir_path + ukca_file[-11:-3] + '.npy'
+    npy_file = f'{paths.npy}/{ukca_file[-11:-3]}_extra.npy'
+    print('Saving .npy file.')
     np.save(npy_file, table)
+    
+  end = time.time()
+  elapsed = end - start
+  print(f'That file took {round(elapsed / 60)} minutes.') 
   
 # Save the np array as a npy file containing all data.
 if not npy_day:
-  npy_file = dir_path + 'all.npy' 
+  npy_file = f'{paths.npy}/all.npy' 
   np.save(npy_file, table)

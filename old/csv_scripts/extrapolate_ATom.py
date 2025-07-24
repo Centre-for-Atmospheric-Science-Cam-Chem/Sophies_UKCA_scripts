@@ -11,10 +11,10 @@ Files are located at scratch/st838/netscratch.
 # Tell this script to run with the currently active Python environment, not the computer's local versions. 
 #!/usr/bin/env python
 
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import prediction_fns_pandas as fns
-
 
 # File paths.
 dir_path = '/scratch/st838/netscratch/'
@@ -85,4 +85,3 @@ for target_name in J_all:
   plt.ylabel('J rate / s\u207b\u00b9')
   plt.show() 
   plt.close()
-

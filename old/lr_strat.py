@@ -76,22 +76,22 @@ for target_idx in [HCHOm]:
   lookup = upper[target_idx]
  
   # Dimension for plot.
-  alt = upper[1]
+  dim = upper[8] # sza.
  
   # Plotting this many datapoints is excessive and costly. Reduce it to 1%.
   length = len(pred)
   idxs = np.arange(0, length, 100)
   pred = pred[idxs]
   lookup = lookup[idxs]
-  alt = alt[idxs]
+  dim = dim[idxs]
   del(idxs)
   
-  plt.scatter(pred, alt, alpha=0.01, label='Predictions from linear model trained on Fast-JX below cut-off')
-  plt.scatter(lookup, alt, alpha=0.01, label='Lookup table')  
+  plt.scatter(dim, pred,  label='Predictions from linear model trained on Fast-JX below cut-off')
+  plt.scatter(dim, lookup,  label='Lookup table')  
   plt.legend()
   plt.title(f'HCHO -> CO + H\u2082 above Fast-JX cut-off')
   #plt.xlabel('Downward shortwave flux / Wm\u207b\u00b2')
   plt.xlabel('J rate / \u207b\u00b9')
-  plt.ylabel('Altitude / model level 85')
+  plt.ylabel('Solar zenith angle / cos(radians)')
   plt.show() 
   plt.close()

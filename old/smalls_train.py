@@ -49,13 +49,13 @@ inputs_all = inputs.copy()
 targets_all = targets.copy()
 
 # Loop through increments.
-tops = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+tops = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
 for top in tops:
   bottom = top - 0.1
   print(f'\nTrain and test on {int(bottom * 100)}% to {int(top * 100)}% of J rates\n')
   
   # Increments of range of J rates.
-  inputs, targets, _ = fns.only_range(inputs_all, targets_all, targets_all, bottom, top, 1000)
+  inputs, targets, _ = fns.only_range(inputs_all, targets_all, targets_all, bottom, top, 1000000)
   print('Inputs:', inputs.shape)
   print('Targets:', targets.shape)
   

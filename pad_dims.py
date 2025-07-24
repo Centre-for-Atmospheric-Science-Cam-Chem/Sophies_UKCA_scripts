@@ -4,7 +4,6 @@ Date: 8/3/2024.
 Contact: st838@cam.ac.uk
 Compile data from daily UM .pp files and make a big .npy file containing all UKCA dimensions
 flattened. Time and space are added as columns. 
-Each time step is saved separately and then they are joined after.
 Files are located at scratch/st838/netscratch.
 '''
 # module load anaconda/python3/2022.05
@@ -16,8 +15,8 @@ import os
 import cf
 import time
 import glob
-import psutil
 import numpy as np
+import file_paths as paths
 
 
 def pad_dim(dim, rep, stride, cols):
@@ -33,44 +32,42 @@ def pad_dim(dim, rep, stride, cols):
   print(f'That took {round(minutes, 1)} minutes.')
   return(cols)
 
-
-# Base.
-dir_path = '/scratch/st838/netscratch/ukca_npy' 
-# Input files.
-ukca_files = glob.glob(dir_path + '/*.pp') # Just .pp files. 
+ 
+# Input files. 
+ukca_files = glob.glob(f'{paths.pp}/cy731a.pl*.pp') # Any .pp file will do as long as it's a day. 
 # Output file path for padded dims to match flattened fields.
-out_path = f'{dir_path}/dims.npy'
+out_path = f'{paths.npy}/dims.npy'
 
 print('Reading the .pp file')
 field = cf.read(ukca_files[0], select='stash_code=50500')[0]
 
 # Get the dimension values.
 print('Getting the dimension values as np arrays.')
-times = field.coord('time').array    
+hours = field.coord('time').hour.array # Hour of day.
 alts = field.coord('atmosphere_hybrid_height_coordinate').array
 lats = field.coord('latitude').array
 lons = field.coord('longitude').array
 
-ntimes = len(times)
+nhours = len(hours)
 nalts = len(alts)
 nlats = len(lats)
 nlons = len(lons)
 
-stride_time = nalts * nlats * nlons 
+stride_hour = nalts * nlats * nlons 
 stride_alt = nlats * nlons 
 stride_lat = nlons
 stride_lon = 1
 
-rep_time = 1
-rep_alt = ntimes
-rep_lat = ntimes * nalts
-rep_lon = ntimes * nalts * nlats
+rep_hour = 1
+rep_alt = nhours
+rep_lat = nhours * nalts
+rep_lon = nhours * nalts * nlats
   
-full_size = ntimes * nalts * nlats * nlons  
+full_size = nhours * nalts * nlats * nlons  
   
 cols = np.empty((0,full_size))   
-print('Padding flat time.')
-cols = pad_dim(times, rep_time, stride_time, cols)
+print('Padding flat hours.')
+cols = pad_dim(hours, rep_hour, stride_hour, cols)
 print('Padding flat altitude.')
 cols = pad_dim(alts, rep_alt, stride_alt, cols)
 print('Padding flat latitude.')

@@ -1,0 +1,119 @@
+These are the ordered indices and column names of the numpy arrays in the .npy files in this directory.  
+STASH code identities are included for each field where possible.   
+Date-times have been converted to numerical interpretations of time.   
+The date-times which they represent are shown here, in the same order as the numpy data.
+  
+Date-times:
+[2016-07-29 01:00:00] gregorian
+[2016-07-29 02:00:00] gregorian
+[2016-07-29 03:00:00] gregorian
+[2016-07-29 04:00:00] gregorian
+[2016-07-29 05:00:00] gregorian
+[2016-07-29 06:00:00] gregorian
+[2016-07-29 07:00:00] gregorian
+[2016-07-29 08:00:00] gregorian
+[2016-07-29 09:00:00] gregorian
+[2016-07-29 10:00:00] gregorian
+[2016-07-29 11:00:00] gregorian
+[2016-07-29 12:00:00] gregorian
+[2016-07-29 13:00:00] gregorian
+[2016-07-29 14:00:00] gregorian
+[2016-07-29 15:00:00] gregorian
+[2016-07-29 16:00:00] gregorian
+[2016-07-29 17:00:00] gregorian
+[2016-07-29 18:00:00] gregorian
+[2016-07-29 19:00:00] gregorian
+[2016-07-29 20:00:00] gregorian
+[2016-07-29 21:00:00] gregorian
+[2016-07-29 22:00:00] gregorian
+[2016-07-29 23:00:00] gregorian
+[2016-07-30 00:00:00] gregorian
+
+Column names:
+0 time
+1 altitude m
+2 latitude deg N
+3 longitude deg E
+4 specific_humidity SPECIFIC HUMIDITY
+5 id%UM_m01s00i266_vn1300 CLOUD FRACTION
+6 air_pressure PRESSURE
+7 id%UM_m01s01i142_vn1300 COS SOLAR ZENITH ANGLE
+8 id%UM_m01s01i217_vn1300 UPWARD SW FLUX
+9 id%UM_m01s01i218_vn1300 DOWNWARD SW FLUX
+10 id%UM_m01s02i217_vn1300 UPWARD LW FLUX
+11 id%UM_m01s02i218_vn1300 DOWNWARD LW FLUX
+12 air_temperature TEMPERATURE
+13 id%UM_m01s30i206_vn1300 RELATIVE HUMIDITY ON PLEV/UV GRID
+14 id%UM_m01s30i296_vn1300 RELATIVE HUMIDITY ON PLEV/T GRID
+15 id%UM_m01s30i301_vn1300 HEAVYSIDE FN ON P LEV/UV GRID
+16 id%UM_m01s30i304_vn1300 HEAVYSIDE FN ON P LEV/T GRID
+17 id%UM_m01s50i228_vn1300 O1D
+18 id%UM_m01s50i229_vn1300 jNO2_NO_O3P
+19 id%UM_m01s50i500_vn1300 organic nitrate J rates (summed)
+20 id%UM_m01s50i501_vn1300 jCH2O_H_HCO
+21 id%UM_m01s50i502_vn1300 jCH2O_H2_CO
+22 id%UM_m01s50i503_vn1300 jCH3COCHO
+23 id%UM_m01s50i504_vn1300 Other CO producing rxns J rates (summed)
+24 id%UM_m01s50i505_vn1300 H and O stuff J rates (summed)
+25 id%UM_m01s50i506_vn1300 O2 J rates (summed)
+26 id%UM_m01s50i507_vn1300 jCl2O2
+27 id%UM_m01s50i508_vn1300 jNO3_NO_O2 b
+28 id%UM_m01s50i509_vn1300 jO1D (summed)
+29 id%UM_m01s50i510_vn1300 jRU12NO3
+30 id%UM_m01s50i511_vn1300 jCOS
+31 id%UM_m01s50i512_vn1300 jH2SO4
+32 id%UM_m01s50i513_vn1300 jSO3
+33 id%UM_m01s50i514_vn1300 jMeONO2_CH3O_NO2
+34 id%UM_m01s50i515_vn1300 jNALD
+35 id%UM_m01s50i516_vn1300 jISON
+36 id%UM_m01s50i517_vn1300 EtONO2 -> NO2 + HO2 + MeCHO
+37 id%UM_m01s50i518_vn1300 jRN10NO3
+38 id%UM_m01s50i519_vn1300 i-PrONO2 J rate
+39 id%UM_m01s50i520_vn1300 jRN13NO3 --> MeCHO
+40 id%UM_m01s50i521_vn1300 jRN13NO3 --> CARB11A
+41 id%UM_m01s50i522_vn1300 jRN16NO3
+42 id%UM_m01s50i523_vn1300 jRN19NO3
+43 id%UM_m01s50i524_vn1300 jRA13NO3
+44 id%UM_m01s50i525_vn1300 jRA16NO3
+45 id%UM_m01s50i526_vn1300 jRA19NO3
+46 id%UM_m01s50i527_vn1300 jRTX24NO3
+47 id%UM_m01s50i528_vn1300 jRU10NO3
+48 id%UM_m01s50i529_vn1300 jRU14NO3
+49 id%UM_m01s50i530_vn1300 jCARB3 --> HO2
+50 id%UM_m01s50i531_vn1300 jCARB6
+51 id%UM_m01s50i532_vn1300 jCARB3 --> H2
+52 id%UM_m01s50i533_vn1300 jCARB3 --> HCHO
+53 id%UM_m01s50i540_vn1300 jMeCHO --> MeOO + HO2 + CO
+54 id%UM_m01s50i541_vn1300 jPropanal_CH2CH3_HCO
+55 id%UM_m01s50i542_vn1300 jHOCH2CHO
+56 id%UM_m01s50i543_vn1300 jUCARB12 --> MeCO3
+57 id%UM_m01s50i544_vn1300 jUCARB12 --> CARB7
+58 id%UM_m01s50i545_vn1300 jNUCARB12 --> HUCARB9
+59 id%UM_m01s50i546_vn1300 jTNCARB10
+60 id%UM_m01s50i547_vn1300 jRTN10OOH
+61 id%UM_m01s50i548_vn1300 jDHPCARB9
+62 id%UM_m01s50i549_vn1300 jHPUCARB12 --> HUCARB9
+63 id%UM_m01s50i550_vn1300 jHPUCARB12 --> CARB7
+64 id%UM_m01s50i551_vn1300 jHUCARB9
+65 id%UM_m01s50i552_vn1300 jDHPR12OOH
+66 id%UM_m01s50i553_vn1300 jDHCARB9
+67 id%UM_m01s50i554_vn1300 jNUCARB12 --> CARB7
+68 id%UM_m01s50i555_vn1300 jNO3_NO_O2
+69 id%UM_m01s50i556_vn1300 peroxide DHPCARB9 J rate
+70 id%UM_m01s50i557_vn1300 jH2O
+71 id%UM_m01s50i558_vn1300 methane J rate
+72 id%UM_m01s50i559_vn1300 jHOBr_OH_Br
+73 id%UM_m01s50i560_vn1300 jHOCl
+74 id%UM_m01s50i561_vn1300 jHONO2
+75 id%UM_m01s50i562_vn1300 jHO2NO2
+76 id%UM_m01s50i563_vn1300 jH2O2_OH_OH
+77 id%UM_m01s50i564_vn1300 jMeOOH
+78 id%UM_m01s50i565_vn1300 jO2 --> O(3P)
+79 id%UM_m01s50i566_vn1300 jO2 --> O(1D)
+80 id%UM_m01s50i567_vn1300 jO3_O2_O1D
+81 id%UM_m01s50i568_vn1300 jN2O -> O(1D)
+82 id%UM_m01s50i569_vn1300 jMACR
+83 id%UM_m01s50i570_vn1300 jMACROOH
+84 id%UM_m01s50i571_vn1300 jMeCHO --> CH4
+85 id%UM_m01s50i615_vn1300 jNRU12OOH a
+86 id%UM_m01s50i616_vn1300 jNRU12OOH b

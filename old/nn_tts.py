@@ -19,10 +19,10 @@ from sklearn.model_selection import train_test_split
 
 # 2 layer.
 # Create a class that inherits nn.Module.
-class Model(nn.Module):
+class SmallModel(nn.Module):
 
   # Set up NN structure.
-  def __init__(self, inputs=14, h1=8, h2=8, outputs=1):
+  def __init__(self, inputs=5, h1=8, h2=8, outputs=1):
     super().__init__() # Instantiate nn.module.
     self.fc1 = nn.Linear(inputs, h1) 
     self.fc2 = nn.Linear(h1, h2)
@@ -77,11 +77,12 @@ name_file = f'{dir_path}/idx_names'
 train_file = f'{dir_path}/4days.npy' 
 
 # Indices of some common combinations to use as inputs and outputs.
-phys_all = np.linspace(0,13,14, dtype=int)
-NO2 = 15
-HCHO = 18 # Molecular product.
-H2O2 = 73
-O3 = 77 # O(1D) product.
+phys_all = np.arange(15, dtype=int)
+J_all = np.arange(15, 85, dtype=int)
+NO2 = 16
+HCHO = 19 # Molecular product.
+H2O2 = 74
+O3 = 78 # O(1D) product.
 
 print('Loading numpy data.')
 
@@ -93,13 +94,17 @@ features = [1,7,8,9,10]
 inputs = days[features]
 
 # Output target.
-target_idx = HCHO
+target_idx = H2O2
 target = days[target_idx]
 
-inputs = np.rot90(inputs, 3)
-target = np.reshape(target, (len(target), 1))
+print('inputs',inputs)
 
-in_train, in_test, out_train, out_test = train_test_split(inputs, target, test_size=0.1, random_state=6)
+inputs = np.swapaxes(inputs, 0, 1)
+target = np.reshape(target, (len(target), 1))
+#inputs = inputs.reshape(-1, 1)
+#target = target.reshape(-1, 1)
+
+in_train, in_test, out_train, out_test = train_test_split(inputs, target, test_size=0.1, random_state=6, shuffle=False)
 
 # Standardisation (optional).
 scaler = StandardScaler()
@@ -118,7 +123,7 @@ print('out_train:', out_train.shape)
 print('out_test:', out_test.shape)
 
 # Create instance of model.
-model = Model()
+model = SmallModel()
 
 # Tell the model to measure the error as fitness function to compare pred with label.
 criterion = nn.MSELoss()
@@ -126,7 +131,7 @@ criterion = nn.MSELoss()
 opt = torch.optim.Adam(model.parameters(), lr=0.01)
 
 # Train model.
-epochs = 350 # Choose num epochs.
+epochs = 300 # Choose num epochs.
 print()
 start = time.time()
 
@@ -163,7 +168,7 @@ out_test = out_test.squeeze()
 
 print('MAPE:', mean_absolute_percentage_error(out_test, pred))
 print('R2:', round(r2_score(out_test, pred), 2))
-  
+'''
 # Plotting this many datapoints is excessive and costly. 
 length = len(pred)
 # Reduce it to 10%.
@@ -180,3 +185,4 @@ plt.xlabel('targets from UKCA')
 plt.ylabel('predictions by NN')
 plt.savefig(f'{dir_path}/{name}.png')
 plt.close()
+'''

@@ -21,8 +21,7 @@ from sklearn.preprocessing import StandardScaler
 def test(in_train, in_test, out_train, out_test):
   # Use 2 different datasets for train and test.
   # Reshape the targets so they enter ML functions in the right order.
-  out_train = np.rot90(out_train, 3)
-  out_test = np.rot90(out_test, 3)
+  out_train, out_test = np.swapaxes(out_train, 0, 1), np.swapaxes(out_test, 0, 1)
   # Linear regression.
   model = fns.train(in_train, out_train)
   pred, mse, mape, r2 = fns.test(model, in_test, out_test)
@@ -36,19 +35,16 @@ def test(in_train, in_test, out_train, out_test):
 dir_path = '/scratch/st838/netscratch/ukca_npy'
 train_files = glob.glob(f'{dir_path}/2015*15.npy')
 train_file = f'{dir_path}/4days.npy'
-test_file = f'{dir_path}/20170415.npy'
+test_file = f'{dir_path}/20170901.npy'
 name_file = f'{dir_path}/idx_names'
 
-print(test_file)
-
 # Indices of some common combinations to use as inputs and outputs.
-phys_all = np.linspace(0,13,14, dtype=int)
-J_all = np.linspace(14,83,70, dtype=int)
-NO2 = 15
-HCHOr = 17 # Radical product.
-HCHOm = 18 # Molecular product.
-H2O2 = 73
-O3 = 77 # O(1D) product.
+phys_all = np.arange(15, dtype=int)
+NO2 = 16
+HCHOr = 18 # Radical product.
+HCHOm = 19 # Molecular product.
+H2O2 = 74
+O3 = 78 # O(1D) product.
 
 # Names of the fields. See metadata.txt.
 idx_names = fns.get_idx_names(name_file)
@@ -69,9 +65,8 @@ features = [1,7,8,9,10]
 in_train = train_days[features]
 in_test = test_day[features]
 
-# Reshape the arrays so they enter ML functions in the right order however many fields are selected.
-in_train, in_test = fns.shape(in_train), fns.shape(in_test)
-in_train, in_test = np.rot90(in_train, 3), np.rot90(in_test, 3)
+# Reshape the arrays so they enter ML functions in the right order.
+in_train, in_test = np.swapaxes(in_train, 0, 1), np.swapaxes(in_test, 0, 1)
 
 # Standardisation (optional).
 scaler = StandardScaler()
@@ -100,7 +95,8 @@ for target_idx in [HCHOm, NO2, O3, H2O2]:
   
   # Show a plot of results.
   plt.scatter(out_test, pred, alpha=0.1)
-  plt.title('J rates on 15/4/17')
+  plt.title('J rates')
   plt.xlabel('targets from UKCA')
   plt.ylabel('predictions by linear regression')
   plt.show()
+  plt.close()

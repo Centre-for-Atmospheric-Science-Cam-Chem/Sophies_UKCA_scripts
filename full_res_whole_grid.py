@@ -14,42 +14,8 @@ import numpy as np
 import functions as fns
 import constants as con
 import file_paths as paths
-import cartopy.crs as ccrs
 from idx_names import idx_names
-import matplotlib.pyplot as plt
 from sklearn.metrics import r2_score
-
-
-def show_map(fullname, grid, r2, out_path):
-  '''Show a map of the column % diffs for a specific J rate.
-  fullname: string, fully formatted name of J rate.
-  grid: 2d numpy array of lat, lon, r2, diff for each column.
-  r2: number, overall R2 score of whole grid at this timestep.
-  out_path: string, file path to save fig as.
-  '''
-  # Show plot for this J rate and ts. 
-  cmap = con.cmap_diff
-  # Clip the bounds to +- 20% to remove ridiculous outliers and simplify the plot visuals.
-  vmin, vmax = -20, 20
-  grid[grid[:, 3] < vmin, 3] = vmin
-  grid[grid[:, 3] > vmax, 3] = vmax
-  x = grid[:, 1]
-  y = grid[:, 0]
-  c = grid[:, 3]
-  # Set the fig to a consistent size.
-  plt.figure(figsize=(10,7.5))
-  # Plot the metrics by lat & lon coords on the cartopy mollweide map.
-  ax = plt.axes(projection=ccrs.Mollweide()) 
-  plt.title(f'Columns of {fullname} photolysis rates predicted by random forest. Overall {con.r2} = {r2}')
-  plt.scatter(x, y, c=c, s=3, vmin=vmin, vmax=vmax, cmap=cmap, transform=ccrs.PlateCarree()) 
-  plt.colorbar(shrink=0.5, label=f'% difference of J rate predictions to targets in column', orientation='horizontal')
-  ax.set_global()
-  ax.coastlines()
-  # Save the fig.
-  plt.savefig(out_path)
-  #plt.show()
-  plt.close() 
-
 
 # File paths.
 day_path = f'{paths.npy}/20160401.npy'
@@ -111,7 +77,7 @@ for i in range(len(targets[0])):
 
   # Show plot for this J rate and ts. 
   map_path = f'{paths.analysis}/col_maps_full_res/{shortname}_whole_grid.png'
-  show_map(fullname, grid, r2, map_path)
+  fns.show_diff_map(fullname, grid, r2, map_path)
 
 # Record time taken.
 end = time.time()

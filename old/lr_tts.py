@@ -44,10 +44,8 @@ data = np.load(data_file)
 # Split the dataset by Fast-J cutoff pressure.
 _, data = fns.split_pressure(data)
 
-# Cut the higher altitudes off where Fast-JX might not work properly.
-# 25km / 85km = 29% 
-#top = 0.29642513
-#data = data[:, np.where(data[1] <= top)].squeeze()
+# Smaller subsample.
+data = fns.sample(data)
 
 # Pick out one time step.
 #data = data[:, np.where(data[0] == 12.)].squeeze()
@@ -69,12 +67,12 @@ inputs = np.swapaxes(inputs, 0, 1)
 print('\nInputs:', inputs.shape)
 
 # Test all the targets.
-for target_idx in [HCHOm]:  
-  target = data[target_idx]
-  print('\nTarget:', target_idx, target.shape)
+for target_idx in [NO2]:  
+  targets = data[target_idx]
+  print('\nTarget:', target_idx, targets.shape)
   
-  in_train, in_test, out_train, out_test = train_test_split(inputs, target, test_size=0.1, random_state=6, shuffle=False) 
- 
+  in_train, in_test, out_train, out_test = train_test_split(inputs, targets, test_size=0.1, random_state=6, shuffle=False) 
+  
   # Standardisation (optional).
   scaler = StandardScaler()
   in_train = scaler.fit_transform(in_train)
@@ -92,18 +90,12 @@ for target_idx in [HCHOm]:
   model.fit(in_train, out_train)
   
   # Test.
-  pred, mse, mape, r2 = fns.test(model, in_test, out_test)
+  # Should also implement k-fold cross validation.
+  pred, maxe, mse, mape, smape, r2 = fns.test(model, in_test, out_test)
   
   # Make them the right shape.
   pred = pred.squeeze()
   out_test = out_test.squeeze()
   
-  # Plotting this many datapoints is excessive and costly. Reduce it to 10%.
-  length = len(pred)
-  idxs = np.arange(0, length, 10)
-  pred = pred[idxs]
-  out_test = out_test[idxs]
-  del(idxs)
-  
   # Plot.
-  fns.show(out_test, pred, mse, r2)
+  fns.show(out_test, pred, maxe, mse, r2)

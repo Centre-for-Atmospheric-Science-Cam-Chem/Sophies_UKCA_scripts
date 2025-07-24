@@ -17,7 +17,6 @@ def indices():
 path = '/scratch/st838/netscratch/'
 path_in = f'{path}nudged_J_outputs_for_ATom/cy731a.pl20180518.pp'
 path_npy = f'{path}tests/'
-path_out = f'{path_npy}vols.csv'
 O3_old = 'stash_code=50228'
 O3_added = 'stash_code=50567'
 
@@ -39,10 +38,11 @@ for alt in range(85):
     zone = np.squeeze(vol[:,alt,lat,:])
     mean = np.nanmean(zone)
     vols[alt, lat] = mean
-    
-print(vols.shape)
 
 # Put it into a csv for easy viewing.
 vols = pd.DataFrame(vols)
-print(vols)
-vols.to_csv(path_out)
+vols = np.nan_to_num(vols, nan=np.nan, posinf=np.nan)
+vols = pd.DataFrame(vols)
+vols = vols.interpolate()
+vols.to_csv(f'{path_npy}vols.csv')
+

@@ -18,7 +18,7 @@ from sklearn.metrics import r2_score
 j_idx = 0
 j_name = con.J_names[j_idx] 
 j_name_s = con.J_names_short[j_idx] 
-#j_idx, j_name, j_name_s = None, 'all', 'all' # Average over all J rates in J core.
+j_idx, j_name, j_name_s = None, 'all', 'all' # Average over all J rates in J core.
 
 # Choose whether to show R2 or % diff on map ('r2' or 'diff').
 show = 'r2'

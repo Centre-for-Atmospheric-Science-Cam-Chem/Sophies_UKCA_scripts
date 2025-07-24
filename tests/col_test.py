@@ -176,9 +176,9 @@ for col_path in all_cols:
   if bestr2 == 1.0:
     bestr2 = 0.999
   txt = f'{j}, {text}'
-  #fns.show(target, pred, mape=bestmape, r2=bestr2, t=txt)
+  fns.show(target, pred, mape=bestmape, r2=bestr2, t=txt)
   # Plot by altitude.
-  #fns.line(target, alts, pred, alts, txt, f'J rate / {con.pers}', 'Altitude / km', f'{j} from UKCA', f'{j} from random forest')  
+  fns.line(target, alts, pred, alts, txt, f'J rate / {con.pers}', 'Altitude / km', f'{j} from UKCA', f'{j} from random forest')  
 
   # Show the worst.
   ji = con.J_core[worsti]
@@ -188,7 +188,7 @@ for col_path in all_cols:
   pred = preds[:, worsti]  
   worstr2 = round(worstr2, 3)
   txt = f'{j}, {text}'
-  #fns.show(target, pred, mape=worstmape, r2=worstr2, t=txt)
+  fns.show(target, pred, mape=worstmape, r2=worstr2, t=txt)
   # Plot by altitude.
-  #fns.line(target, alts, pred, alts, txt, f'J rate / {con.pers}', 'Altitude / km', f'{j} from UKCA', f'{j} from random forest')  
+  fns.line(target, alts, pred, alts, txt, f'J rate / {con.pers}', 'Altitude / km', f'{j} from UKCA', f'{j} from random forest')  
   

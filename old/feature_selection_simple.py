@@ -6,6 +6,7 @@ Find best UKCA inputs to predict UKCA J rates.
 '''
 
 import numpy as np
+import constants_cc as con
 import prediction_fns_numpy as fns
 from sklearn.model_selection import train_test_split
 from sklearn.feature_selection import SelectKBest, f_regression
@@ -47,19 +48,8 @@ def remove_duplicates(remove, keep):
 
 # File paths.
 dir_path = '/scratch/st838/netscratch/ukca_npy'
-input_file = f'{dir_path}/20151015.npy'
-name_file = f'{dir_path}/idx_names'
-
-# Indices of some common combinations to use as inputs and outputs.
-phys_all = np.arange(0,15, dtype=int)
-J_all = np.arange(15,85, dtype=int)
-# J rates which are not summed or duplicate fg.
-J_core = [16,18,19,20,24,25,28,29,30,31,32,33,34,36,51,52,53,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82]
-NO2 = 16
-HCHOr = 18 # Radical product.
-HCHOm = 19 # Molecular product.
-H2O2 = 74
-O3 = 78 # O(1D) product.
+input_file = f'{dir_path}/20150115cc.npy'
+name_file = f'{dir_path}/idx_names_cc'
 
 # 2D list of indices and names of the fields. See metadata.
 idx_names = fns.get_idx_names(name_file)
@@ -68,13 +58,18 @@ idx_names = fns.get_idx_names(name_file)
 day = np.load(input_file)
 
 # Cut the higher altitudes off where Fast-JX might not work properly.
-# 25km / 85km = 29% 
-top = 0.29642513
-day = day[:, np.where(day[1] <= top)].squeeze()
+day, _ = fns.split_pressure(day)
+# Could alternatively do 25km / 85km = 29% .
 
-inputs = day[phys_all]
-targets = day[O3] # Only 1 target feature allowed.
-n_best = 2
+# Try only the lowest few altitudes to see how cloud affects these.
+# Bottom 5% of levels = 5% x 85km = 4.25km.
+#top = 0.05
+#day = day[:, np.where(day[1] <= top)].squeeze()
+
+
+inputs = day[con.phys_all]
+targets = day[con.H2O2] # Only 1 target feature allowed.
+n_best = 7
 
 if targets.ndim > 1:
   print('Please choose a single target feature.')
@@ -118,5 +113,5 @@ in_train, in_test, out_train, out_test = train_test_split(inputs, targets, test_
 
 # Test.
 model = fns.train(in_train, out_train)
-pred, mse, mape, r2 = fns.test(model, in_test, out_test)
+_, _, _, _, _, r2 = fns.test(model, in_test, out_test)
 print('\nR2:', r2)

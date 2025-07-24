@@ -42,7 +42,7 @@ def standard_names(data):
     name_new = name_new.strip()
     data = data.rename(columns={name_old:name_new})
   return(data)
-  
+
 
 # Open the .csv of all the ATom data which I have already pre-processed in the script, ATom_J_data.
 print('Loading the ATom data.')

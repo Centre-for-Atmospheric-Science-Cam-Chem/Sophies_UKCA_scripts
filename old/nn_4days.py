@@ -3,10 +3,10 @@ Name: Sophie Turner.
 Date: 4/6/2024.
 Contact: st838@cam.ac.uk
 Try to predict UKCA J rates with a neural network using UKCA data as inputs.
-For use on JASMIN's GPUs. 
 '''
 
 import time
+import psutil
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -16,8 +16,13 @@ from sklearn.metrics import r2_score, mean_absolute_percentage_error
 from sklearn.preprocessing import StandardScaler
 
 
+GB = 1000000000
+mem = round(psutil.virtual_memory().used / GB, 3)
+print(f'Memory usage at start of program: {mem} GB.')
+
+
 # Create a class that inherits nn.Module.
-class Model(nn.Module):
+class SmallModel(nn.Module):
 
   # Set up NN structure.
   def __init__(self, inputs=5, h1=8, h2=8, outputs=1):
@@ -79,11 +84,11 @@ train_file = f'{dir_path}/4days.npy'
 test_file = f'{dir_path}/20170601.npy' 
 
 # Indices of some common combinations to use as inputs and outputs.
-phys_all = np.linspace(0,13,14, dtype=int)
-NO2 = 15
-HCHO = 18 # Molecular product.
-H2O2 = 73
-O3 = 77 # O(1D) product.
+phys_all = np.arange(15, dtype=int)
+NO2 = 16
+HCHO = 19 # Molecular product.
+H2O2 = 74
+O3 = 78 # O(1D) product.
 
 print('Loading numpy data.')
 
@@ -107,8 +112,8 @@ out_train = train_days[target_idx]
 out_test = test_day[target_idx]
 
 # Make them the right shape.
-in_train = np.rot90(in_train, 3)
-in_test = np.rot90(in_test, 3)
+in_train = np.swapaxes(in_train, 0, 1)
+in_test = np.swapaxes(in_test, 0, 1)
 out_train = out_train.reshape(-1, 1)
 out_test = out_test.reshape(-1, 1)
 
@@ -133,7 +138,7 @@ del(train_days)
 del(test_day)
 
 # Create instance of model.
-model = BigModel()
+model = SmallModel()
 
 # Tell the model to measure the error as fitness function to compare pred with label.
 criterion = nn.MSELoss()
@@ -141,7 +146,7 @@ criterion = nn.MSELoss()
 opt = torch.optim.Adam(model.parameters(), lr=0.01)
 
 # Train model.
-epochs = 300 # Choose num epochs.
+epochs = 200 # Choose num epochs.
 print()
 start = time.time()
 for i in range(epochs):
@@ -152,6 +157,8 @@ for i in range(epochs):
   # Print every 10 epochs.
   if (i+1) % 10 == 0:
     print(f'Epoch {i+1} \tMSE: {loss.detach().numpy()}')
+    mem = round(psutil.virtual_memory().used / GB, 3)
+    print(f'Memory usage: {mem} GB.')
     
   # Backpropagation. Tune weights using loss.
   opt.zero_grad() 
@@ -176,6 +183,9 @@ out_test = out_test.squeeze()
 
 print('MAPE:', mean_absolute_percentage_error(out_test, pred))
 print('R2:', round(r2_score(out_test, pred), 2))
+  
+mem = round(psutil.virtual_memory().used / GB, 3)
+print(f'Memory usage at end of program, without plots: {mem} GB.')  
   
 # Plotting this many datapoints is excessive and costly. Reduce it to 1%.
 length = len(pred)

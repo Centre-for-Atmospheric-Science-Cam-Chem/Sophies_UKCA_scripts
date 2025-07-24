@@ -9,14 +9,15 @@ import time
 import numpy as np
 import file_paths as paths
 import constants as con
-import prediction_fns_numpy as fns
+import functions as fns
 from sklearn.ensemble import RandomForestRegressor
 
 # File paths.
-train_file = f'{paths.npy}/low_res_yr_500.npy' 
+train_file = f'{paths.npy}/low_res_yr_500ku.npy' 
 test_file = f'{paths.npy}/20150301.npy'
 
 print()
+print('27')
 start = time.time()
 print('Loading data')
 train_data = np.load(train_file)
@@ -33,7 +34,7 @@ test_data = test_data[:, np.where(test_data[10] > 0)].squeeze()
 
 # Remove test set date from training set.
 # Get integer portion of date-time for test set. That is the day of year.
-print('\nRemoving test day from train data.')
+print('Removing test day from train data.')
 test_day = round(test_data[4, 0])
 # Find any samples in the training set which have that day of year.
 i_day = np.where((train_data[4] >= test_day) & (train_data[4] < test_day + 1)) 

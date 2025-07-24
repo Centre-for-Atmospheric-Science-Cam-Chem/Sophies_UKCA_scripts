@@ -31,7 +31,7 @@ def data_diff(dataATom, dataUKCA):
   # Get the difference of UKCA from ATom for a field to check against other vars.
   diff = dataATom - dataUKCA
   name = f'ATom - UKCA {dataATom.name}'
-  return diff, name  
+  return diff, name
 
 
 def plot_timeseries_2_fields(path, field1, field2, field2ATom=None):

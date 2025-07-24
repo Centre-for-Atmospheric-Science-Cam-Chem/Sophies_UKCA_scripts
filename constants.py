@@ -76,6 +76,10 @@ H2O2 = 74
 O3 = 78 # O(1D) product.
 # All 33 tropospheric J rates in strat-trop.
 J_trop = [15,16,17,18,19,20,21,22,23,24,25,26,28,30,31,32,33,51,52,66,68,70,71,72,73,74,75,76,78,79,80,81,82]
+# Strat-trop J rates which have data in the stratosphere but not the troposphere.
+J_strat = [29,69,77]
+# All 36 strat-trop J rates which have data.
+J_strat_trop = np.sort(J_trop + J_strat)
 # J rates which are not summed or duplicate fg. with usually zero rates removed.
 #           0  1 2  3 4  5  6 7  8 9 10 11 1213 14 1516 17 1819 20 21   
 J_core    = [16,18,19,20,24,28,30,31,33,51,52,66,70,71,72,73,74,75,78,79,80,82]

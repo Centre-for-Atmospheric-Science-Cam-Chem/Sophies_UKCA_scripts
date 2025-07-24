@@ -1,0 +1,12 @@
+# Ignore default outputs 
+nohup.out
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore large data files
+*.npy
+*.pp
+*.csv
+*.dat

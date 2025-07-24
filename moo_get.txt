@@ -1,0 +1,1097 @@
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160101.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160102.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160103.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160104.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160101.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160102.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160103.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160104.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160105.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160106.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160107.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160108.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160105.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160106.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160107.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160108.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160109.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160110.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160111.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160112.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160109.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160110.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160111.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160112.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160113.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160114.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160115.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160116.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160113.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160114.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160115.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160116.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160117.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160118.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160119.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160120.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160117.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160118.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160119.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160120.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160121.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160122.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160123.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160124.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160121.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160122.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160123.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160124.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160125.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160126.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160127.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160128.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160125.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160126.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160127.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160128.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160129.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160130.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160131.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160201.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160129.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160130.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160131.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160201.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160202.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160203.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160204.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160205.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160202.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160203.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160204.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160205.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160206.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160207.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160208.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160209.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160206.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160207.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160208.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160209.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160210.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160211.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160212.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160213.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160210.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160211.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160212.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160213.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160214.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160215.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160216.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160217.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160214.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160215.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160216.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160217.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160218.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160219.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160220.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160221.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160218.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160219.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160220.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160221.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160222.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160223.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160224.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160225.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160222.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160223.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160224.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160225.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160226.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160227.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160228.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160229.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160226.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160227.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160228.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160229.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160301.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160302.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160303.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160304.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160301.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160302.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160303.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160304.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160305.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160306.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160307.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160308.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160305.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160306.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160307.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160308.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160309.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160310.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160311.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160312.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160309.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160310.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160311.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160312.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160313.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160314.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160315.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160316.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160313.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160314.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160315.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160316.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160317.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160318.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160319.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160320.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160317.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160318.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160319.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160320.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160321.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160322.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160323.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160324.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160321.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160322.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160323.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160324.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160325.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160326.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160327.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160328.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160325.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160326.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160327.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160328.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160329.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160330.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160331.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160401.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160329.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160330.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160331.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160401.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160402.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160403.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160404.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160405.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160402.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160403.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160404.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160405.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160406.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160407.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160408.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160409.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160406.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160407.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160408.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160409.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160410.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160411.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160412.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160413.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160410.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160411.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160412.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160413.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160414.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160415.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160416.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160417.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160414.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160415.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160416.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160417.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160418.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160419.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160420.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160421.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160418.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160419.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160420.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160421.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160422.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160423.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160424.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160425.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160422.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160423.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160424.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160425.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160426.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160427.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160428.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160429.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160426.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160427.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160428.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160429.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160430.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160501.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160502.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160503.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160430.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160501.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160502.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160503.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160504.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160505.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160506.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160507.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160504.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160505.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160506.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160507.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160508.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160509.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160510.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160511.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160508.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160509.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160510.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160511.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160512.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160513.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160514.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160515.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160512.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160513.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160514.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160515.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160516.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160517.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160518.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160519.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160516.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160517.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160518.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160519.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160520.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160521.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160522.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160523.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160520.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160521.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160522.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160523.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160524.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160525.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160526.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160527.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160524.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160525.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160526.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160527.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160528.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160529.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160530.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160531.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160528.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160529.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160530.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160531.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160601.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160602.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160603.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160604.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160601.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160602.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160603.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160604.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160605.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160606.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160607.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160608.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160605.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160606.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160607.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160608.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160609.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160610.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160611.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160612.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160609.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160610.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160611.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160612.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160613.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160614.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160615.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160616.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160613.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160614.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160615.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160616.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160617.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160618.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160619.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160620.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160617.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160618.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160619.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160620.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160621.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160622.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160623.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160624.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160621.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160622.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160623.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160624.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160625.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160626.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160627.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160628.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160625.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160626.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160627.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160628.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160629.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160630.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160701.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160702.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160629.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160630.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160701.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160702.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160703.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160704.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160705.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160706.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160703.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160704.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160705.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160706.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160707.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160708.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160709.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160710.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160707.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160708.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160709.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160710.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160711.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160712.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160713.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160714.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160711.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160712.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160713.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160714.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160715.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160716.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160717.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160718.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160715.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160716.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160717.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160718.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160719.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160720.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160721.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160722.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160719.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160720.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160721.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160722.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160723.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160724.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160725.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160726.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160723.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160724.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160725.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160726.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160727.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160728.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160729.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160730.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160727.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160728.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160729.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160730.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160731.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160801.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160802.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160803.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160731.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160801.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160802.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160803.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160804.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160805.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160806.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160807.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160804.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160805.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160806.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160807.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160808.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160809.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160810.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160811.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160808.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160809.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160810.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160811.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160812.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160813.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160814.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160815.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160812.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160813.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160814.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160815.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160816.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160817.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160818.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160819.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160816.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160817.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160818.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160819.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160820.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160821.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160822.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160823.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160820.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160821.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160822.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160823.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160824.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160825.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160826.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160827.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160824.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160825.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160826.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160827.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160828.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160829.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160830.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160831.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160828.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160829.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160830.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160831.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160901.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160902.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160903.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160904.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160901.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160902.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160903.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160904.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160905.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160906.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160907.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160908.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160905.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160906.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160907.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160908.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160909.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160910.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160911.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160912.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160909.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160910.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160911.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160912.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160913.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160914.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160915.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160916.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160913.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160914.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160915.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160916.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160917.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160918.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160919.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160920.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160917.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160918.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160919.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160920.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160921.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160922.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160923.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160924.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160921.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160922.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160923.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160924.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160925.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160926.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160927.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160928.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160925.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160926.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160927.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160928.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160929.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20160930.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161001.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161002.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160929.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20160930.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161001.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161002.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161003.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161004.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161005.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161006.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161003.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161004.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161005.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161006.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161007.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161008.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161009.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161010.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161007.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161008.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161009.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161010.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161011.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161012.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161013.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161014.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161011.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161012.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161013.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161014.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161015.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161016.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161017.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161018.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161015.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161016.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161017.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161018.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161019.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161020.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161021.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161022.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161019.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161020.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161021.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161022.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161023.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161024.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161025.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161026.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161023.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161024.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161025.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161026.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161027.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161028.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161029.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161030.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161027.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161028.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161029.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161030.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161031.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161101.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161102.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161103.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161031.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161101.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161102.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161103.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161104.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161105.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161106.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161107.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161104.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161105.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161106.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161107.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161108.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161109.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161110.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161111.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161108.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161109.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161110.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161111.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161112.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161113.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161114.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161115.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161112.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161113.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161114.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161115.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161116.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161117.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161118.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161119.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161116.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161117.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161118.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161119.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161120.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161121.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161122.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161123.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161120.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161121.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161122.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161123.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161124.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161125.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161126.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161127.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161124.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161125.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161126.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161127.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161128.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161129.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161130.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161201.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161128.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161129.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161130.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161201.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161202.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161203.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161204.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161205.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161202.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161203.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161204.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161205.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161206.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161207.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161208.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161209.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161206.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161207.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161208.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161209.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161210.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161211.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161212.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161213.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161210.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161211.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161212.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161213.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161214.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161215.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161216.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161217.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161214.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161215.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161216.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161217.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161218.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161219.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161220.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161221.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161218.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161219.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161220.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161221.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161222.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161223.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161224.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161225.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161222.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161223.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161224.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161225.pp /scratch/st838/netscratch/data/ukca_pps/
+
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161226.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161227.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161228.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161229.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161226.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161227.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161228.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161229.pp /scratch/st838/netscratch/data/ukca_pps/
+
+rm cy731a.* MetOffice*
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161230.pp .
+moo get -v moose:/crum/u-cy731/apl.pp/cy731a.pl20161231.pp .
+
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161230.pp /scratch/st838/netscratch/data/ukca_pps/
+rsync -v sophiet@xfer-vm-01.jasmin.ac.uk:~/cy731a.pl20161231.pp /scratch/st838/netscratch/data/ukca_pps/
