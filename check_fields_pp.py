@@ -2,16 +2,14 @@
 Name: Sophie Turner.
 Date: 4/4/2025.
 Contact: st838@cam.ac.uk.
-Check the order and number of fields in .pp file.
+Check the order and number of fields in .pp file and their values' ranges.
 '''
 
 import cf
 import file_paths as paths
 
 # A sample UM output .pp file.
-um_files = [f'{paths.pp}/cy731a.pl20150103.pp',
-            f'{paths.pp}/cy731a.pl20150104.pp',
-	    f'{paths.pp}/cy731a.pl20170102.pp']
+um_files = [f'{paths.pp}/atmosa.pl19810901_18']
 
 for um_file in um_files:
   # Open it in CF Python.
@@ -21,6 +19,6 @@ for um_file in um_files:
   day = cf.read(um_file)
 
   for field in day:
-    print(field.long_name)
+    print(f'{field.long_name} ranges from {field.min()} to {field.max()}')se
 
-  print(len(day))
+  print(f'There are {len(day)} fields in the dataset.')
