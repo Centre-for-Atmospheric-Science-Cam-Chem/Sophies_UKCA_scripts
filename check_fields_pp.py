@@ -19,6 +19,6 @@ for um_file in um_files:
   day = cf.read(um_file)
 
   for field in day:
-    print(f'{field.long_name} ranges from {field.min()} to {field.max()}')se
+    print(f'{field.long_name} ranges from {field.min()} to {field.max()}')
 
   print(f'There are {len(day)} fields in the dataset.')
